@@ -18,7 +18,7 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '.env' });
+dotenv.config({ path: '.env', quiet: true });
 
 const goCode = `/* 
 * Copyright (c) Motadata 2025.  All rights reserved. 

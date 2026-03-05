@@ -17,7 +17,7 @@
 // import { test, expect } from '@playwright/test';
 // import dotenv from 'dotenv';
 
-// dotenv.config({ path: '.env' });
+// dotenv.config({ path: '.env', quiet: true });
 
 // test.describe.serial('Motadata AIOps Multi LDAP Server Sync for User Settings', async () => {
 //   let page;
@@ -159,7 +159,7 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '.env' });
+dotenv.config({ path: '.env', quiet: true });
 
 const ldapServers = [
   {
