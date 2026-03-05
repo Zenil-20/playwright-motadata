@@ -4,10 +4,11 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -17,6 +18,16 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Copy .env file
+      shell: pwsh
+      run: |
+        if (Test-Path "${{ runner.workspace }}/.env") {
+          Copy-Item "${{ runner.workspace }}/.env" -Destination ".env"
+        } elseif (Test-Path "$env:USERPROFILE/.env.playwright") {
+          Copy-Item "$env:USERPROFILE/.env.playwright" -Destination ".env"
+        } else {
+          Write-Host "WARNING: No .env file found. Tests may fail."
+        }
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
