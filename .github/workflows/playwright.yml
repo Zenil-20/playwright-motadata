@@ -19,12 +19,11 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Copy .env file
-      shell: pwsh
+      shell: powershell
       run: |
-        if (Test-Path "${{ runner.workspace }}/.env") {
-          Copy-Item "${{ runner.workspace }}/.env" -Destination ".env"
-        } elseif (Test-Path "$env:USERPROFILE/.env.playwright") {
-          Copy-Item "$env:USERPROFILE/.env.playwright" -Destination ".env"
+        if (Test-Path "$env:USERPROFILE\.env.playwright") {
+          Copy-Item "$env:USERPROFILE\.env.playwright" -Destination ".env" -Force
+          Write-Host ".env copied from USERPROFILE"
         } else {
           Write-Host "WARNING: No .env file found. Tests may fail."
         }
