@@ -11,7 +11,7 @@
  * license agreement entered into with Motadata.
  *
  * Author  : Zenil Kapadia
- * Created : 5 March 2026
+ * Created : 6 March 2026
  */
 
 import { test, expect } from '@playwright/test';
@@ -19,7 +19,7 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
-test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery', () => {
+test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
   let page;
 
   test.beforeAll(async ({ browser }) => {
@@ -51,66 +51,69 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await page.getByRole('button', { name: 'Create Discovery Profile' }).click();
   });
 
-  test('Create Discovery for Linux Server', async () => {
-    await page.locator("//input[@id='profile-id']").fill('172.16.8.165-linux');
-    await page.locator("//input[@id='ip-address-id']").fill(process.env.Sybase_linux_ip);
+  test('Create Discovery for RabbitMQ', async () => {
+    await page.locator("//input[@id='profile-id']").fill('172.16.8.196-linux');
+    await page.locator("//input[@id='ip-address-id']").fill(process.env.Rabbitmq_linux_ip);
     await page.locator('#create-credential-btn-id').click();
-    await page.locator("//input[@id='credential-profile-name-id']").fill('172.16.8.165');
-    await page.locator("//input[@id='username-id']").fill(process.env.Sybase_linux_username);
-    await page.locator("//input[@id='password-id']").fill(process.env.Sybase_linux_password);
+    await page.locator("//input[@id='credential-profile-name-id']").fill('172.16.8.196');
+    await page.locator("//input[@id='username-id']").fill(process.env.Rabbitmq_linux_username);
+    await page.locator("//input[@id='password-id']").fill(process.env.Rabbitmq_linux_password);
     await page.locator("//button[@id='test-btn']").click();
-    await page.locator("//input[@name='hostname-ip']").fill(process.env.Sybase_linux_ip);
+    await page.locator("//input[@name='hostname-ip']").fill(process.env.Rabbitmq_linux_ip);
     await page.locator("//button[@id='run-test-btn']").click();
     await expect(page.locator('#message')).toHaveText('Successful');
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
-    await page.locator('#save-run-btn-id').click();
-    await expect(page.getByRole('gridcell', { name: process.env.Sybase_linux_ip })).toBeVisible({ timeout: 100000 });
+    await page.locator("//button[@id='save-exit-btn-id']").click();
+    await page.locator("//input[@name='discovery-search']").fill(process.env.Rabbitmq_linux_ip);
+    await page.waitForTimeout(1000);
+    await page.locator('[data-cy="rerun"]').click();
+    await expect(page.getByRole('gridcell', { name: process.env.Rabbitmq_linux_ip })).toBeVisible({ timeout: 100000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully')).toBeVisible();
     await page.locator('svg[data-icon="times"]').click();
   });
 
-  test('Rediscover for Sybase Database', async () => {
+  test('Rediscover for RabbitMQ', async () => {
 await page.locator("//input[@placeholder='Search']").first().fill('Rediscover Settings');
 await page.getByRole('link', { name: 'Rediscover Settings' }).click();
 await page.locator("//input[@name='search']").fill('weekly');
-await page.waitForTimeout(1000); // 1 second pause
+await page.waitForTimeout(1000);
 await page.locator('#start-rediscovery').click();
-  await page.locator('input[name="search"]').nth(1).fill('sybase', { timeout: 128000 });
+  await page.locator('input[name="search"]').nth(1).fill('rabbitmq', { timeout: 128000 });
   const row = page.locator(".rediscover-row")
-    .filter({ hasText: "Sybase" })
-    .filter({ hasText: "172.16.8.165" });
+    .filter({ hasText: "RabbitMQ" })
+    .filter({ hasText: "172.16.8.196" });
   await row.waitFor({ state: "attached" });
   await row.scrollIntoViewIfNeeded();
   await row.waitFor({ state: "visible" });
   await row.click({ force: true });
-  await page.locator("//input[@id='instance-jdbc']").click();
-  await page.locator("//input[@id='instance-jdbc']").fill(process.env.Sybase_instance_name);
   await page.locator('#create-credential-btn-id').click();
-  await page.locator("//input[@id='credential-profile-name-id']").fill("172.16.8.165-sybase");
-  await page.locator("//input[@id='username-id']").fill(process.env.Sybase_username);
-  await page.locator("//input[@id='password-id']").fill(process.env.Sybase_password);
+  await page.locator("//input[@id='credential-profile-name-id']").fill("172.16.8.196-Rabbitmq");
+  await page.locator("//div[@id='authentication-type']").click();
+  await page.locator("//span[@title='Basic']").click();
+  await page.locator("//input[@id='username-id']").fill(process.env.Rabbitmq_username);
+  await page.locator("//input[@id='password-id']").fill(process.env.Rabbitmq_password);
   await page.locator("//button[@id='create-credential-profile-btn-id']").click();
   await page.locator("//button[@id='run']").click();
   await page.locator("//button[@id='confirm-yes']").click();
   try {
   await row.waitFor({ state: "visible", timeout: 60000 });
-  throw new Error("Sybase Rediscovery failed");
+  throw new Error("RabbitMQ Rediscovery failed");
 } catch (error) {
-  console.log("Successfully provisioned sybase rediscovery");
+  console.log("Successfully provisioned RabbitMQ rediscovery");
 }
   await page.locator('//div[@class="ant-drawer ant-drawer-right ant-drawer-open rediscover-result-drawer discovery-boat-panel"]//button[2]').click();
   await page.locator("//input[@placeholder='Search']").first().fill('device monitor settings');
   await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
   await page.waitForTimeout(1000);
-  await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.165', { timeout: 128000 } );
-  await expect(page.getByText('Sybase')).toBeVisible({ timeout: 120000 });
+  await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.196', { timeout: 128000 } );
+  await expect(page.getByText('RabbitMQ')).toBeVisible({ timeout: 120000 });
   await page.waitForTimeout(1000);
   await page.locator('svg[data-icon="ellipsis-v"]').click();
   await page.locator("#metric-collection-time").click();
-  await expect(page.getByRole('tab', { name: 'Sybase' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'RabbitMQ' })).toBeVisible();
   const updateBtn = page.locator('#update-metric-collection-time');
   await expect(updateBtn).toBeVisible({ timeout: 30000 });
   await expect(updateBtn).toBeEnabled();
