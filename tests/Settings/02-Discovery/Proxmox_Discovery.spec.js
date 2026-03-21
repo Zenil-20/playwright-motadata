@@ -99,8 +99,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
     await page.locator('.svg-inline--fa.fa-times.fa-w-16.fa-lg').click();
     await page.locator("input[placeholder='Search']").first().fill("device monitor settings", { timeout: 60000 });
     page.getByRole('link', { name: 'Device Monitor Settings' }).click();
-    await page.locator("input[placeholder='Search']").nth(1).fill("proxmox");
     await page.waitForTimeout(1000);
+    await page.locator("//input[@placeholder='Search']").nth(1).fill('proxmox', { timeout: 128000 } );
     await expect(page.locator('img[alt="Proxmox VE"]')).toBeVisible();
     await expect(page.getByRole('gridcell', { name: '172.16.12.117' }).first()).toBeVisible();
     await expect(page.locator('[title="Virtualization > Proxmox VE"]')).toBeVisible();
