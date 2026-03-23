@@ -22,26 +22,18 @@ dotenv.config({ path: '.env', quiet: true });
 test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery', () => {
   let page;
 
+
   test.beforeAll(async ({ browser }) => {
-    // Create a single browser context and page shared across all tests
-    const context = await browser.newContext();
-    page = await context.newPage();
-    page.setDefaultTimeout(500000);
-  });
+   const context = await browser.newContext();
+   page = await context.newPage();
+   page.setDefaultTimeout(500000);
 
-  test.afterAll(async () => {
-    if (page) {
-      await page.close();
-    }
-  });
-
-  test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
-  });
+   await page.goto(process.env.Motadata_Aiops);
+   await page.locator("//input[@placeholder='Username']").fill('admin');
+   await page.locator("//input[@placeholder='Password']").fill('admin');
+   await page.locator("//button[@type='submit']").click();
+   await page.waitForLoadState('networkidle');
+});
 
   test('Navigate to Discovery Profile', async () => {
     await page.locator("//a[@href='/settings/']").click();
@@ -117,10 +109,11 @@ await page.locator('#start-rediscovery').click();
   await updateBtn.click();
   });
 
-  test('Logout from AIOps', async () => {
+ test.afterAll(async () => {
+  if (page) {
     await page.locator("//img[@alt='Avatar']").click();
     await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
-  });
+    await page.close();
+  }
+});
 });

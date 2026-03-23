@@ -14,6 +14,15 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  // Custom test execution order for Settings module
+testMatch: [
+  'tests/Settings/01-AgentMonitoringSettings/*.spec.js',
+  'tests/Settings/02-Discovery/*.spec.js',
+  'tests/Settings/03-NetrouteSettings/*.spec.js',
+  'tests/Settings/04-PolicySettings/*.spec.js',
+  'tests/Settings/05-Runbook/*.spec.js',
+  'tests/Settings/06-UserSettings/*.spec.js',
+],
   /* Run tests sequentially, not in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -21,7 +30,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Single worker to ensure sequential execution */
-  workers: 4,
+  workers: 1,
   /* Test timeout - increase for slow networks, decrease for production */
   timeout: 120000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
