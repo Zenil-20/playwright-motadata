@@ -73,7 +73,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Aruba Wireless Discovery
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    const dialog = page.getByRole('dialog', { name: 'Provision Status' });
+    await dialog.locator('svg[data-icon="times"]').click();
   });
 
   test('Logout from AIOps', async () => {

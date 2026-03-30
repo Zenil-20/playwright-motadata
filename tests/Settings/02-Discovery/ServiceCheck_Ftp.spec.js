@@ -53,6 +53,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
   });
 
   test('Create Discovery for Service check FTP', async () => {
+    test.setTimeout(600000);
+
     await page.getByText('Service Check', { exact: true }).click();
     await page.locator('input[name="profile-name"]').fill('172.16.8.57ftp');
     await page.locator('#service-type-id').click();
@@ -62,8 +64,14 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
     await page.locator("//input[@id='username-id']").fill("Administrator");
     await page.locator("//input[@id='password-id']").fill("Motadata@8");
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText("172.16.8.57").first()).toBeVisible({ timeout: 480000 });
-    await page.locator('input[type="checkbox"]').nth(1).check();
+
+    const discoveryRow = page.locator('tr').filter({ hasText: '172.16.8.57' }).first();
+    await expect(discoveryRow).toBeVisible({ timeout: 480000 });
+
+    const rowCheckbox = discoveryRow.locator('input[type="checkbox"]').first();
+    await expect(rowCheckbox).toBeVisible({ timeout: 30000 });
+    await rowCheckbox.check();
+
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
     await page.locator('svg[data-icon="times"]').click();

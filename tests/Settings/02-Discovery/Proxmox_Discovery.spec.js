@@ -63,14 +63,14 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
 
   test('Create Discovery for Proxmox Virtualization', async () => {
     await page.locator("input[placeholder='Search']").first().fill("discovery profile");
+    await page.locator('.ant-drawer-mask').waitFor({ state: 'hidden' }).catch(() => {});
+    await page.waitForTimeout(200); 
     await page.getByRole('link', { name: 'Discovery Profile' }).click();
     await page.getByRole('button', { name: 'Create Discovery Profile' }).click();
     await page.getByText('Virtualization', { exact: true }).click();
     await page.getByRole('link', { name: 'Proxmox VE' }).click();
-
     await page.getByRole('textbox', { name: 'Must be unique' }).fill('discoverproxmox');
     await page.getByRole('textbox', { name: 'e.g. 192.168.1.1 or fd00::1' }).fill(process.env.Proxmox_ip);
-
     // Open credential drawer and fill fields (scoped to drawer to avoid conflicts)
     const tags = ['PROXMOx', 'Automation@zen', 'sp@#$%^^&*()sp'];
 
@@ -104,7 +104,10 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
     await expect(page.locator('img[alt="Proxmox VE"]')).toBeVisible();
     await expect(page.getByRole('gridcell', { name: '172.16.12.117' }).first()).toBeVisible();
     await expect(page.locator('[title="Virtualization > Proxmox VE"]')).toBeVisible();
-    await page.locator("//i[@class='anticon excluded-header-icon']").click();
+    const rows = page.locator('tr.k-master-row');
+    await expect(rows).toHaveCount(1, { timeout: 10000 });
+    await expect(rows.first()).toBeVisible();
+    await rows.first().locator('.anticon.excluded-header-icon').click();
     await page.locator("//span[normalize-space()='Edit']").click();
     for (const tag of tags) {
     await expect(page.getByText(tag.toLowerCase(), { exact: true })).toBeVisible();

@@ -1,6 +1,33 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
+const settingsProjects = [
+  {
+    name: 'settings_01_agent_monitoring',
+    testMatch: ['tests/Settings/01-AgentMonitoringSettings/*.spec.js'],
+  },
+  {
+    name: 'settings_02_discovery',
+    testMatch: ['tests/Settings/02-Discovery/*.spec.js'],
+  },
+  {
+    name: 'settings_03_netroute',
+    testMatch: ['tests/Settings/03-NetrouteSettings/*.spec.js'],
+  },
+  {
+    name: 'settings_04_policy',
+    testMatch: ['tests/Settings/04-PolicySettings/*.spec.js'],
+  },
+  {
+    name: 'settings_05_runbook',
+    testMatch: ['tests/Settings/05-Runbook/*.spec.js'],
+  },
+  {
+    name: 'settings_06_user_settings',
+    testMatch: ['tests/Settings/06-UserSettings/*.spec.js'],
+  },
+];
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -14,23 +41,17 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  // Custom test execution order for Settings module
-testMatch: [
-  'tests/Settings/01-AgentMonitoringSettings/*.spec.js',
-  'tests/Settings/02-Discovery/*.spec.js',
-  'tests/Settings/03-NetrouteSettings/*.spec.js',
-  'tests/Settings/04-PolicySettings/*.spec.js',
-  'tests/Settings/05-Runbook/*.spec.js',
-  'tests/Settings/06-UserSettings/*.spec.js',
-],
-  /* Run tests sequentially, not in parallel */
+  /* Keep tests inside each file ordered unless a spec opts into parallelism. */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Single worker to ensure sequential execution */
-  workers: 1,
+  /*
+   * Run the Settings projects independently so a failure in one folder
+   * does not block the remaining folders from executing.
+   */
+  workers: process.env.CI ? 2 : 4,
   /* Test timeout - increase for slow networks, decrease for production */
   timeout: 120000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -47,43 +68,11 @@ testMatch: [
     ignoreHTTPSErrors: true,
   },
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+  /* Configure ordered Settings projects on Chromium */
+  projects: settingsProjects.map((project) => ({
+    ...project,
+    use: { ...devices['Desktop Chrome'] },
+  })),
 
   /* Run your local dev server before starting the tests */
   // webServer: {
@@ -92,4 +81,3 @@ testMatch: [
   //   reuseExistingServer: !process.env.CI,
   // },
 });
-
