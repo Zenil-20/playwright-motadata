@@ -18,13 +18,11 @@ const DASHBOARD_URL =
 
 const DASHBOARD_USERNAME =
   process.env.Motadata_Username ||
-  process.env.MOTADATA_USERNAME ||
-  'admin';
+  process.env.MOTADATA_USERNAME;
 
 const DASHBOARD_PASSWORD =
   process.env.Motadata_Password ||
-  process.env.MOTADATA_PASSWORD ||
-  'admin';
+  process.env.MOTADATA_PASSWORD;
 
 export function getDashboardBaseUrl() {
   if (!DASHBOARD_URL) {
@@ -37,6 +35,12 @@ export function getDashboardBaseUrl() {
 }
 
 export async function loginToDashboard(page) {
+  if (!DASHBOARD_USERNAME || !DASHBOARD_PASSWORD) {
+    throw new Error(
+      'Dashboard credentials are missing. Set Motadata_Username and Motadata_Password in .env.'
+    );
+  }
+
   await page.goto(getDashboardBaseUrl(), { waitUntil: 'domcontentloaded' });
 
   const usernameInput = page.locator("//input[@placeholder='Username']");

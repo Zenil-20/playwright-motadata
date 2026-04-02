@@ -19,6 +19,9 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
+const APP_USERNAME = process.env.Motadata_Username;
+const APP_PASSWORD = process.env.Motadata_Password;
+
 test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', () => {
   let page;
 
@@ -37,8 +40,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', (
 
   test('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.getByRole('textbox', { name: 'Username' }).fill('admin');
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+    await page.getByRole('textbox', { name: 'Username' }).fill(APP_USERNAME);
+    await page.getByRole('textbox', { name: 'Password' }).fill(APP_PASSWORD);
     await page.getByRole('button', { name: 'Login' }).click();
     await page.waitForLoadState('networkidle');
   });

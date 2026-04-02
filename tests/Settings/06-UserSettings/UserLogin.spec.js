@@ -19,8 +19,8 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'admin';
+const ADMIN_USERNAME = process.env.Motadata_Username;
+const ADMIN_PASSWORD = process.env.Motadata_Password;
 const LOCAL_AUTH_OPTION = 'Local Authentication';
 const TEST_PASSWORD = 'Motadata@123';
 const UPDATED_TEST_PASSWORD = 'Motadata@1234';
