@@ -29,8 +29,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
    page.setDefaultTimeout(500000);
 
    await page.goto(process.env.Motadata_Aiops);
-   await page.locator("//input[@placeholder='Username']").fill('admin');
-   await page.locator("//input[@placeholder='Password']").fill('admin');
+    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+   await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
    await page.locator("//button[@type='submit']").click();
    await page.waitForLoadState('networkidle');
 });
@@ -110,9 +110,7 @@ await page.locator('#start-rediscovery').click();
   });
 
  test.afterAll(async () => {
-  if (page) {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
+  if (page && !page.isClosed()) {
     await page.close();
   }
 });

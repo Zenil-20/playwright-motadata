@@ -38,8 +38,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check NTP', () =
 
   test('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
+     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
     await page.waitForLoadState('networkidle');
   });

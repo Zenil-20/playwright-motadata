@@ -38,8 +38,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check url Discov
 
   test('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
+     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
     await page.waitForLoadState('networkidle');
   });
@@ -53,8 +53,12 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check url Discov
   });
 
   test('Create Discovery for Service check URL', async () => {
+    test.setTimeout(300000);
+
+    const profileName = `url-${Date.now()}`;
+
     await page.getByText('Service Check', { exact: true }).click();
-    await page.locator('input[name="profile-name"]').fill('url');
+    await page.locator('input[name="profile-name"]').fill(profileName);
     await page.locator('#service-type-id').click();
     await page.locator("//input[@data-cy='dropdown-search-input']").fill('URL');
     await page.locator('#URL').click();
@@ -63,10 +67,10 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check url Discov
     await page.locator("//span[normalize-space()='HTTPS']").click();
     await page.locator("//span[normalize-space()='POST']").click();
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText("thronesdb.com/register/").first()).toBeVisible({ timeout: 480000 });
+    await expect(page.getByText("thronesdb.com/register/").first()).toBeVisible({ timeout: 180000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 15000 });
     await page.locator('svg[data-icon="times"]').click();
   });
 

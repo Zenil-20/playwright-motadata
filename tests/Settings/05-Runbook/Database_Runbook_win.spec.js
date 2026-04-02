@@ -42,8 +42,8 @@ test.describe.serial('Motadata AIOps Login', () => {
 
     test('Login to Motadata AIOps', async () => {
         await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-        await page.locator("//input[@placeholder='Username']").fill('admin');
-        await page.locator("//input[@placeholder='Password']").fill('admin');
+         await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+        await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
         await page.locator("//button[@type='submit']").click();
         await page.waitForLoadState('networkidle');
     });
@@ -75,11 +75,21 @@ test.describe.serial('Motadata AIOps Login', () => {
         // Click the checkbox inside that row
         const checkbox = row.locator('input[type="checkbox"]');
         await expect(checkbox).toBeVisible({ timeout: 5000 });
-        await checkbox.click();
+          await checkbox.click();
           await page.locator("//input[@name='runbook-description']").fill("runbook to get all databases in postgres");
           await page.locator("//div[@id='credential-profile-picker-id']").click();
-          await page.locator("//input[@placeholder='Search']").fill("172.16.10.134_postgresql");
-          await page.locator("//span[@title='172.16.10.134_postgresql']").click();
+          await page.locator("input[data-cy='dropdown-search-input']").fill("172.16.10.134_postgresql");
+          const credentialOption = page.locator("//span[@title='172.16.10.134_postgresql']");
+          if (!(await credentialOption.isVisible().catch(() => false))) {
+              await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+              await page.locator("//input[@id='credential-profile-name-id']").fill("172.16.10.134_postgresql");
+              await page.locator("//input[@id='username-id']").fill("postgres");
+              await page.locator("//input[@id='password-id']").fill("Mind@123");
+              await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+              await page.locator("//div[@id='credential-profile-picker-id']").click();
+              await page.locator("input[data-cy='dropdown-search-input']").fill("172.16.10.134_postgresql");
+          }
+          await credentialOption.click();
           await page.getByRole('button', { name: 'Test' }).click();
           await page.locator("//div[@id='test-monitor-picker-id']").click();
           const checkbox1 = row.locator('input[type="checkbox"]');

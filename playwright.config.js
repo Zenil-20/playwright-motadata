@@ -28,6 +28,29 @@ const settingsProjects = [
   },
 ];
 
+const dashboardProjects = [
+  {
+    name: 'dashboard_01_server_and_apps',
+    testMatch: ['tests/Dashboard/01-ServerAndApps/*.spec.js'],
+  },
+  {
+    name: 'dashboard_02_network',
+    testMatch: ['tests/Dashboard/02-Network/*.spec.js'],
+  },
+  {
+    name: 'dashboard_03_virtualization',
+    testMatch: ['tests/Dashboard/03-Virtualization/*.spec.js'],
+  },
+  {
+    name: 'dashboard_04_database',
+    testMatch: ['tests/Dashboard/04-Database/*.spec.js'],
+  },
+  {
+    name: 'dashboard_05_service_check',
+    testMatch: ['tests/Dashboard/05-ServiceCheck/*.spec.js'],
+  },
+];
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -69,7 +92,7 @@ export default defineConfig({
   },
 
   /* Configure ordered Settings projects on Chromium */
-  projects: settingsProjects.map((project) => ({
+  projects: [...settingsProjects, ...dashboardProjects].map((project) => ({
     ...project,
     use: { ...devices['Desktop Chrome'] },
   })),

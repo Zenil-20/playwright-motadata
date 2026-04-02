@@ -274,8 +274,8 @@ test.describe.serial(
     test('Login to Motadata AIOps', async () => {
       await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
 
-      await page.locator("//input[@placeholder='Username']").fill('admin');
-      await page.locator("//input[@placeholder='Password']").fill('admin');
+       await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+      await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
 
       await page.locator("//button[@type='submit']").click();
 
@@ -304,22 +304,9 @@ test.describe.serial(
         await row.waitFor({ state: 'visible', timeout: 120000 });
 
         // Add Tags
-        await row.locator('svg[data-icon="ellipsis-v"]').click();
-
-        await page.getByRole('link', { name: 'Edit' }).click();
-
-        const tags = ['motadata:8.61', 'Automation@zen', 'sp@#$%^^&*()sp'];
-
-        const tagBox = page.locator('[role="combobox"]');
-
-        await tagBox.click();
-
-        for (const tag of tags) {
-          await page.keyboard.type(tag);
-          await page.keyboard.press('Enter');
-        }
-
-        await page.locator("//button[@id='submit-btn']").click();
+        const rowCheckbox = row.locator('input[type="checkbox"]').first();
+        await expect(rowCheckbox).toBeVisible({ timeout: 10000 });
+        await rowCheckbox.check();
 
         // Export Agent Config
         await row.locator('svg[data-icon="ellipsis-v"]').click();

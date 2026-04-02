@@ -37,8 +37,8 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
 
   test('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
+     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
     await page.waitForLoadState('networkidle');
   });
@@ -69,6 +69,12 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
   });
 
   test('Logout from AIOps', async () => {
+    const drawerCloseButton = page.locator('.ant-drawer-close').last();
+    if (await drawerCloseButton.isVisible().catch(() => false)) {
+      await drawerCloseButton.click();
+      await expect(drawerCloseButton).toBeHidden({ timeout: 10000 });
+    }
+
     await page.locator("//img[@alt='Avatar']").click();
     await page.getByText('Logout').click();
     await page.context().clearCookies();

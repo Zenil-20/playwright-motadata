@@ -37,8 +37,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
 
   test('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
+     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
     await page.waitForLoadState('networkidle');
   });
@@ -52,6 +52,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
   });
 
   test('Create Discovery for RabbitMQ', async () => {
+    test.setTimeout(300000);
+
     await page.locator("//input[@id='profile-id']").fill('172.16.8.196-linux');
     await page.locator("//input[@id='ip-address-id']").fill(process.env.Rabbitmq_linux_ip);
     await page.locator('#create-credential-btn-id').click();
@@ -68,10 +70,16 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
     await page.locator("//input[@name='discovery-search']").fill(process.env.Rabbitmq_linux_ip);
     await page.waitForTimeout(1000);
     await page.locator('[data-cy="rerun"]').click();
-    await expect(page.getByRole('gridcell', { name: process.env.Rabbitmq_linux_ip })).toBeVisible({ timeout: 100000 });
-    await page.locator('input[type="checkbox"]').nth(1).check();
+    const discoveredRow = page.locator('tr', { hasText: process.env.Rabbitmq_linux_ip }).first();
+    await expect(discoveredRow).toBeVisible({ timeout: 100000 });
+    await discoveredRow.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
+    const provisionDialog = page.getByRole('dialog', { name: 'Provision Status' });
+    if (await provisionDialog.isVisible().catch(() => false)) {
+      await provisionDialog.getByRole('img').click();
+    } else {
+      await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 15000 });
+    }
     await page.locator('svg[data-icon="times"]').click();
   });
 

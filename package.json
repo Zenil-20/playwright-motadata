@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test:dashboard": "playwright test tests/Dashboard",
+    "test:dashboard:list": "playwright test tests/Dashboard --list"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -38,8 +38,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
 
   test('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
+     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
     await page.waitForLoadState('networkidle');
   });
@@ -67,7 +67,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
     await expect(page.locator('#message')).toHaveText('Successful', { timeout: 120000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
-    await page.locator('#save-run-btn-id').click();
+    await expect(page.locator("//button[@id='create-credential-profile-btn-id']")).toBeHidden({ timeout: 10000 });
+    await page.locator('#save-run-btn-id').click({ force: true });
     await expect(page.getByText(process.env.Windows_server_172_16_10_134).first()).toBeVisible();
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
@@ -76,6 +77,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   });
 
   test('Postgresql Rediscovery For Windows Server', async () => {
+    test.setTimeout(300000);
+
     await page.locator("//input[@placeholder='Search']").first().fill('Rediscover Settings');
     await page.getByRole('link', { name: 'Rediscover Settings' }).click();
     /*
@@ -107,9 +110,9 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   const row = page.locator(".rediscover-row")
     .filter({ hasText: "PostgreSQL" })
     .filter({ hasText: "172.16.10.134" });
-  await row.waitFor({ state: "attached" });
+  await row.waitFor({ state: "attached", timeout: 180000 });
   await row.scrollIntoViewIfNeeded();
-  await row.waitFor({ state: "visible" });
+  await row.waitFor({ state: "visible", timeout: 180000 });
   await row.click({ force: true });
   await page.locator("//input[@id='instance-jdbc']").click();
   await page.locator("//input[@id='instance-jdbc']").fill("postgres");

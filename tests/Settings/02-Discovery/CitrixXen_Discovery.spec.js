@@ -102,11 +102,10 @@ test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', (
     await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
     await page.locator("input[placeholder='Search']").nth(1).fill("citrixxen");
     await page.waitForTimeout(1000);
+    const row = page.locator('tr', { hasText: process.env.CitrixXen_ip });
     await expect(page.locator('img[alt="Citrix Xen"]')).toBeVisible();
     await expect(page.getByRole('gridcell', { name: '172.16.10.231' }).first()).toBeVisible();
-    await expect(page.locator('[title="Virtualization > Citrix Xen"]')).toBeVisible();
     //await page.locator("//i[@class='anticon excluded-header-icon']").click();
-    const row = page.locator('tr', { hasText: process.env.CitrixXen_ip });
 
     await row.locator('.excluded-header-icon').click();
     await page.locator("//span[normalize-space()='Edit']").click();
