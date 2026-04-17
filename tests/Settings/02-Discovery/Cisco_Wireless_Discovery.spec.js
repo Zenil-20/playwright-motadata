@@ -20,6 +20,11 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
+async function closeProvisionStatus(page) {
+  const provisionDialog = page.getByRole('dialog', { name: 'Provision Status' });
+  await expect(provisionDialog).toBeVisible({ timeout: 30000 });
+  await provisionDialog.locator("svg[data-icon='times']").first().click();
+}
 test.describe.serial('Motadata AIOps Discovery Flow For Cisco Wireless Discovery', () => {
   let page;
 
@@ -73,7 +78,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Cisco Wireless Discovery
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {

@@ -19,6 +19,26 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
+async function closeProvisionStatus(page) {
+  const provisionDialog = page.getByRole('dialog', { name: 'Provision Status' });
+  if (await provisionDialog.isVisible().catch(() => false)) {
+    await provisionDialog.locator("svg[data-icon='times']").first().click();
+    return;
+  }
+
+  const closeIcon = page.locator("svg[data-icon='times']").first();
+  if (await closeIcon.isVisible().catch(() => false)) {
+    await closeIcon.click();
+  }
+}
+
+async function openNetworkInventory(page) {
+  await page.goto(`${process.env.Motadata_Aiops}/inventory/`, {
+    timeout: 120000,
+    waitUntil: 'domcontentloaded',
+  });
+  await page.getByRole('tab', { name: 'Network' }).click();
+}
 test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
   let page;
 
@@ -68,7 +88,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
     await page.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
   });
 
   test('Create write private and write public credentials', async () => {
@@ -111,9 +131,11 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
   });
 
   test('Provision WAN link service with write private and public creds and validate inventory', async () => {
-    await page.getByRole('menuitem', { name: 'Monitors' }).click();
-    await page.getByRole('tab', { name: 'Network' }).click();
+    await expect(page.isClosed()).toBeFalsy();
+
+    await openNetworkInventory(page);
     await page.locator("//input[@placeholder='Search']").fill("172.16.14.52");
+    await expect(page.getByRole('link', { name: 'site2.test2.com' })).toBeVisible({ timeout: 120000 });
     await page.getByRole('link', { name: 'site2.test2.com' }).click();
     await page.getByRole('button', { name: 'Add WAN Link' }).click();
 
@@ -131,9 +153,9 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
     await expect(page.getByText('Initializing WAN-Link configuration on source: site2.test2.com')).toBeVisible();
    
     //Write public
-    await page.getByRole('menuitem', { name: 'Monitors' }).click();
-    await page.getByRole('tab', { name: 'Network' }).click();
+    await openNetworkInventory(page);
     await page.locator("//input[@placeholder='Search']").fill("172.16.14.51");
+    await expect(page.getByRole('link', { name: 'site1.test1.com' })).toBeVisible({ timeout: 120000 });
     await page.getByRole('link', { name: 'site1.test1.com' }).click();
     await page.getByRole('button', { name: 'Add WAN Link' }).click();
 

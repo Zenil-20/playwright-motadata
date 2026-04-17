@@ -6,14 +6,25 @@
 
 import { test } from '@playwright/test';
 import { loginToDashboard, logoutFromDashboard } from '../_core/auth.js';
+import { validateDashboard } from '../_core/dashboard.helpers.js';
 import { validateLinuxDashboardE2E } from '../_core/linux.dashboard.helpers.js';
 import { dashboardCatalog } from '../_data/dashboard.devices.js';
 
 test.describe.serial('Dashboard | Server and Apps', () => {
   let page;
+  const linuxDeviceId = 'linux-ubuntu8165';
   const linuxDevice = dashboardCatalog.serverAndApps.find(
-    (device) => device.id === 'linux-ubuntu8165'
+    (device) => device.id === linuxDeviceId
   );
+  const nonLinuxDevices = dashboardCatalog.serverAndApps.filter(
+    (device) => device.id !== linuxDeviceId
+  );
+
+  if (!linuxDevice) {
+    throw new Error(
+      `Linux Server and Apps device "${linuxDeviceId}" was not found in dashboardCatalog.serverAndApps.`
+    );
+  }
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext({
@@ -35,4 +46,11 @@ test.describe.serial('Dashboard | Server and Apps', () => {
     test.setTimeout(300000);
     await validateLinuxDashboardE2E(page, linuxDevice);
   });
+
+  for (const device of nonLinuxDevices) {
+    test(`Validate ${device.deviceName} dashboard across all monitor screens`, async () => {
+      test.setTimeout(300000);
+      await validateDashboard(page, device);
+    });
+  }
 });

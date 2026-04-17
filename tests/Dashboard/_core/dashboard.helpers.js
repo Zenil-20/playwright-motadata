@@ -7,8 +7,10 @@
 
 import { expect } from '@playwright/test';
 import {
+  DASHBOARD_LOADING_SELECTOR,
   DEFAULT_TIMEOUT,
   EMPTY_STATE_PATTERNS,
+  LOADING_STATE_PATTERNS,
   VALUE_PATTERNS,
 } from './dashboard.constants.js';
 import { getDashboardBaseUrl } from './auth.js';
@@ -33,6 +35,12 @@ function getWidgetTitleLocator(page, title) {
   });
 
   return levelFourHeading.first();
+}
+
+function getScreenConfig(device, tabName) {
+  return (device.screenAssertions || []).find(
+    (screen) => String(screen.tab).toLowerCase() === String(tabName).toLowerCase()
+  );
 }
 
 async function getWidgetContainer(page, title) {
@@ -65,23 +73,86 @@ async function waitForDashboardReady(page, device) {
     ...(device?.identityTokens || []),
   ].filter(Boolean);
 
-  await page.waitForFunction(
-    (tokens) => {
-      const text = document.body?.innerText?.trim() || '';
-      if (!text || text === 'Loading...') {
-        return false;
-      }
+  await waitForDashboardSettled(page, {
+    requiredTexts: expectedTokens,
+  });
+}
 
-      if (!tokens.length) {
-        return text.length > 20;
-      }
+export async function waitForDashboardSettled(page, options = {}) {
+  const { requiredTexts = [], timeout = DEFAULT_TIMEOUT } = options;
 
-      const lowerText = text.toLowerCase();
-      return tokens.some((token) => lowerText.includes(String(token).toLowerCase()));
-    },
-    expectedTokens,
+  await expect
+    .poll(
+      async () => {
+        const bodyText = (await page.locator('body').innerText().catch(() => '')).trim();
+        const lowerText = bodyText.toLowerCase();
+        const hasLoadingText = LOADING_STATE_PATTERNS.some((pattern) =>
+          pattern.test(bodyText)
+        );
+        const loadingIndicators = await page
+          .locator(DASHBOARD_LOADING_SELECTOR)
+          .filter({ visible: true })
+          .count()
+          .catch(() => 0);
+        const allRequiredTextsPresent = requiredTexts.every((text) =>
+          lowerText.includes(String(text).toLowerCase())
+        );
+
+        return (
+          bodyText.length > 20 &&
+          !hasLoadingText &&
+          loadingIndicators === 0 &&
+          allRequiredTextsPresent
+        );
+      },
+      {
+        timeout,
+        message: 'Dashboard should finish loading before validation starts.',
+      }
+    )
+    .toBe(true);
+}
+
+async function clickDashboardTab(page, tabName) {
+  const tab = page.getByRole('tab', {
+    name: new RegExp(`^${escapeRegExp(tabName)}$`, 'i'),
+  }).first();
+
+  await expect(tab, `Tab "${tabName}" should be visible.`).toBeVisible({
+    timeout: DEFAULT_TIMEOUT,
+  });
+
+  await tab.scrollIntoViewIfNeeded().catch(() => {});
+  await tab.click({ force: true });
+
+  await expect(tab, `Tab "${tabName}" should be selected.`).toHaveAttribute(
+    'aria-selected',
+    'true',
     { timeout: DEFAULT_TIMEOUT }
   );
+
+  await page.waitForLoadState('networkidle').catch(() => {});
+  await waitForDashboardSettled(page, {
+    requiredTexts: [tabName],
+  });
+}
+
+async function tryClickDashboardTab(page, tabName) {
+  const tab = page.getByRole('tab', {
+    name: new RegExp(`^${escapeRegExp(tabName)}$`, 'i'),
+  }).first();
+  const isVisible = await tab.isVisible().catch(() => false);
+
+  expect.soft(tab, `Tab "${tabName}" should be visible.`).toBeVisible({
+    timeout: 8000,
+  });
+
+  if (!isVisible) {
+    return false;
+  }
+
+  await clickDashboardTab(page, tabName);
+  return true;
 }
 
 function parsePercentValues(text) {
@@ -271,6 +342,23 @@ export async function captureDashboardContext(page, device) {
   };
 }
 
+export async function captureCurrentTabContext(page) {
+  const bodyText = await page.locator('body').innerText().catch(() => '');
+  const visibleHeadings = (
+    await page
+      .locator('h1, h2, h3, h4, .ant-card-head-title, [role="tab"][aria-selected="true"]')
+      .allInnerTexts()
+      .catch(() => [])
+  )
+    .map((text) => text.trim())
+    .filter(Boolean);
+
+  return {
+    bodyText,
+    visibleHeadings,
+  };
+}
+
 export function softAssertNoEmptyStates(context, label) {
   const matchedStates = EMPTY_STATE_PATTERNS.filter((pattern) =>
     pattern.test(context.bodyText)
@@ -313,6 +401,53 @@ export async function softAssertTabsVisible(page, titles, label) {
 
     await expect
       .soft(tabLocator.first(), `${label} should expose "${title}".`)
+      .toBeVisible({ timeout: 8000 });
+  }
+}
+
+export async function softAssertScreen(page, device, tabName) {
+  const screen = getScreenConfig(device, tabName) || { tab: tabName };
+
+  const tabOpened = await tryClickDashboardTab(page, tabName);
+
+  if (!tabOpened) {
+    return;
+  }
+
+  await waitForDashboardSettled(page, {
+    requiredTexts: [tabName, ...(screen.expectedTexts || [])],
+  });
+
+  const context = await captureCurrentTabContext(page);
+  expect.soft(
+    context.bodyText.trim().length > 0,
+    `${device.deviceName} ${tabName} should render visible content.`
+  ).toBeTruthy();
+
+  if (!screen.allowEmptyState) {
+    const matchedStates = EMPTY_STATE_PATTERNS.filter((pattern) =>
+      pattern.test(context.bodyText)
+    );
+
+    expect.soft(
+      matchedStates,
+      `${device.deviceName} ${tabName} should not expose empty-state messages.`
+    ).toEqual([]);
+  }
+
+  for (const text of screen.expectedTexts || []) {
+    expect.soft(
+      context.bodyText,
+      `${device.deviceName} ${tabName} should contain "${text}".`
+    ).toContain(text);
+  }
+
+  for (const title of screen.expectedSections || []) {
+    await expect
+      .soft(
+        getTitleLocator(page, title),
+        `${device.deviceName} ${tabName} should expose "${title}".`
+      )
       .toBeVisible({ timeout: 8000 });
   }
 }
@@ -388,12 +523,20 @@ export async function softAssertWidgets(page, widgets) {
   }
 }
 
+export async function validateDashboardScreens(page, device) {
+  for (const tabName of device.expectedTabs || []) {
+    await softAssertScreen(page, device, tabName);
+  }
+}
+
 export async function validateDashboard(page, device) {
   await openDashboardForDevice(page, device);
 
   const context = await captureDashboardContext(page, device);
   softAssertPageIdentity(context, device);
-  softAssertNoEmptyStates(context, device.deviceName);
+  if (!device.allowDashboardEmptyState) {
+    softAssertNoEmptyStates(context, device.deviceName);
+  }
 
   await softAssertTabsVisible(page, device.expectedTabs, `${device.deviceName} tabs`);
   await softAssertTitlesVisible(
@@ -402,4 +545,5 @@ export async function validateDashboard(page, device) {
     `${device.deviceName} sections`
   );
   await softAssertWidgets(page, device.expectedWidgets);
+  await validateDashboardScreens(page, device);
 }

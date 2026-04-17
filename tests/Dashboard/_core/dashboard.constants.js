@@ -13,6 +13,14 @@ export const EMPTY_STATE_PATTERNS = [
   /nothing to show/i,
 ];
 
+export const LOADING_STATE_PATTERNS = [
+  /\bloading\b/i,
+  /\bplease wait\b/i,
+  /\bfetching\b/i,
+];
+
+export const DASHBOARD_LOADING_SELECTOR =
+  '.ant-spin-spinning, .ant-skeleton, .ant-skeleton-active, [aria-busy="true"], .loading, .loader, .spinner';
 export const VALUE_PATTERNS = {
   percent: /(\d+(?:\.\d+)?)\s*%/,
   number: /\b\d+(?:\.\d+)?\b/,

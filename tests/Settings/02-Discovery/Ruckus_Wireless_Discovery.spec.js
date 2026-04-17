@@ -20,6 +20,12 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
+async function closeProvisionStatus(page) {
+  const provisionDialog = page.getByRole('dialog', { name: 'Provision Status' });
+  if (await provisionDialog.isVisible().catch(() => false)) {
+    await provisionDialog.locator("svg[data-icon='times']").first().click();
+  }
+}
 test.describe.serial('Motadata AIOps Discovery Flow For Ruckus Wireless Discovery', () => {
   let page;
 
@@ -67,11 +73,13 @@ test.describe.serial('Motadata AIOps Discovery Flow For Ruckus Wireless Discover
     await page.locator("//span[normalize-space()='HTTPS']").click();
     await page.locator('input[name="port"]').fill('8443');
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.Ruckus_Wireless_10_20_40_4)).toBeVisible();
+    await page.waitForURL(/network-discovery-profiles\/.+(result)?/, { timeout: 120000 }).catch(() => {});
+    await expect(page.locator('table tr').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText(process.env.Ruckus_Wireless_10_20_40_4)).toBeVisible({ timeout: 120000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {

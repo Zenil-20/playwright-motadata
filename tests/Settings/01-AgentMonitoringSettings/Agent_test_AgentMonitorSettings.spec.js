@@ -20,7 +20,13 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '../.env'), quiet: true });
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
+
+const MOTADATA_URL =
+  process.env.Motadata_Aiops ||
+  process.env.SERVER_URL ||
+  process.env.Server_url ||
+  process.env.server_url;
 
 // Utility to execute SSH command
 async function executeCommand({ host, username, password, command }) {
@@ -83,7 +89,7 @@ test.beforeAll(async () => {
     process.env.Server_url ||
     process.env.server_url;
 
-  const aiopsUrl = process.env.Motadata_Aiops;
+  const aiopsUrl = MOTADATA_URL;
 
   if (serverUrl) {
     const match = serverUrl.match(/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/);
@@ -272,7 +278,7 @@ test.describe.serial(
     });
 
     test('Login to Motadata AIOps', async () => {
-      await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+      await page.goto(MOTADATA_URL, { timeout: 500000 });
 
        await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
       await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);

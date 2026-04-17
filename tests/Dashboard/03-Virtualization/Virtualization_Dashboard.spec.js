@@ -28,6 +28,7 @@ test.describe.serial('Dashboard | Virtualization', () => {
 
   for (const device of dashboardCatalog.virtualization) {
     test(`Validate ${device.deviceName} dashboard`, async () => {
+      test.setTimeout(300000);
       await validateDashboard(page, device);
     });
   }

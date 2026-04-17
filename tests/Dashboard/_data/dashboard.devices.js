@@ -12,23 +12,83 @@ function envValue(name, fallback) {
   return process.env[name] || fallback;
 }
 
+function firstDefinedValue(...values) {
+  return values.find((value) => value !== undefined && value !== null && value !== '');
+}
+
+function createOverviewScreen(expectedSections) {
+  return {
+    tab: 'Overview',
+    expectedSections,
+  };
+}
+
+function createMetricExplorerScreen(extraTexts = []) {
+  return {
+    tab: 'Metric Explorer',
+    allowEmptyState: true,
+    expectedTexts: [
+      'Save View',
+      'Metric',
+      'Saved View',
+      ...extraTexts,
+    ],
+  };
+}
+
+function createActivePoliciesScreen() {
+  return {
+    tab: 'Active Policies',
+    allowEmptyState: true,
+  };
+}
+
 export const dashboardCatalog = {
   serverAndApps: [
     {
       id: 'linux-ubuntu8165',
       deviceName: envValue('DASHBOARD_LINUX_NAME', 'ubuntu8165'),
-      searchTerm: envValue('DASHBOARD_LINUX_SEARCH', '172.16.8.165'),
+      searchTerm: firstDefinedValue(
+        process.env.DASHBOARD_LINUX_SEARCH,
+        process.env.DASHBOARD_LINUX_IP,
+        process.env.Sybase_linux_ip,
+        envValue('DASHBOARD_LINUX_NAME', 'ubuntu8165')
+      ),
+      ipAddress: firstDefinedValue(
+        process.env.DASHBOARD_LINUX_IP,
+        process.env.DASHBOARD_LINUX_SEARCH,
+        process.env.Sybase_linux_ip,
+        envValue('DASHBOARD_LINUX_SEARCH', '172.16.8.165')
+      ),
       listingPath: envValue('DASHBOARD_LINUX_LISTING', '/inventory/All'),
       monitorPath: process.env.DASHBOARD_LINUX_MONITOR_PATH,
       rowTokens: [
         envValue('DASHBOARD_LINUX_NAME', 'ubuntu8165'),
-        envValue('DASHBOARD_LINUX_SEARCH', '172.16.8.165'),
+        firstDefinedValue(
+          process.env.DASHBOARD_LINUX_SEARCH,
+          process.env.DASHBOARD_LINUX_IP,
+          process.env.Sybase_linux_ip,
+          envValue('DASHBOARD_LINUX_SEARCH', '172.16.8.165')
+        ),
         'Linux',
       ],
       identityTokens: ['Linux', 'Server'],
       expectedTabs: ['Overview', 'Active Process', 'Services', 'Metric Explorer', 'Active Policies'],
       expectedSections: [],
       expectedWidgets: [],
+      screenAssertions: [
+        { tab: 'Overview', allowEmptyState: true },
+        {
+          tab: 'Active Process',
+          expectedTexts: ['PROCESS ID', 'PROCESS NAME', 'USER NAME'],
+        },
+        {
+          tab: 'Services',
+          expectedTexts: ['SERVICE NAME', 'START TYPE', 'STATUS'],
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
     {
       id: 'windows-server',
@@ -36,6 +96,7 @@ export const dashboardCatalog = {
       searchTerm: envValue('DASHBOARD_WINDOWS_SEARCH', 'WIN-4PJMESL4SHA'),
       listingPath: envValue('DASHBOARD_WINDOWS_LISTING', '/inventory/All'),
       identityTokens: ['Windows', 'Server'],
+      allowDashboardEmptyState: true,
       expectedTabs: ['Overview', 'Active Process', 'Services', 'Metric Explorer', 'Active Policies'],
       expectedSections: [
         "Today's Availability",
@@ -46,12 +107,36 @@ export const dashboardCatalog = {
         'Disk IOPS Details',
       ],
       expectedWidgets: [
-        { title: 'CPU', valueType: 'percent' },
-        { title: 'Memory', valueType: 'percent' },
-        { title: 'Disk', valueType: 'percent' },
-        { title: 'IOPS', valueType: 'number' },
-        { title: 'Network', valueType: 'traffic' },
+        { title: 'CPU', valueType: 'percent', allowPlaceholder: true },
+        { title: 'Memory', valueType: 'percent', allowPlaceholder: true },
+        { title: 'Disk', valueType: 'percent', allowPlaceholder: true },
+        { title: 'IOPS', valueType: 'number', allowPlaceholder: true },
+        { title: 'Network', valueType: 'traffic', allowPlaceholder: true },
         { title: 'Response Time', valueType: 'time', allowPlaceholder: true },
+      ],
+      screenAssertions: [
+        {
+          tab: 'Overview',
+          allowEmptyState: true,
+          expectedSections: [
+            "Today's Availability",
+            'Availability Statistics',
+            'System Disk Utilization',
+            'CPU Details',
+            'Memory Details',
+            'Disk IOPS Details',
+          ],
+        },
+        {
+          tab: 'Active Process',
+          allowEmptyState: true,
+        },
+        {
+          tab: 'Services',
+          allowEmptyState: true,
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
       ],
     },
   ],
@@ -61,6 +146,10 @@ export const dashboardCatalog = {
       deviceName: envValue('DASHBOARD_NETWORK_NAME', 'ArubaMC-VA_BB_8A_50'),
       searchTerm: envValue('DASHBOARD_NETWORK_SEARCH', 'ArubaMC-VA_BB_8A_50'),
       listingPath: envValue('DASHBOARD_NETWORK_LISTING', '/inventory/All'),
+      monitorPath: envValue(
+        'DASHBOARD_NETWORK_MONITOR_PATH',
+        '/inventory/All/monitors/102079283699'
+      ),
       identityTokens: ['Aruba Wireless', 'Wireless'],
       expectedTabs: ['Overview', 'Client', 'Rogue Device', 'Metric Explorer', 'Active Policies'],
       expectedSections: [
@@ -79,14 +168,49 @@ export const dashboardCatalog = {
         { title: 'Response Time', valueType: 'time', allowPlaceholder: true },
         { title: 'Packet Lost', valueType: 'percent' },
       ],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'Aruba CPU/Memory Utilization',
+          'Aruba Top Clients by Packets',
+          'Aruba Top Access Point Interface by Clients',
+          'Aruba Top Wireless Clients by Traffic',
+        ]),
+        {
+          tab: 'Client',
+          allowEmptyState: true,
+          expectedTexts: ['Client'],
+        },
+        {
+          tab: 'Rogue Device',
+          allowEmptyState: true,
+          expectedTexts: ['Rogue'],
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
   ],
   virtualization: [
     {
       id: 'vcenter',
-      deviceName: envValue('DASHBOARD_VCENTER_NAME', '172.16.10.180'),
-      searchTerm: envValue('DASHBOARD_VCENTER_SEARCH', '172.16.10.180'),
+      deviceName: firstDefinedValue(
+        process.env.DASHBOARD_VCENTER_NAME,
+        process.env.vCenter_Server_172_16_10_180,
+        '172.16.10.180'
+      ),
+      searchTerm: firstDefinedValue(
+        process.env.DASHBOARD_VCENTER_SEARCH,
+        process.env.DASHBOARD_VCENTER_NAME,
+        process.env.vCenter_Server_172_16_10_180,
+        '172.16.10.180'
+      ),
       listingPath: envValue('DASHBOARD_VCENTER_LISTING', '/inventory/All'),
+      monitorPath: envValue(
+        'DASHBOARD_VCENTER_MONITOR_PATH',
+        '/inventory/All/monitors/102079283545'
+      ),
       identityTokens: ['vCenter', 'Virtualization'],
       expectedTabs: ['Overview', 'Cluster', 'ESXi Host', 'Virtual Machine', 'Metric Explorer', 'Active Policies'],
       expectedSections: [
@@ -103,6 +227,32 @@ export const dashboardCatalog = {
         { title: 'Virtual Machine', valueType: 'number' },
         { title: 'CPU', valueType: 'percent' },
         { title: 'Memory', valueType: 'percent' },
+      ],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'DataStore Utilization',
+          'CPU Utilization',
+          'Memory Utilization',
+        ]),
+        {
+          tab: 'Cluster',
+          allowEmptyState: true,
+          expectedTexts: ['Cluster'],
+        },
+        {
+          tab: 'ESXi Host',
+          allowEmptyState: true,
+          expectedTexts: ['ESXi'],
+        },
+        {
+          tab: 'Virtual Machine',
+          allowEmptyState: true,
+          expectedTexts: ['Virtual Machine'],
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
       ],
     },
     {
@@ -127,6 +277,38 @@ export const dashboardCatalog = {
         { title: 'Swap Memory', valueType: 'bytes' },
         { title: 'Storage Details', valueType: 'bytes' },
         { title: 'Network', valueType: 'traffic' },
+      ],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'Datastore Utilization',
+          'CPU Utilization',
+          'Memory Utilization',
+          'Network Traffic Utilization',
+        ]),
+        {
+          tab: 'Datastore',
+          allowEmptyState: true,
+          expectedTexts: ['Datastore'],
+        },
+        {
+          tab: 'Network',
+          allowEmptyState: true,
+          expectedTexts: ['Network'],
+        },
+        {
+          tab: 'Storage Adapters',
+          allowEmptyState: true,
+          expectedTexts: ['Storage'],
+        },
+        {
+          tab: 'Hardware Sensor',
+          allowEmptyState: true,
+          expectedTexts: ['Sensor'],
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
       ],
     },
     {
@@ -156,6 +338,32 @@ export const dashboardCatalog = {
         { title: 'Swap Memory', valueType: 'percent' },
         { title: 'Network Traffic', valueType: 'traffic' },
       ],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'CPU Utilization',
+          'Memory Utilization',
+          'Root FS Disk Utilization',
+        ]),
+        {
+          tab: 'Storage Pool',
+          allowEmptyState: true,
+          expectedTexts: ['Storage'],
+        },
+        {
+          tab: 'Disk',
+          allowEmptyState: true,
+          expectedTexts: ['Disk'],
+        },
+        {
+          tab: 'Interface',
+          allowEmptyState: true,
+          expectedTexts: ['Interface'],
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
   ],
   database: [
@@ -164,6 +372,10 @@ export const dashboardCatalog = {
       deviceName: envValue('DASHBOARD_DATABASE_NAME', 'motadata101'),
       searchTerm: envValue('DASHBOARD_DATABASE_SEARCH', 'motadata101'),
       listingPath: envValue('DASHBOARD_DATABASE_LISTING', '/inventory/All'),
+      monitorPath: envValue(
+        'DASHBOARD_DATABASE_MONITOR_PATH',
+        '/inventory/All/monitors/102079283237'
+      ),
       identityTokens: ['Elasticsearch', 'Database'],
       expectedTabs: ['Overview', 'Memory', 'I/O Details', 'Network', 'Thread Details', 'Metric Explorer', 'Active Policies'],
       expectedSections: [
@@ -181,6 +393,37 @@ export const dashboardCatalog = {
         { title: 'Network I/O', valueType: 'bytes' },
         { title: 'Search Time', valueType: 'time' },
       ],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'CPU Utilization',
+          'Search Time',
+          'Segment Time',
+        ]),
+        {
+          tab: 'Memory',
+          allowEmptyState: true,
+          expectedTexts: ['Heap', 'Memory'],
+        },
+        {
+          tab: 'I/O Details',
+          allowEmptyState: true,
+          expectedTexts: ['I/O'],
+        },
+        {
+          tab: 'Network',
+          allowEmptyState: true,
+          expectedTexts: ['Network'],
+        },
+        {
+          tab: 'Thread Details',
+          allowEmptyState: true,
+          expectedTexts: ['Thread'],
+        },
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
   ],
   serviceCheck: [
@@ -189,6 +432,10 @@ export const dashboardCatalog = {
       deviceName: envValue('DASHBOARD_SERVICECHECK_URL_NAME', 'thronesdb.com/register/'),
       searchTerm: envValue('DASHBOARD_SERVICECHECK_URL_SEARCH', 'thronesdb.com/register/'),
       listingPath: envValue('DASHBOARD_SERVICECHECK_LISTING', '/inventory/All'),
+      monitorPath: envValue(
+        'DASHBOARD_SERVICECHECK_URL_MONITOR_PATH',
+        '/inventory/All/monitors/102079283728'
+      ),
       rowTokens: [
         envValue('DASHBOARD_SERVICECHECK_URL_NAME', 'thronesdb.com/register/'),
         'Service Check',
@@ -204,6 +451,18 @@ export const dashboardCatalog = {
         'Response Time Split Up',
       ],
       expectedWidgets: [],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'URL Details',
+          'Page Size',
+          'Response Time',
+          'Response Time Split Up',
+        ]),
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
     {
       id: 'service-check-dns',
@@ -227,6 +486,15 @@ export const dashboardCatalog = {
         'DNS Latency and Lookup Time',
       ],
       expectedWidgets: [],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'DNS Latency and Lookup Time',
+        ]),
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
     {
       id: 'service-check-email',
@@ -251,6 +519,16 @@ export const dashboardCatalog = {
         'Email Details',
       ],
       expectedWidgets: [],
+      screenAssertions: [
+        createOverviewScreen([
+          "Today's Availability",
+          'Availability Statistics',
+          'Email Response Time and Connection Time',
+          'Email Details',
+        ]),
+        createMetricExplorerScreen(['Drop metric here to view trend']),
+        createActivePoliciesScreen(),
+      ],
     },
   ],
 };
