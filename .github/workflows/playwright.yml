@@ -1,0 +1,44 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      test_file:
+        description: 'Test file to run (e.g. Linux_Discovery.spec.js). Leave empty to run all.'
+        required: false
+        default: ''
+        type: string
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Copy .env file
+      shell: powershell
+      run: |
+        if (Test-Path "$env:USERPROFILE\.env.playwright") {
+          Copy-Item "$env:USERPROFILE\.env.playwright" -Destination ".env" -Force
+          Write-Host ".env copied from USERPROFILE"
+        } else {
+          Write-Host "WARNING: No .env file found. Tests may fail."
+        }
+    - name: Run Playwright tests
+      continue-on-error: true
+      run: npx playwright test ${{ github.event.inputs.test_file }}
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
