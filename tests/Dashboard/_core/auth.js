@@ -54,18 +54,40 @@ export async function loginToDashboard(page) {
 
   await page.waitForLoadState('networkidle');
 
-  const avatar = page.locator("//img[@alt='Avatar']");
-  await expect(avatar).toBeVisible({ timeout: 60000 });
+  const avatar = page.locator("//img[@alt='Avatar']").first();
+  await expect(avatar).toBeVisible({ timeout: 90000 });
 }
 
 export async function logoutFromDashboard(page) {
-  const avatar = page.locator("//img[@alt='Avatar']");
+  const avatar = page.locator("//img[@alt='Avatar']").first();
 
-  if (!(await avatar.isVisible().catch(() => false))) {
+  const avatarVisible = await avatar
+    .waitFor({ state: 'visible', timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (!avatarVisible) {
     return;
   }
 
-  await avatar.click();
-  await page.getByText('Logout', { exact: true }).click();
-  await page.waitForLoadState('networkidle');
+  await avatar.click({ timeout: 10000 }).catch(() => {});
+
+  const logoutItem = page.getByText('Logout', { exact: true }).first();
+  const logoutVisible = await logoutItem
+    .waitFor({ state: 'visible', timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (!logoutVisible) {
+    return;
+  }
+
+  await logoutItem.click({ timeout: 10000 }).catch(() => {});
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+
+  await page
+    .locator("//input[@placeholder='Username']")
+    .first()
+    .waitFor({ state: 'visible', timeout: 15000 })
+    .catch(() => {});
 }

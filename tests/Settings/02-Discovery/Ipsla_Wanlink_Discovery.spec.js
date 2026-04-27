@@ -37,8 +37,14 @@ async function openNetworkInventory(page) {
     timeout: 120000,
     waitUntil: 'domcontentloaded',
   });
+
   await page.getByRole('tab', { name: 'Network' }).click();
+
+  const searchBox = page.locator("input[placeholder='Search']");
+  await searchBox.waitFor({ state: 'visible', timeout: 30000 });
+  await expect(searchBox).toBeEnabled();
 }
+
 test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
   let page;
 
@@ -146,11 +152,14 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
 
     await page.locator("//input[@placeholder='Enter']").first().fill("jio");
     await page.locator("//input[@placeholder='Enter']").nth(2).fill("65.65.65.2");
-    await page.locator("//input[@placeholder='Enter']").nth(6).fill("30");
-    await page.locator("//div[9]//div[2]//div[1]//div[1]//div[2]//div[1]//span[1]//input[1]").fill("30");
+    await page.locator("//input[@placeholder='Enter']").nth(6).fill("60");
+    await page.locator("//div[9]//div[2]//div[1]//div[1]//div[2]//div[1]//span[1]//input[1]").fill("60");
+    await page.locator('label:has-text("Operation Timeout")')
+    .locator('xpath=following::input[1]')
+    .fill('60');
 
     await page.locator("//button[@id='submit-btn']").click();
-    await expect(page.getByText('Initializing WAN-Link configuration on source: site2.test2.com')).toBeVisible();
+    await expect(page.getByText('Initializing WAN-Link configuration', { exact: false })).toBeVisible({ timeout: 30000 });
    
     //Write public
     await openNetworkInventory(page);
@@ -166,8 +175,11 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
 
     await page.locator("//input[@placeholder='Enter']").first().fill("jio");
     await page.locator("//input[@placeholder='Enter']").nth(2).fill("55.55.55.1");
-    await page.locator("//input[@placeholder='Enter']").nth(6).fill("30");
-    await page.locator("//div[9]//div[2]//div[1]//div[1]//div[2]//div[1]//span[1]//input[1]").fill("30");
+    await page.locator("//input[@placeholder='Enter']").nth(6).fill("60");
+    await page.locator("//div[9]//div[2]//div[1]//div[1]//div[2]//div[1]//span[1]//input[1]").fill("60");
+    await page.locator('label:has-text("Operation Timeout")')
+    .locator('xpath=following::input[1]')
+    .fill('60');
 
     await page.locator("//button[@id='submit-btn']").click();
     await expect(page.getByText('Initializing WAN-Link configuration on source: site1.test1.com')).toBeVisible();

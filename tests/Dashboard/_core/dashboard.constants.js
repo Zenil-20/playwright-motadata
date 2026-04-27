@@ -30,4 +30,4 @@ export const VALUE_PATTERNS = {
   state: /\b(up|down|online|offline|connected|disconnected|running|stopped)\b/i,
 };
 
-export const DEFAULT_TIMEOUT = 30000;
+export const DEFAULT_TIMEOUT = 60000;

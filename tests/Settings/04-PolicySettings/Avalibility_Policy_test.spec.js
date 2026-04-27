@@ -84,12 +84,12 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await page.locator('input#policy-name').click();
     //Notify Team 
     await page.locator('svg[data-icon="angle-down"]').nth(1).click();
-    await page.locator("//input[@placeholder='@User or Email or /Handle or #User Profile']").type('zenil.kapadia@motadata.com\n');
+    await page.locator("//input[@placeholder='@User or Email or /Handle or #User Profile or !syslog profile or SNMP trap Profile']").type('zenil.kapadia@motadata.com\n');
     await page.locator("//input[@readonly='readonly']").nth(1).click();
     await page.locator("//span[@title='DOWN']").click();
     // Close the severity dropdown before continuing
     await page.locator('input#policy-name').click();
-    await page.locator("//input[@placeholder='@User or Email or /Handle or #User Profile']").type('@admin\n');
+    await page.locator("//input[@placeholder='@User or Email or /Handle or #User Profile or !syslog profile or SNMP trap Profile']").type('@admin\n');
     await page.locator('svg[data-icon="angle-up"]').click();
     //Set Alert Message
     await page.locator('svg[data-icon="angle-down"]').first().click();
