@@ -111,4 +111,19 @@ $$$counter.related.metrics$$$ will give you a broader picture of your system's b
     await page.locator('svg[data-icon="angle-up"]').click();
     await page.getByRole('button', { name: 'Create Policy' }).click();
   });
+
+  test('Validate the Manual poll functionality in monitors page', async () => {
+    await page.getByRole('link', { name: 'Monitors', exact: true }).click();
+    await page.waitForLoadState('networkidle');
+    await page.locator("//button[@id='btn-filter-agent']").click();
+    await page.locator("//input[@placeholder='Search']").first().fill('ubuntu8165');
+    await page.getByRole('link', { name: 'ubuntu8165' }).click();
+    await page.waitForLoadState('networkidle');
+    await page.locator("//button[@title='Poll Now']").click();
+    await expect(
+      page.locator('.ant-message-notice-content', {
+        hasText: 'Polling request is queued, Please wait...'
+      })
+    ).toBeVisible();
+  });
 });

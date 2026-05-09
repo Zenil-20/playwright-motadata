@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { time } from 'node:console';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -40,9 +41,37 @@ async function openNetworkInventory(page) {
 
   await page.getByRole('tab', { name: 'Network' }).click();
 
-  const searchBox = page.locator("input[placeholder='Search']");
-  await searchBox.waitFor({ state: 'visible', timeout: 30000 });
-  await expect(searchBox).toBeEnabled();
+  const gridBtn = page.locator("//button[@title='Grid']");
+  const dashboardBtn = page.locator("//button[@title='Dashboard']");
+
+  if (await gridBtn.waitFor({ state: 'visible', timeout: 30000 }).then(() => true).catch(() => false)){
+    await gridBtn.click();
+  }
+
+  await expect(dashboardBtn).toBeVisible({ timeout: 120000 });
+
+  // Wait for API calls
+  await page.waitForLoadState('networkidle');
+
+  //  Wait for loader to disappear (VERY IMPORTANT)
+  const loader = page.locator('.ant-spin, .loader, [data-testid="loader"]');
+  if (await loader.first().isVisible().catch(() => false)) {
+    await loader.first().waitFor({ state: 'hidden', timeout: 60000 });
+  }
+
+  // Re-create locator AFTER render (important)
+  const searchBox = page.getByPlaceholder('Search').first();
+
+  // Wait until visible
+  await expect(searchBox).toBeVisible({ timeout: 60000 });
+
+  // Ensure element is stable + usable
+  await page.waitForFunction(() => {
+    const el = document.querySelector("input[placeholder='Search']");
+    return el && !el.disabled;
+  });
+
+  return searchBox;
 }
 
 test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {

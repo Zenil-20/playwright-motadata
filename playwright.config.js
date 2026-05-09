@@ -26,6 +26,22 @@ const settingsProjects = [
     name: 'settings_06_user_settings',
     testMatch: ['tests/Settings/06-UserSettings/*.spec.js'],
   },
+  {
+  name: 'settings_08_slo',
+  testMatch: ['tests/Settings/08-SLO/*.spec.js'],
+},
+{
+  name: 'settings_09_proxy_server',
+  testMatch: ['tests/Settings/09-SystemSettings/ProxyServerSettings.spec.js'],
+},
+{
+  name: 'settings_10_integrations',
+  testMatch: ['tests/Settings/10-Integrations/*.spec.js'],
+},
+{
+  name: 'settings_11_rediscovery',
+  testMatch: ['tests/Settings/11-rediscovery/*.spec.js'],
+}
 ];
 
 const dashboardProjects = [

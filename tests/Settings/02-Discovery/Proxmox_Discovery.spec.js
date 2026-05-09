@@ -75,7 +75,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
     await page.getByRole('textbox', { name: 'Must be unique' }).fill('discoverproxmox');
     await page.getByRole('textbox', { name: 'e.g. 192.168.1.1 or fd00::1' }).fill(process.env.Proxmox_ip);
     // Open credential drawer and fill fields (scoped to drawer to avoid conflicts)
-    const tags = ['PROXMOx', 'Automation@zen', 'sp@#$%^^&*()sp'];
+    const tags = ['pr0oxmox', 'Automation@zen', 'sp@#$%^^&*()sp'];
 
     const tagBox = page.locator('[role="combobox"]');
 
@@ -93,6 +93,20 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
     await page.getByRole('button', { name: 'Save and Run' }).click();
 
     await expect(page.getByText(process.env.Proxmox_ip)).toBeVisible();
+
+    // Hostname 'motadata' is already provisioned — rename it inline before adding.
+    // Clicking the name span turns it into an input; do not click elsewhere in between.
+    const discoveredRow = page.locator('tr.k-master-row', {
+      has: page.locator('td', { hasText: process.env.Proxmox_ip })
+    }).first();
+    await discoveredRow.locator('span.text-ellipsis').first().click();
+    // The first input in the row is the row checkbox; the name field is the textbox.
+    const nameInput = discoveredRow.getByRole('textbox').first();
+    await expect(nameInput).toBeVisible({ timeout: 10000 });
+    await nameInput.fill('proxmox');
+    await nameInput.press('Enter');
+    await expect(discoveredRow.locator('span.text-ellipsis', { hasText: 'proxmox' }).first())
+      .toBeVisible({ timeout: 10000 });
 
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.getByRole('button', { name: 'Add Selected' }).click();
