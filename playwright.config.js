@@ -27,6 +27,10 @@ const settingsProjects = [
     testMatch: ['tests/Settings/06-UserSettings/*.spec.js'],
   },
   {
+    name: 'settings_07_apm',
+    testMatch: ['tests/Settings/07-APM/*.spec.js'],
+  },
+  {
   name: 'settings_08_slo',
   testMatch: ['tests/Settings/08-SLO/*.spec.js'],
 },
