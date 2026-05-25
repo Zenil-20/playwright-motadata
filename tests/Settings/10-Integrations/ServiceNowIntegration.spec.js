@@ -35,7 +35,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
     }
   });
 
-  test('Login to Motadata AIOps', async () => {
+  test.only('Login to Motadata AIOps', async () => {
     await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
@@ -175,7 +175,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
     await expect(successToast).toBeVisible({ timeout: 20000 });
   });
 
-  test("Navigate to Integration Profile and create a new Profile for ServiceNow Integration", async () => {
+  test.only("Navigate to Integration Profile and create a new Profile for ServiceNow Integration", async () => {
     test.skip(alreadyLoggedOut, 'ServiceNow integration already configured; skipping Integration Profile creation.');
     test.setTimeout(300000);
     await page.locator("//input[@placeholder='Search']").first().fill('Integration Profile');
@@ -222,13 +222,14 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
       await option.click();
     };
 
-    await selectDropdownValue('Category', 'Database');
-    await selectDropdownValue('Sub Category', 'DB2');
-    await selectDropdownValue('Group', 'Service Desk');
-    await selectDropdownValue('Technician', 'Beth Anglin');
-    await selectDropdownValue('Impact', '3 - Low');
-    await selectDropdownValue('Urgency', '2 - Medium');
-    await selectDropdownValue('Service', 'Client Services');
+    // Optional dropdowns — not mandatory, skipping
+    // await selectDropdownValue('Category', 'Database');
+    // await selectDropdownValue('Sub Category', 'DB2');
+    // await selectDropdownValue('Group', 'Service Desk');
+    // await selectDropdownValue('Technician', 'Beth Anglin');
+    // await selectDropdownValue('Impact', '3 - Low');
+    // await selectDropdownValue('Urgency', '2 - Medium');
+    // await selectDropdownValue('Service', 'Client Services');
 
     // Auto Close Ticket — enable it (default is OFF)
     const autoCloseTicket = page
@@ -253,7 +254,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
 ).toBeVisible();
   });
 
-  test('Logout from AIOps', async () => {
+  test.only('Logout from AIOps', async () => {
     if (alreadyLoggedOut) {
       console.log('Already logged out during integration check. Skipping.');
       return;

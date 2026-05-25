@@ -253,10 +253,12 @@ test.describe.serial('Motadata AIOps Multi LDAP Server Sync for User Settings', 
 
         //search for the synced server in the list
         await page.locator("//input[@name='search']").fill(server.primaryIp);
+        await page.waitForTimeout(1000);
 
-
-        // --- CLICK START REDISCOVERY ---
-        await page.locator('#start-rediscovery').click();
+        // --- CLICK START REDISCOVERY (scoped to the matching row) ---
+        const serverRow = page.getByRole('row', { name: new RegExp(server.primaryIp) });
+        await expect(serverRow).toBeVisible({ timeout: 30000 });
+        await serverRow.getByTestId('ldap-sync-trigger').click();
         await page.locator('#confirm-yes').click();
 
         // --- VERIFY TOAST NOTIFICATION ---

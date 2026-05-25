@@ -32,7 +32,7 @@ const settingsProjects = [
 },
 {
   name: 'settings_09_proxy_server',
-  testMatch: ['tests/Settings/09-SystemSettings/ProxyServerSettings.spec.js'],
+  testMatch: ['tests/Settings/09-SystemSettings/*.spec.js'],
 },
 {
   name: 'settings_10_integrations',
@@ -41,6 +41,14 @@ const settingsProjects = [
 {
   name: 'settings_11_rediscovery',
   testMatch: ['tests/Settings/11-rediscovery/*.spec.js'],
+},
+{
+  name: 'settings_12_metric_plugin',
+  testMatch: ['tests/Settings/12-MetricPlugin/*.spec.js'],
+},
+{
+  name: 'settings_13_Device_Monitoring',
+  testMatch: ['tests/Settings/13-MonitorSettings/*.spec.js'],
 }
 ];
 
@@ -65,6 +73,17 @@ const dashboardProjects = [
     name: 'dashboard_05_service_check',
     testMatch: ['tests/Dashboard/05-ServiceCheck/*.spec.js'],
   },
+];
+
+const metricExplorerProjects = [
+  {
+    name: 'metric_explorer_01_instance_kpi_anomaly',
+    testMatch: ['tests/metricExplorer/Instance_KPI_Anomaly_Metric_Explore_Screen.spec.js'],
+  },
+ {
+    name: 'metric_explorer_02_instance_kpi_compare',
+    testMatch: ['tests/metricExplorer/Instance_KPI_Compare_Metric_Explore_Screen.spec.js'],
+ }
 ];
 
 /**
@@ -108,7 +127,7 @@ export default defineConfig({
   },
 
   /* Configure ordered Settings projects on Chromium */
-  projects: [...settingsProjects, ...dashboardProjects].map((project) => ({
+  projects: [...settingsProjects, ...dashboardProjects, ...metricExplorerProjects].map((project) => ({
     ...project,
     use: { ...devices['Desktop Chrome'] },
   })),

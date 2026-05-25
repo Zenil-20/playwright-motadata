@@ -28,6 +28,33 @@ const MOTADATA_URL =
   process.env.Server_url ||
   process.env.server_url;
 
+// Parse the first balanced JSON object from a string, ignoring trailing garbage.
+function parseFirstJsonObject(text) {
+  const start = text.indexOf('{');
+  if (start === -1) throw new Error('No JSON object found in content');
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') { inString = true; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) return JSON.parse(text.slice(start, i + 1));
+    }
+  }
+  throw new Error('Unterminated JSON object in content');
+}
+
 // Utility to execute SSH command
 async function executeCommand({ host, username, password, command }) {
   return new Promise((resolve, reject) => {
@@ -143,7 +170,7 @@ test.beforeAll(async () => {
 
   // Update config file: append masterIp to hosts arrays if not present
   const rawContent = fs.readFileSync(localConfigPath, 'utf-8');
-  const configData = JSON.parse(rawContent);
+  const configData = parseFirstJsonObject(rawContent);
 
   let updated = false;
   const cleanIp = masterIp.trim();
@@ -283,7 +310,7 @@ test.describe.serial(
        await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
       await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
 
-      await page.locator("//button[@type='submit']").click();
+      await page.getByTestId('login-btn-submit').click();
 
       await page.waitForLoadState('networkidle');
     });
@@ -303,9 +330,9 @@ test.describe.serial(
           .getByRole('link', { name: 'Agent Monitor Settings' })
           .click();
 
-        await page.locator('input[name="search-agent"]').fill('172.16.8.61');
+        await page.locator('input[name="search-agent"]').fill('172.16.12.90');
 
-        const row = page.locator('tr', { hasText: '172.16.8.61' });
+        const row = page.locator('tr', { hasText: '172.16.12.90' });
 
         await row.waitFor({ state: 'visible', timeout: 120000 });
 
@@ -329,9 +356,9 @@ test.describe.serial(
 
         console.log('Downloaded file name:', fileName);
 
-        expect(fileName).toBe('motadata8.61.json');
+        expect(fileName).toBe('suse15.json');
 
-        const downloadedConfig = JSON.parse(
+        const downloadedConfig = parseFirstJsonObject(
           fs.readFileSync(downloadPath, 'utf-8')
         );
 

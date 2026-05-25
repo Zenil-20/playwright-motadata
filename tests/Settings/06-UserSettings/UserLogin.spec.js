@@ -145,6 +145,23 @@ async function selectRole(page, drawer) {
   await expect(visibleRoleOption).toBeVisible({ timeout: 10000 });
   await visibleRoleOption.click({ force: true });
 }
+//MOTADATA-8393 Introduce Per-User Session Timeout Support
+async function selectSessionExpiry(page, drawer) {
+  const options = ['10 Minutes', '20 Minutes', '30 Minutes', '45 Minutes', '60 Minutes'];
+  const choice = options[Math.floor(Math.random() * options.length)];
+
+  const sessionExpiryDropdown = drawer.locator(
+    "xpath=.//*[normalize-space(text())='Session Expiry']/ancestor::div[.//input[@placeholder='Select']][1]//input[@placeholder='Select']"
+  ).first();
+  await expect(sessionExpiryDropdown).toBeVisible({ timeout: 10000 });
+  await sessionExpiryDropdown.click({ force: true });
+  await waitForDrawerAnimation(page);
+
+  const option = page.getByText(choice, { exact: true }).last();
+  await expect(option).toBeVisible({ timeout: 10000 });
+  await option.click({ force: true });
+  await waitForDrawerAnimation(page);
+}
 
 async function ensureUserStatusEnabled(drawer) {
   const statusSwitch = drawer.getByRole('switch').last();
@@ -178,6 +195,7 @@ async function fillLocalAuthenticationUserForm(page, drawer, user) {
 
   await selectGroup(page, drawer);
   await selectRole(page, drawer);
+  await selectSessionExpiry(page, drawer);
   await enableFirstLoginPasswordChange(drawer);
   await ensureUserStatusEnabled(drawer);
 }

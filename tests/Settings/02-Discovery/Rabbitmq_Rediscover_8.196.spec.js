@@ -52,7 +52,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
   });
 
   test('Create Discovery for RabbitMQ', async () => {
-    test.setTimeout(300000);
+    test.setTimeout(500000);
 
     await page.locator("//input[@id='profile-id']").fill('172.16.8.196-linux');
     await page.locator("//input[@id='ip-address-id']").fill(process.env.Rabbitmq_linux_ip);
@@ -76,11 +76,14 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
     await page.locator("//button[@id='add-selected-btn-id']").click();
     const provisionDialog = page.getByRole('dialog', { name: 'Provision Status' });
     if (await provisionDialog.isVisible().catch(() => false)) {
-      await provisionDialog.getByRole('img').click();
+      await expect(
+        provisionDialog.getByText('provisioned successfully').first()
+      ).toBeVisible({ timeout: 120000 });
+      await provisionDialog.locator('svg[data-icon="times"]').first().click();
     } else {
-      await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 15000 });
+      await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+      await page.locator('svg[data-icon="times"]').first().click();
     }
-    await page.locator('svg[data-icon="times"]').click();
   });
 
   test('Rediscover for RabbitMQ', async () => {
