@@ -1,0 +1,33 @@
+# manual-cases.yaml — schema
+# Output of mt-manual-test-author. Deterministic, parseable, human-reviewed once.
+# Cap: <=500 bytes per step.
+
+- id: TC-001                          # stable id
+  title: <imperative one line>
+  screen: <canonical screen name>     # MUST match cookbook keys
+  preconditions:
+    - logged in
+    - device {{data.ip}} reachable
+  data:                               # parameterized; no secrets
+    ip: "{{env.DEVICE_IP}}"
+  steps:
+    # action vocabulary is CLOSED — spec-writer maps these 1:1:
+    #   navigate | click | fill | select | check | uncheck
+    #   expect_toast | expect_text | expect_row | wait_status
+    - { action: navigate, target: "Settings > Discovery Profile" }
+    - { action: click,    target: "Create Discovery Profile" }
+    - { action: fill,     target: "Profile Name", value: "{{title}}" }
+    - { action: select,   target: "Protocol", value: "SSH" }
+    - { action: check,    target: "default snmp credential row" }
+    - { action: click,    target: "Save and Run" }
+    - { action: expect_toast, target: "provisioned successfully" }
+  expected:
+    - toast: "provisioned successfully"
+    - row_visible: "{{data.ip}}"
+  edge_cases:
+    - "duplicate profile name -> expect 'not unique' error"
+
+# Notes:
+# - target is a HUMAN control name; the resolver maps it to a verified locator.
+# - one action per step; no compound steps.
+# - create-flows MUST include an idempotency precondition or skip-if-exists step.

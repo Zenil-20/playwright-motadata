@@ -1,0 +1,20 @@
+{
+  "feature": "metric-description-widget-multicategory",
+  "jira": "MOTADATA-8898",
+  "created": "2026-06-02",
+  "budget": { "max_subagent_calls": 40, "used": 0, "token_cap": null },
+  "target_server": "https://172.16.15.86",
+  "stages": [
+    { "name": "ingest",    "status": "done", "output": "ticket.json", "gate": false },
+    { "name": "synthesis", "status": "done", "output": "feature-spec.md", "gate": false },
+    { "name": "authoring", "status": "awaiting_review", "output": "manual-cases.json + MOTADATA-8898_ManualTests.xlsx/.pdf + coverage-summary.md", "gate": true },
+    { "name": "state",     "status": "done", "output": "findings.md", "gate": false,
+      "result": "Metric/APM/RUM/NetRoute/Flow descriptions PRESENT on 172.16.15.86; Log descriptions EMPTY (un-seeded). A7 'unavailable' message not shown for Log (blank body) — flagged." },
+    { "name": "resolve",   "status": "done", "output": "cookbook #1.1 Add Widget — Chart config + findings.md", "gate": false,
+      "note": "Widget-create Chart config harvested live; locators verified and written to cookbook. Trigger gesture = hover counter option." },
+    { "name": "write",     "status": "awaiting_user", "output": "specs/*.spec.js", "gate": true,
+      "note": "Paused per user request: report harvest findings before spec-writing. Log gap needs product decision." },
+    { "name": "run",       "status": "pending", "output": "results.json", "gate": false },
+    { "name": "triage",    "status": "pending", "heal_iterations": 0, "gate": true }
+  ]
+}

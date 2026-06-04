@@ -1,6 +1,101 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
+<<<<<<< Updated upstream
+=======
+const settingsProjects = [
+  {
+    name: 'settings_01_agent_monitoring',
+    testMatch: ['tests/Settings/01-AgentMonitoringSettings/*.spec.js'],
+  },
+  {
+    name: 'settings_02_discovery',
+    testMatch: ['tests/Settings/02-Discovery/*.spec.js'],
+  },
+  {
+    name: 'settings_03_netroute',
+    testMatch: ['tests/Settings/03-NetrouteSettings/*.spec.js'],
+  },
+  {
+    name: 'settings_04_policy',
+    testMatch: ['tests/Settings/04-PolicySettings/*.spec.js'],
+  },
+  {
+    name: 'settings_05_runbook',
+    testMatch: ['tests/Settings/05-Runbook/*.spec.js'],
+  },
+  {
+    name: 'settings_06_user_settings',
+    testMatch: ['tests/Settings/06-UserSettings/*.spec.js'],
+  },
+  {
+  name: 'settings_08_slo',
+  testMatch: ['tests/Settings/08-SLO/*.spec.js'],
+},
+{
+  name: 'settings_09_proxy_server',
+  testMatch: ['tests/Settings/09-SystemSettings/*.spec.js'],
+},
+{
+  name: 'settings_10_integrations',
+  testMatch: ['tests/Settings/10-Integrations/*.spec.js'],
+},
+{
+  name: 'settings_11_rediscovery',
+  testMatch: ['tests/Settings/11-rediscovery/*.spec.js'],
+},
+{
+  name: 'settings_12_metric_plugin',
+  testMatch: ['tests/Settings/12-MetricPlugin/*.spec.js'],
+},
+{
+  name: 'settings_13_Device_Monitoring',
+  testMatch: ['tests/Settings/13-MonitorSettings/*.spec.js'],
+}
+];
+
+const dashboardProjects = [
+  {
+    name: 'dashboard_01_server_and_apps',
+    testMatch: ['tests/Dashboard/01-ServerAndApps/*.spec.js'],
+  },
+  {
+    name: 'dashboard_02_network',
+    testMatch: ['tests/Dashboard/02-Network/*.spec.js'],
+  },
+  {
+    name: 'dashboard_03_virtualization',
+    testMatch: ['tests/Dashboard/03-Virtualization/*.spec.js'],
+  },
+  {
+    name: 'dashboard_04_database',
+    testMatch: ['tests/Dashboard/04-Database/*.spec.js'],
+  },
+  {
+    name: 'dashboard_05_service_check',
+    testMatch: ['tests/Dashboard/05-ServiceCheck/*.spec.js'],
+  },
+];
+
+const metricExplorerProjects = [
+  {
+    name: 'metric_explorer_01_instance_kpi_anomaly',
+    testMatch: ['tests/metricExplorer/Instance_KPI_Anomaly_Metric_Explore_Screen.spec.js'],
+  },
+ {
+    name: 'metric_explorer_02_instance_kpi_compare',
+    testMatch: ['tests/metricExplorer/Instance_KPI_Compare_Metric_Explore_Screen.spec.js'],
+ }
+];
+
+const nccmProjects = [
+  {
+    name: 'nccm_01_device_discovery',
+    testMatch: ['tests/nccm/*.spec.js'],
+  }
+];
+
+>>>>>>> Stashed changes
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -47,6 +142,7 @@ testMatch: [
     ignoreHTTPSErrors: true,
   },
 
+<<<<<<< Updated upstream
   /* Configure projects for major browsers */
   projects: [
     {
@@ -84,6 +180,13 @@ testMatch: [
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
+=======
+  /* Configure ordered Settings projects on Chromium */
+  projects: [...settingsProjects, ...dashboardProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
+    ...project,
+    use: { ...devices['Desktop Chrome'] },
+  })),
+>>>>>>> Stashed changes
 
   /* Run your local dev server before starting the tests */
   // webServer: {
