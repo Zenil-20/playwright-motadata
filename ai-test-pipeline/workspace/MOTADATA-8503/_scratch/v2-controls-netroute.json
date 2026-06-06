@@ -1,0 +1,13 @@
+{
+  "ctrls": [
+    {
+      "tag": "input",
+      "id": null,
+      "name": "search",
+      "placeholder": "Search",
+      "aria": null,
+      "role": null
+    }
+  ],
+  "labels": []
+}

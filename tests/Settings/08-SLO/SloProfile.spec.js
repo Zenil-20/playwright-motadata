@@ -150,7 +150,7 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
-        await page.locator('div.ant-calendar-date:not([aria-disabled="true"])', {
+        await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
             hasText: new RegExp(`^${SLO_CONSTANTS.START_DATE}$`),
         }).click();
 
@@ -189,7 +189,7 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
-        await page.locator('div.ant-calendar-date:not([aria-disabled="true"])', {
+        await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
             hasText: new RegExp(`^${SLO_CONSTANTS.START_DATE}$`),
         }).click();
 
@@ -241,7 +241,7 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
-        await page.locator('div.ant-calendar-date:not([aria-disabled="true"])', {
+        await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
             hasText: new RegExp(`^${SLO_CONSTANTS_1.START_DATE}$`),
         }).click();
 
@@ -293,7 +293,7 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
-        await page.locator('div.ant-calendar-date:not([aria-disabled="true"])', {
+        await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
             hasText: new RegExp(`^${SLO_CONSTANTS_1.START_DATE}$`),
         }).click();
 

@@ -1,0 +1,174 @@
+# Manual test cases — MOTADATA-8503 Unified Create Policy UI
+# screen key: "Policy Settings (Create Policy)". Every case traces to Jira AC ids.
+
+- id: "TC-8503-01"
+  title: "Metric Threshold policy via unified Set Conditions"
+  traces_to: ["A1", "A2", "B1", "B2", "B3", "B4", "D4"]
+  risk: "smoke"
+  module: "Metric"
+  preconditions:
+    - "logged in"
+    - "a Linux monitor exists (env Sybase_linux_ip)"
+  data:
+    ip: "{{env.Sybase_linux_ip}}"
+    counter: "system.cpu.percent"
+  steps:
+    - "navigate: Settings > Policy Settings"
+    - "click: Create Policy (lands on Metric module)"
+    - "select Set Conditions card: Threshold Alert"
+    - "fill: Policy Name = 8503-Metric-Threshold"
+    - "add tags: motadata:8.61, Automation@zen"
+    - "select: Counter = system.cpu.percent"
+    - "select: Source Filter = Monitor; pick monitor row {{ip}} (Linux)"
+    - "fill severity: critical=85, major=75, warning=60"
+    - "verify operator dropdown (Equals/Greater/Less) selectable & persists"
+    - "click: Create Policy"
+  expected:
+    - "success toast appears"
+    - "redirect to policy list; 8503-Metric-Threshold visible"
+  edge_cases:
+    - "empty Policy Name + click Create -> validate-on-submit, required field highlighted, no create"
+    - "empty Counter -> field highlighted red, save blocked"
+
+- id: "TC-8503-02"
+  title: "APM Baseline policy via unified Set Conditions"
+  traces_to: ["A1", "A2", "B2", "B3", "B5", "D1"]
+  risk: "high"
+  module: "APM"
+  preconditions:
+    - "logged in"
+    - "APM service source Checkout Service exists"
+  data:
+    policy_type: "Trace Metrics"
+    counter: "Avg Response Time"
+    source_filter: "Service"
+    source: "Checkout Service"
+  steps:
+    - "navigate: Settings > Policy Settings > Create Policy"
+    - "select module: APM (in-panel)"
+    - "set APM Policy Type = Trace Metrics (filters counters)"
+    - "fill: Policy Name = 8503-APM-Baseline"
+    - "select Set Conditions card: Baseline Alert"
+    - "select: Counter = Avg Response Time"
+    - "select: Source Filter = Service; Source = Checkout Service"
+    - "configure baseline params + Abnormality Occurrence / Auto Clear"
+    - "click: Create Policy"
+  expected:
+    - "success toast + policy visible as Baseline type"
+  edge_cases:
+    - "switch Policy Type to Trace Analytics -> counter list changes (D1)"
+    - "Baseline tab present for APM (new vs old build)"
+
+- id: "TC-8503-03"
+  title: "RUM Anomaly policy via unified Set Conditions"
+  traces_to: ["A1", "A2", "A3", "B2", "B5", "D2"]
+  risk: "high"
+  module: "Real User Monitoring"
+  preconditions:
+    - "logged in"
+    - "RUM application source Customer Portal exists"
+  data:
+    counter: "Page Load Time"
+    source_filter: "Application"
+    source: "Customer Portal"
+  steps:
+    - "navigate: Settings > Policy Settings > Create Policy"
+    - "select module: Real User Monitoring (in-panel)"
+    - "fill: Policy Name = 8503-RUM-Anomaly"
+    - "select Set Conditions card: Anomaly"
+    - "select: Counter = Page Load Time"
+    - "select: Source Filter = Application; Source = Customer Portal"
+    - "configure occurrence threshold"
+    - "click: Create Policy"
+  expected:
+    - "policy created without leaving Create Policy flow (A3)"
+    - "only RUM-eligible counters shown (D2)"
+  edge_cases:
+    - "Anomaly is a card here, not a separate standalone flow (A3)"
+
+- id: "TC-8503-04"
+  title: "NetRoute Forecast policy via unified Set Conditions"
+  traces_to: ["A1", "A2", "A3", "B2", "D3"]
+  risk: "high"
+  module: "NetRoute"
+  preconditions:
+    - "logged in"
+    - "NetRoute interface source WAN Interface exists"
+  data:
+    counter: "Link Utilization"
+    source_filter: "Interface"
+    source: "WAN Interface"
+  steps:
+    - "navigate: Settings > Policy Settings > Create Policy"
+    - "select module: NetRoute (in-panel hrefless link, not global sidebar)"
+    - "fill: Policy Name = 8503-NetRoute-Forecast"
+    - "select Set Conditions card: Forecast"
+    - "select: Counter = Link Utilization"
+    - "select: Source Filter = Interface; Source = WAN Interface"
+    - "configure forecast horizon / threshold"
+    - "click: Create Policy"
+  expected:
+    - "forecast policy created in unified flow"
+    - "only NetRoute-eligible counters/source filters shown (D3)"
+  edge_cases:
+    - "clicking NetRoute in-panel must NOT navigate to /netroute/ module"
+
+- id: "TC-8503-05"
+  title: "Set Conditions exposes four cards in correct order"
+  traces_to: ["A2"]
+  risk: "smoke"
+  module: "Metric"
+  preconditions:
+    - "logged in"
+  steps:
+    - "navigate: Settings > Policy Settings > Create Policy (Metric)"
+    - "observe Set Conditions section"
+  expected:
+    - "exactly four cards: Threshold Alert | Baseline Alert | Anomaly | Forecast, in order"
+
+- id: "TC-8503-06"
+  title: "Edit existing Threshold policy renders in unified screen and persists"
+  traces_to: ["A1", "F1", "B4"]
+  risk: "high"
+  module: "APM/RUM/NetRoute (one with an existing Threshold policy)"
+  preconditions:
+    - "an existing Threshold policy exists"
+  steps:
+    - "navigate: Settings > Policy Settings"
+    - "open an existing Threshold policy (edit)"
+    - "verify it renders in unified layout, Threshold card selected"
+    - "update a severity threshold value"
+    - "click: Save / Update Policy"
+    - "reopen the same policy"
+  expected:
+    - "updated value persisted (F1)"
+
+- id: "TC-8503-07"
+  title: "Backward compatibility — existing Anomaly/Forecast policies still function"
+  traces_to: ["F2", "A3"]
+  risk: "edge"
+  module: "any"
+  preconditions:
+    - "a pre-existing Anomaly or Forecast policy exists"
+  steps:
+    - "navigate: Settings > Policy Settings"
+    - "locate an existing Anomaly/Forecast policy"
+    - "open it"
+  expected:
+    - "opens on the matching card in the unified screen; no error; values intact (F2)"
+
+- id: "TC-8503-08"
+  title: "Validation — Policy Name and Counter gating (validate-on-submit)"
+  traces_to: ["B1", "B2"]
+  risk: "smoke"
+  module: "Metric"
+  preconditions:
+    - "logged in"
+  steps:
+    - "navigate: Settings > Policy Settings > Create Policy (Metric)"
+    - "with empty form, click Create Policy"
+    - "observe required fields highlighted; no policy created"
+    - "fill Policy Name only; leave Counter empty; click Create Policy"
+  expected:
+    - "Create Policy stays enabled but submit is blocked while required fields empty"
+    - "Counter required on all four cards (B2)"
