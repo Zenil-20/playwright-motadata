@@ -102,8 +102,10 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
   test('Attach storage profiles to Config DB Backup Profile, run, then swap and rerun', async () => {
     test.setTimeout(600000);
 
+    // NOTE: Backup Profile does not support TFTP storage profiles, so TFTP never appears
+    // in this dropdown. Only SCP/SFTP and FTP are exercised here.
     const SCP_STORAGE = 'SCPplugin By Playwright';
-    const TFTP_STORAGE = 'TFTPplugin By Playwright';
+    const FTP_STORAGE = 'ftp-8.57plugin By Playwright';
 
     await page.locator("//a[@href='/settings/']").click();
     await page.locator("//input[@id='phone-number']").click();
@@ -117,7 +119,11 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
     const setStorageProfile = async (name) => {
       await configRow.locator('[data-cy="grid-action"]').click();
       await page.locator('#edit').click();
-      await page.locator("//div[@title='Config DB Backup Storage Profile']//input[@placeholder='Select']").click();
+      // Scope to the "Storage Profile Name" field group by label (the wrapper title is the
+      // selected value, which changes on swap — so a value-based title locator is unreliable).
+      await page.locator(
+        "xpath=//*[normalize-space(text())='Storage Profile Name']/ancestor::div[.//input[@placeholder='Select']][1]//input[@placeholder='Select']"
+      ).click();
       await page.locator("//input[@data-cy='dropdown-search-input']").last().fill(name);
       await page.locator(`//span[@title='${name}']`).click();
       await page.locator('#btn-submit-trap-forwarding').click();
@@ -133,8 +139,8 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
     await setStorageProfile(SCP_STORAGE);
     await runAndWait();
 
-    // Swap to TFTP and rerun
-    await setStorageProfile(TFTP_STORAGE);
+    // Swap to FTP and rerun (TFTP is intentionally skipped — unsupported by Backup Profile)
+    await setStorageProfile(FTP_STORAGE);
     await runAndWait();
   });
 

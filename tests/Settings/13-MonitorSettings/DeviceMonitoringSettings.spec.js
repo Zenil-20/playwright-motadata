@@ -22,6 +22,10 @@ dotenv.config({ path: '.env', quiet: true });
 const SOURCE_SEARCH = 'aruba';
 const NEW_SPEED = '99';
 const BULK_TAG = 'automation:playwright';
+// Disable / Poll-Now / re-enable is exercised against this one specific firewall monitor only
+const FIREWALL_MONITOR = 'fg_firewall.mindarray.com';
+// Docker-capable monitor whose Metric Settings expose the Docker / Docker Container tabs
+const DOCKER_MONITOR = '172.16.15.234';
 
 test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   let page;
@@ -150,7 +154,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
     await page.locator("//input[@type='checkbox']").first().click();
 
     // Open the bulk Tag panel (the tag-icon button; #filter-btn is reused on the page)
-    await page.locator('button#filter-btn:has(svg[data-icon="tag"])').click();
+    await page.locator('#bulk-tag-toggle').click();
 
     // Add the tag via the ant-select tag input
     const tagPlaceholder = page.locator("//div[contains(@class,'ant-select-selection__placeholder') and normalize-space()='Add Tags']");
@@ -180,25 +184,27 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
     await expect(page.locator('td', { hasText: BULK_TAG }).first()).toBeVisible();
   });
 
-  test('Disable a monitor from grid action and verify status changes to Disable', async () => {
+  test('Disable the firewall monitor from grid action and verify status changes to Disable', async () => {
     test.setTimeout(120000);
     await page.reload();
 
-    const taggedRow = page.locator('tr.k-master-row', { hasText: BULK_TAG }).first();
-    await taggedRow.locator('svg[data-icon="ellipsis-v"]').click();
+    // Scope to the one firewall monitor so only that device is disabled
+    await page.locator("//input[@placeholder='Search']").nth(1).fill(FIREWALL_MONITOR);
+
+    const firewallRow = page.locator('tr.k-master-row', { hasText: FIREWALL_MONITOR }).first();
+    await expect(firewallRow).toBeVisible({ timeout: 30000 });
+    await firewallRow.locator('svg[data-icon="ellipsis-v"]').click();
     await page.locator('a#disable').click();
     await page.locator('#confirm-yes').click();
 
-    await expect(taggedRow.locator('td', { hasText: /^\s*Disable\s*$/ })).toBeVisible();
+    await expect(firewallRow.locator('td', { hasText: /^\s*Disable\s*$/ })).toBeVisible();
   });
 
-  test('Poll Now on disabled monitor shows error, then re-enable it', async () => {
+  test('Poll Now on disabled firewall monitor shows error, then re-enable it', async () => {
     test.setTimeout(120000);
 
-    // Read the disabled monitor name from the tagged row
-    const taggedRow = page.locator('tr.k-master-row', { hasText: BULK_TAG }).first();
-    const monitorName = (await taggedRow.locator('td').nth(1).textContent())?.trim();
-    expect(monitorName, 'Failed to read monitor name').toBeTruthy();
+    // Target only the firewall monitor disabled in the previous test
+    const monitorName = FIREWALL_MONITOR;
 
     // Open the monitor from "All" inventory and trigger Poll Now
     const baseUrl = new URL(process.env.Motadata_Aiops).origin;
@@ -277,6 +283,18 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   test('Update the metric collection time for Aruba Wireless monitor and change the polling time between 60-90 seconds, then verify the changes are reflected in the Metric Settings drawer', async () => {
     test.setTimeout(120000);
 
+    // The previous test left us on the inventory page — go to Settings → Device Monitor
+    // Settings and scope the grid to the Aruba Wireless monitor first.
+    await page.locator("//a[@href='/settings/']").click();
+    await page.locator("//input[@id='phone-number']").click();
+    await page.locator("//input[@placeholder='Search']").fill('device monitor');
+    await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
+    await page.locator("//input[@placeholder='Search']").nth(1).fill(SOURCE_SEARCH);
+
+    const arubaMonitorRow = page.locator('tr.k-master-row', { hasText: 'ArubaMC-VA_BB_8A_50' }).first();
+    await expect(arubaMonitorRow).toBeVisible({ timeout: 30000 });
+    await arubaMonitorRow.locator('input[type="checkbox"]').first().check();
+
     // Random polling time in [60, 90]
     const pollTime = String(Math.floor(Math.random() * 31) + 60);
 
@@ -313,6 +331,45 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
     await expect(interfaceRow.locator('input[placeholder="Poll Time"]')).toHaveValue(pollTime);
 
     await page.locator('#update-metric-collection-time').click();
+  });
+
+  test('Verify Metric Settings for 172.16.15.234 exposes Docker and Docker Container tabs', async () => {
+    test.setTimeout(120000);
+
+    // Navigate to Device Monitor Settings
+    await page.locator("//a[@href='/settings/']").click();
+    await page.locator("//input[@id='phone-number']").click();
+    await page.locator("//input[@placeholder='Search']").fill('device monitor');
+    await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
+
+    // Scope the grid to the docker-capable monitor
+    await page.locator("//input[@placeholder='Search']").nth(1).fill(DOCKER_MONITOR);
+    const monitorRow = page.locator('tr.k-master-row', { hasText: DOCKER_MONITOR }).first();
+    await expect(monitorRow).toBeVisible({ timeout: 30000 });
+
+    // Open kebab -> Metric Settings
+    await monitorRow.locator('svg[data-icon="ellipsis-v"]').click();
+    await page.getByText('Metric Settings', { exact: false }).first().click();
+
+    // The Metric Settings drawer should expose both Docker tabs
+    const drawer = page.locator('div.ant-drawer-open');
+    const dockerContainerTab = drawer.getByRole('tab', { name: 'Docker Container', exact: true });
+    const dockerTab = drawer.getByRole('tab', { name: 'Docker', exact: true });
+
+    await expect(dockerContainerTab).toBeVisible({ timeout: 30000 });
+    await expect(dockerTab).toBeVisible();
+
+    // Activate Docker Container tab — container names are dynamic, so assert only the tab state + static header
+    await dockerContainerTab.click();
+    await expect(dockerContainerTab).toHaveAttribute('aria-selected', 'true');
+    await expect(drawer.locator('th', { hasText: /Container Name/i }).first()).toBeVisible();
+
+    // Activate Docker tab and confirm it becomes the selected tab
+    await dockerTab.click();
+    await expect(dockerTab).toHaveAttribute('aria-selected', 'true');
+
+    // Close the drawer
+    await page.locator('button.ant-drawer-close').first().click();
   });
 
   test('Logout from AIOps', async () => {

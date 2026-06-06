@@ -1,0 +1,52 @@
+# resolved-cases.yaml — schema
+# Output of mt-locator-resolver. Same as manual-cases.yaml + a VERIFIED locator on every
+# actionable step. The spec-writer consumes ONLY this. A step missing `locator` is an error
+# (spec-writer must refuse to invent one).
+
+- id: TC-001
+  title: Discover device with default SNMP credential
+  screen: Discovery Profile
+  data:
+    ip: "{{env.DEVICE_IP}}"
+  steps:
+    - action: navigate
+      target: "Settings > Discovery Profile"
+      locator: "settings_nav + discovery_profile_link"   # from cookbook
+      verified: true
+    - action: click
+      target: "Create Discovery Profile"
+      locator: "page.getByRole('button', { name: 'Create Discovery Profile' })"
+      verified: true
+    - action: fill
+      target: "Profile Name"
+      value: "{{title}}"
+      locator: "input[name='profile-name']"
+      verified: true
+    - action: check
+      target: "default snmp credential row"
+      locator: ".ant-popover:visible >> tr hasText:/default snmp/i  (scoped, .first())"
+      verified: true
+      scope_reason: "multiple credential rows; scoped to visible popover + row text"
+  expected:
+    - toast: "provisioned successfully"
+
+    - action: raw
+      target: "drawer-in-drawer credential test"
+      code: "await drawer.locator(...).click(); await expect(...).toBeVisible();"  # verified by resolver
+      verified: true
+      confidence: medium
+
+# Per-step fields the resolver adds:
+#   locator       : the verified Playwright locator (count()===1 proven in the SEEDED state)
+#   verified      : true (false is NOT allowed downstream; spec-writer refuses it)
+#   confidence    : high | medium | low   (reject-tier never reaches here)
+#   fallback      : a second verified locator using a different strategy (self-heal)
+#   scope_reason  : present whenever disambiguation/.first() was needed (audit trail)
+#   conditional   : true + `trigger` when the control only exists in a specific state
+#   source        : cookbook | suite | explored   (provenance)
+#   code          : only for action=raw — verified snippet the vocabulary can't express
+#
+# Case-level fields carried through from the manual case:
+#   traces_to     : [AC ids]   — traceability, no orphan tests
+#   risk          : smoke|high|edge
+#   required_state: the precondition the sandbox-state agent seeded + the resolver harvested against

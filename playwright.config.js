@@ -86,6 +86,13 @@ const metricExplorerProjects = [
  }
 ];
 
+const nccmProjects = [
+  {
+    name: 'nccm_01_device_discovery',
+    testMatch: ['tests/nccm/*.spec.js'],
+  }
+];
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -127,7 +134,7 @@ export default defineConfig({
   },
 
   /* Configure ordered Settings projects on Chromium */
-  projects: [...settingsProjects, ...dashboardProjects, ...metricExplorerProjects].map((project) => ({
+  projects: [...settingsProjects, ...dashboardProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
     ...project,
     use: { ...devices['Desktop Chrome'] },
   })),

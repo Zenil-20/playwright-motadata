@@ -1,0 +1,223 @@
+[
+  {
+    "id": "TC-DESC-APM",
+    "title": "APM metric shows a description on the widget-creation Metric dropdown",
+    "family": "Description-availability",
+    "category": "APM",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P1",
+    "risk": "smoke",
+    "traces_to": ["A1", "A3", "A4"],
+    "preconditions": ["logged in", "APM data source exists so the APM category lists at least one metric", "metric-description data seeded for APM"],
+    "data": { "category": "APM", "metric": "<first available APM metric — resolve live>" },
+    "steps": [
+      { "action": "Navigate to Dashboard and start Add/Create Widget", "expected": "Widget creation screen opens" },
+      { "action": "Set the data category / source type to 'APM'", "expected": "Metric dropdown repopulates with APM metrics" },
+      { "action": "Open the Metric dropdown and select the first APM metric", "expected": "Metric is selected" },
+      { "action": "Observe the description affordance (pop-up/tooltip/info panel) for the selected metric", "expected": "A non-empty description is shown for the APM metric" }
+    ],
+    "expected": [ "description_visible: true", "description_text: non-empty", "category: APM" ],
+    "edge_cases": ["metric with the longest text — pop-up must not truncate/overflow"],
+    "postcondition": "No widget needs to be saved; description verified in-flow",
+    "automation": "Yes (after live locator + content harvest)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-RUM",
+    "title": "RUM metric shows a description on the widget-creation Metric dropdown",
+    "family": "Description-availability",
+    "category": "RUM",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P1",
+    "risk": "smoke",
+    "traces_to": ["A1", "A3", "A4"],
+    "preconditions": ["logged in", "RUM data source exists", "metric-description data seeded for RUM"],
+    "data": { "category": "RUM", "metric": "<first available RUM metric — resolve live>" },
+    "steps": [
+      { "action": "Navigate to Dashboard and start Add/Create Widget", "expected": "Widget creation screen opens" },
+      { "action": "Set the data category / source type to 'RUM'", "expected": "Metric dropdown repopulates with RUM metrics" },
+      { "action": "Open the Metric dropdown and select the first RUM metric", "expected": "Metric is selected" },
+      { "action": "Observe the description affordance for the selected metric", "expected": "A non-empty description is shown for the RUM metric" }
+    ],
+    "expected": [ "description_visible: true", "description_text: non-empty", "category: RUM" ],
+    "edge_cases": [],
+    "postcondition": "Description verified in-flow",
+    "automation": "Yes (after live locator + content harvest)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-LOG",
+    "title": "Log metric shows a description on the widget-creation Metric dropdown",
+    "family": "Description-availability",
+    "category": "Log",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P1",
+    "risk": "smoke",
+    "traces_to": ["A1", "A3", "A4"],
+    "preconditions": ["logged in", "Log data source exists", "metric/event-description data seeded for Log"],
+    "data": { "category": "Log", "metric": "<first available Log metric — resolve live>" },
+    "steps": [
+      { "action": "Navigate to Dashboard and start Add/Create Widget", "expected": "Widget creation screen opens" },
+      { "action": "Set the data category / source type to 'Log'", "expected": "Metric dropdown repopulates with Log metrics" },
+      { "action": "Open the Metric dropdown and select the first Log metric", "expected": "Metric is selected" },
+      { "action": "Observe the description affordance for the selected metric", "expected": "A non-empty description is shown for the Log metric" }
+    ],
+    "expected": [ "description_visible: true", "description_text: non-empty", "category: Log" ],
+    "edge_cases": [],
+    "postcondition": "Description verified in-flow",
+    "automation": "Yes (after live locator + content harvest)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-NETROUTE",
+    "title": "NetRoute metric shows a description on the widget-creation Metric dropdown",
+    "family": "Description-availability",
+    "category": "NetRoute",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P2",
+    "risk": "high-traffic",
+    "traces_to": ["A1", "A3", "A4"],
+    "preconditions": ["logged in", "NetRoute data source exists", "metric-description data seeded for NetRoute"],
+    "data": { "category": "NetRoute", "metric": "<first available NetRoute metric — resolve live>" },
+    "steps": [
+      { "action": "Navigate to Dashboard and start Add/Create Widget", "expected": "Widget creation screen opens" },
+      { "action": "Set the data category / source type to 'NetRoute'", "expected": "Metric dropdown repopulates with NetRoute metrics" },
+      { "action": "Open the Metric dropdown and select the first NetRoute metric", "expected": "Metric is selected" },
+      { "action": "Observe the description affordance for the selected metric", "expected": "A non-empty description is shown for the NetRoute metric" }
+    ],
+    "expected": [ "description_visible: true", "description_text: non-empty", "category: NetRoute" ],
+    "edge_cases": [],
+    "postcondition": "Description verified in-flow",
+    "automation": "Yes (after live locator + content harvest)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-FLOW",
+    "title": "Flow metric shows a description on the widget-creation Metric dropdown",
+    "family": "Description-availability",
+    "category": "Flow",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P2",
+    "risk": "high-traffic",
+    "traces_to": ["A1", "A3", "A4"],
+    "preconditions": ["logged in", "Flow data source exists", "metric/event-description data seeded for Flow"],
+    "data": { "category": "Flow", "metric": "<first available Flow metric — resolve live>" },
+    "steps": [
+      { "action": "Navigate to Dashboard and start Add/Create Widget", "expected": "Widget creation screen opens" },
+      { "action": "Set the data category / source type to 'Flow'", "expected": "Metric dropdown repopulates with Flow metrics" },
+      { "action": "Open the Metric dropdown and select the first Flow metric", "expected": "Metric is selected" },
+      { "action": "Observe the description affordance for the selected metric", "expected": "A non-empty description is shown for the Flow metric" }
+    ],
+    "expected": [ "description_visible: true", "description_text: non-empty", "category: Flow" ],
+    "edge_cases": [],
+    "postcondition": "Description verified in-flow",
+    "automation": "Yes (after live locator + content harvest)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-METRIC-REGRESSION",
+    "title": "Metric category still shows descriptions (pre-existing behavior, no regression)",
+    "family": "Regression",
+    "category": "Metric",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P1",
+    "risk": "smoke",
+    "traces_to": ["A1"],
+    "preconditions": ["logged in", "a monitored metric source exists"],
+    "data": { "category": "Metric", "metric": "<first available Metric metric — resolve live>" },
+    "steps": [
+      { "action": "Navigate to Dashboard and start Add/Create Widget", "expected": "Widget creation screen opens" },
+      { "action": "Keep category 'Metric'", "expected": "Metric dropdown lists Metric counters" },
+      { "action": "Select the first Metric metric and observe the description", "expected": "Description shown — unchanged from before this feature" }
+    ],
+    "expected": [ "description_visible: true", "description_text: non-empty", "category: Metric" ],
+    "edge_cases": [],
+    "postcondition": "Baseline behavior intact",
+    "automation": "Yes",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-CONTENT",
+    "title": "Description content conveys meaning (what it measures / how to read / root-cause hint)",
+    "family": "Content-quality",
+    "category": "(all new)",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P2",
+    "risk": "high-traffic",
+    "traces_to": ["A2", "A5"],
+    "preconditions": ["logged in", "description data seeded"],
+    "data": {},
+    "steps": [
+      { "action": "For one metric per category (APM/RUM/Log/NetRoute/Flow), open its description", "expected": "Description present" },
+      { "action": "Read the description text", "expected": "Text is meaningful (not a placeholder/key), describes what the metric measures and/or how values are interpreted" }
+    ],
+    "expected": [ "description_text: meaningful (length > N, not equal to the metric key/id)" ],
+    "edge_cases": ["a description equal to the metric's raw key id == fail (data not mapped)"],
+    "postcondition": "Content quality recorded; exact wording is product copy, not asserted verbatim",
+    "automation": "Partial (assert non-empty + not-equal-to-key; verbatim copy is manual)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-CONSISTENCY",
+    "title": "Description format/structure is consistent across all categories",
+    "family": "Consistency",
+    "category": "(all)",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P2",
+    "risk": "high-traffic",
+    "traces_to": ["A6"],
+    "preconditions": ["logged in", "description data seeded for every category"],
+    "data": {},
+    "steps": [
+      { "action": "Trigger the description affordance for one metric in each of Metric/APM/RUM/Log/NetRoute/Flow", "expected": "Same control/role/container surfaces the description in every category" },
+      { "action": "Compare the rendered structure", "expected": "Consistent format (same component, same placement, same trigger gesture)" }
+    ],
+    "expected": [ "same_description_container_role_across_categories: true" ],
+    "edge_cases": [],
+    "postcondition": "Consistency confirmed structurally",
+    "automation": "Yes (structural — same locator pattern resolves in every category)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-MISSING",
+    "title": "Metric with no description data shows an 'unavailable' message, not a blank",
+    "family": "Negative / Error-handling",
+    "category": "(any)",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P2",
+    "risk": "edge",
+    "traces_to": ["A7"],
+    "preconditions": ["logged in", "a metric known to LACK mapped description data is identified live"],
+    "data": { "metric": "<a metric with no description — resolve live; may not exist on this build>" },
+    "steps": [
+      { "action": "Select a metric whose description data is missing", "expected": "Metric selected" },
+      { "action": "Observe the description affordance", "expected": "UI shows an explicit 'description unavailable for this metric' message (not empty, not error toast)" }
+    ],
+    "expected": [ "unavailable_message_visible: true" ],
+    "edge_cases": ["if every metric on the build has data, this case is N/A on this server — record, do not fake"],
+    "postcondition": "Graceful empty-state confirmed",
+    "automation": "Conditional (only if a description-less metric exists on the target build)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  },
+  {
+    "id": "TC-DESC-TRIGGER",
+    "title": "Disambiguate the description trigger (select vs hover) and confirm it is discoverable",
+    "family": "Interaction",
+    "category": "(all new)",
+    "screen": "Widget creation (Dashboard > Add Widget)",
+    "priority": "P1",
+    "risk": "smoke",
+    "traces_to": ["A3", "A4"],
+    "preconditions": ["logged in", "description data seeded"],
+    "data": {},
+    "steps": [
+      { "action": "Open the Metric dropdown for an APM metric; hover over the metric option", "expected": "Record whether hover surfaces the description (ticket TC steps say hover)" },
+      { "action": "Select the metric", "expected": "Record whether selection surfaces the description (AC A4 says on-select)" }
+    ],
+    "expected": [ "description reachable by at least one documented gesture; the working gesture is recorded for automation" ],
+    "edge_cases": ["ticket is contradictory (hover vs select) — the live behavior is authoritative"],
+    "postcondition": "Canonical trigger gesture decided for the spec",
+    "automation": "Yes (drives the locator strategy for all other cases)",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8898"
+  }
+]

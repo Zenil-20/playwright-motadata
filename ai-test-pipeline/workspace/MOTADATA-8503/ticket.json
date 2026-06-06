@@ -1,0 +1,45 @@
+{
+  "key": "MOTADATA-8503",
+  "title": "Unify Policy Creation UI across Metric, APM, RUM, NetRoute with single “Set Conditions” experience (Threshold + Baseline + Anomaly + Forecast)",
+  "type": "Story",
+  "status": "Done",
+  "priority": "Medium",
+  "components": ["AIOPS"],
+  "description_summary": "Single unified Create Policy flow for Metric/APM/RUM/NetRoute. 'Set Conditions' section exposes four tabs: Threshold | Baseline | Anomaly | Forecast. Baseline support newly added for APM/RUM/NetRoute. Anomaly/Forecast are no longer separate standalone flows. Downstream sections (Alert Message, Notify Team, Take Action, Declare Incident) unchanged.",
+  "acceptance_criteria": [
+    { "id": "A1", "source": "jira:explicit", "then": "Metric/APM/RUM/NetRoute Create Policy use the SAME layout: header + basic fields + Set Conditions + remaining accordions" },
+    { "id": "A2", "source": "jira:explicit", "then": "Set Conditions has four tabs in order: Threshold Alert | Baseline Alert | Anomaly | Forecast" },
+    { "id": "A3", "source": "jira:explicit", "then": "Anomaly and Forecast are no longer separate standalone policy creation flows" },
+    { "id": "B1", "source": "jira:explicit", "then": "Policy Name mandatory; Create Policy disabled until provided" },
+    { "id": "B2", "source": "jira:explicit", "then": "Counter mandatory for all four tabs" },
+    { "id": "B3", "source": "jira:explicit", "then": "Source Filter controls Source list; Source required when Source Filter not Everywhere/All" },
+    { "id": "B4", "source": "jira:explicit", "then": "Severity Critical/Major/Warning available; operator dropdown (Equals/Greater/Less) works and persists" },
+    { "id": "B5", "source": "jira:explicit", "then": "'Notify if breach within' / 'Abnormality Occurrence' / 'Auto Clear' available and persist per selected tab" },
+    { "id": "D1", "source": "jira:explicit", "then": "APM supports Policy Type switch (Trace Metrics/Trace Analytics) which filters available counters" },
+    { "id": "D2", "source": "jira:explicit", "then": "RUM shows only RUM-eligible counters and source filters" },
+    { "id": "D3", "source": "jira:explicit", "then": "NetRoute shows only NetRoute-eligible counters and source filters" },
+    { "id": "D4", "source": "jira:explicit", "then": "Metric retains existing counters/sources, no regression" },
+    { "id": "F1", "source": "jira:explicit", "then": "Existing Threshold policies remain functional, no behavioral change" },
+    { "id": "F2", "source": "jira:explicit", "then": "Existing Anomaly/Forecast policies continue to function" }
+  ],
+  "use_cases": [
+    { "id": "UC1", "module": "Metric",   "tab": "Threshold", "counter": "CPU Utilization", "source_filter": "Group", "source": "Linux Servers", "thresholds": "Critical>85, Major>75, Warning>60", "verify": "in list + simulate breach -> alert" },
+    { "id": "UC2", "module": "APM",      "tab": "Baseline",  "policy_type": "Trace Metrics", "counter": "Avg Response Time", "source_filter": "Service", "source": "Checkout Service", "verify": "baseline deviation raises alert / window behavior" },
+    { "id": "UC3", "module": "RUM",      "tab": "Anomaly",   "counter": "Page Load Time", "source_filter": "Application", "source": "Customer Portal", "verify": "anomaly policy created without leaving flow" },
+    { "id": "UC4", "module": "NetRoute", "tab": "Forecast",  "counter": "Link Utilization", "source_filter": "Interface", "source": "WAN Interface", "verify": "forecast alert logic wired" },
+    { "id": "UC6", "module": "APM/RUM/NetRoute", "tab": "Threshold(edit)", "verify": "existing Threshold policy renders in unified screen; update values -> save -> persist" }
+  ],
+  "screens_mentioned": ["Policy Settings (Create Policy)", "Monitors"],
+  "figma_links": ["https://www.figma.com/proto/DPReGBjeIv7nogzeNs9Uel/Settings?node-id=30368-222640"],
+  "labels": ["Anant", "bhaving", "bhavya", "raj"],
+  "completeness": {
+    "score": "partial",
+    "gaps": [
+      "UC5 referenced implicitly but absent (numbering skips 5)",
+      "Exact severity operators per tab not enumerated for Baseline/Anomaly/Forecast",
+      "No explicit expected success-toast text",
+      "Breach simulation / alert-generation is backend-dependent; not pure UI",
+      "New unified 'Set Conditions' tab UI + APM Policy Type switch have NO existing automated coverage -> live locator harvest required"
+    ]
+  }
+}

@@ -1,0 +1,1896 @@
+[
+  {
+    "id": "TC-CREATE-MET-THR",
+    "title": "Create Metric Threshold Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Metric source 'Linux Servers' exists"
+    ],
+    "data": {
+      "counter": "CPU Utilization (system.cpu.percent)",
+      "filter": "Monitor",
+      "source": "Linux Servers"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Metric' in the in-panel left nav",
+        "expected": "Metric Policy form loads (stays in Create Policy, not the global Metric module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Metr-Threshold'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Threshold Alert'",
+        "expected": "'Threshold Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'CPU Utilization (system.cpu.percent)'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Monitor', Source = 'Linux Servers'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set severity: Critical Equals 85, Major Equals 75, Warning Equals 60; Notify-if-breach=5 min; Auto Clear=Never",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Threshold Alert'"
+      }
+    ],
+    "postcondition": "Policy created under Metric/Threshold Alert",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-MET-BAS",
+    "title": "Create Metric Baseline Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Metric",
+    "condition": "Baseline Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Metric source 'Linux Servers' exists"
+    ],
+    "data": {
+      "counter": "CPU Utilization (system.cpu.percent)",
+      "filter": "Monitor",
+      "source": "Linux Servers"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Metric' in the in-panel left nav",
+        "expected": "Metric Policy form loads (stays in Create Policy, not the global Metric module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Metr-Baseline'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Baseline Alert'",
+        "expected": "'Baseline Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'CPU Utilization (system.cpu.percent)'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Monitor', Source = 'Linux Servers'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set baseline deviation params; Abnormality Occurrence=1; Auto Clear",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Baseline Alert'"
+      }
+    ],
+    "postcondition": "Policy created under Metric/Baseline Alert",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-MET-ANO",
+    "title": "Create Metric Anomaly policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Metric",
+    "condition": "Anomaly",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Metric source 'Linux Servers' exists"
+    ],
+    "data": {
+      "counter": "CPU Utilization (system.cpu.percent)",
+      "filter": "Monitor",
+      "source": "Linux Servers"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Metric' in the in-panel left nav",
+        "expected": "Metric Policy form loads (stays in Create Policy, not the global Metric module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Metr-Anomaly'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Anomaly'",
+        "expected": "'Anomaly' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'CPU Utilization (system.cpu.percent)'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Monitor', Source = 'Linux Servers'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set Abnormality Occurrence threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Anomaly'"
+      }
+    ],
+    "postcondition": "Policy created under Metric/Anomaly",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-MET-FOR",
+    "title": "Create Metric Forecast policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Metric",
+    "condition": "Forecast",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Metric source 'Linux Servers' exists"
+    ],
+    "data": {
+      "counter": "CPU Utilization (system.cpu.percent)",
+      "filter": "Monitor",
+      "source": "Linux Servers"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Metric' in the in-panel left nav",
+        "expected": "Metric Policy form loads (stays in Create Policy, not the global Metric module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Metr-Forecast'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Forecast'",
+        "expected": "'Forecast' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'CPU Utilization (system.cpu.percent)'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Monitor', Source = 'Linux Servers'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set forecast horizon / breach threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Forecast'"
+      }
+    ],
+    "postcondition": "Policy created under Metric/Forecast",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-APM-THR",
+    "title": "Create APM Threshold Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "APM",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3",
+      "D1"
+    ],
+    "precond": [
+      "logged in",
+      "APM source 'Checkout Service' exists"
+    ],
+    "data": {
+      "counter": "Avg Response Time",
+      "filter": "Service",
+      "source": "Checkout Service"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'APM' in the in-panel left nav",
+        "expected": "APM Policy form loads (stays in Create Policy, not the global APM module)"
+      },
+      {
+        "action": "Set 'APM Policy Type' = Trace Metrics",
+        "expected": "Counter list filters to that policy type"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-APM-Threshold'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Threshold Alert'",
+        "expected": "'Threshold Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Avg Response Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Service', Source = 'Checkout Service'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set severity: Critical Equals 85, Major Equals 75, Warning Equals 60; Notify-if-breach=5 min; Auto Clear=Never",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Threshold Alert'"
+      }
+    ],
+    "postcondition": "Policy created under APM/Threshold Alert",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-APM-BAS",
+    "title": "Create APM Baseline Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "APM",
+    "condition": "Baseline Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3",
+      "D1"
+    ],
+    "precond": [
+      "logged in",
+      "APM source 'Checkout Service' exists"
+    ],
+    "data": {
+      "counter": "Avg Response Time",
+      "filter": "Service",
+      "source": "Checkout Service"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'APM' in the in-panel left nav",
+        "expected": "APM Policy form loads (stays in Create Policy, not the global APM module)"
+      },
+      {
+        "action": "Set 'APM Policy Type' = Trace Metrics",
+        "expected": "Counter list filters to that policy type"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-APM-Baseline'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Baseline Alert'",
+        "expected": "'Baseline Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Avg Response Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Service', Source = 'Checkout Service'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set baseline deviation params; Abnormality Occurrence=1; Auto Clear",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Baseline Alert'"
+      }
+    ],
+    "postcondition": "Policy created under APM/Baseline Alert",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-APM-ANO",
+    "title": "Create APM Anomaly policy via unified Set Conditions",
+    "family": "Create",
+    "module": "APM",
+    "condition": "Anomaly",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3",
+      "D1"
+    ],
+    "precond": [
+      "logged in",
+      "APM source 'Checkout Service' exists"
+    ],
+    "data": {
+      "counter": "Avg Response Time",
+      "filter": "Service",
+      "source": "Checkout Service"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'APM' in the in-panel left nav",
+        "expected": "APM Policy form loads (stays in Create Policy, not the global APM module)"
+      },
+      {
+        "action": "Set 'APM Policy Type' = Trace Metrics",
+        "expected": "Counter list filters to that policy type"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-APM-Anomaly'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Anomaly'",
+        "expected": "'Anomaly' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Avg Response Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Service', Source = 'Checkout Service'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set Abnormality Occurrence threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Anomaly'"
+      }
+    ],
+    "postcondition": "Policy created under APM/Anomaly",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-APM-FOR",
+    "title": "Create APM Forecast policy via unified Set Conditions",
+    "family": "Create",
+    "module": "APM",
+    "condition": "Forecast",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3",
+      "D1"
+    ],
+    "precond": [
+      "logged in",
+      "APM source 'Checkout Service' exists"
+    ],
+    "data": {
+      "counter": "Avg Response Time",
+      "filter": "Service",
+      "source": "Checkout Service"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'APM' in the in-panel left nav",
+        "expected": "APM Policy form loads (stays in Create Policy, not the global APM module)"
+      },
+      {
+        "action": "Set 'APM Policy Type' = Trace Metrics",
+        "expected": "Counter list filters to that policy type"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-APM-Forecast'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Forecast'",
+        "expected": "'Forecast' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Avg Response Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Service', Source = 'Checkout Service'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set forecast horizon / breach threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Forecast'"
+      }
+    ],
+    "postcondition": "Policy created under APM/Forecast",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-REA-THR",
+    "title": "Create Real User Monitoring Threshold Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Real User Monitoring",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Real User Monitoring source 'Customer Portal' exists"
+    ],
+    "data": {
+      "counter": "Page Load Time",
+      "filter": "Application",
+      "source": "Customer Portal"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Real User Monitoring' in the in-panel left nav",
+        "expected": "Real User Monitoring Policy form loads (stays in Create Policy, not the global Real User Monitoring module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Real-Threshold'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Threshold Alert'",
+        "expected": "'Threshold Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Page Load Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Application', Source = 'Customer Portal'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set severity: Critical Equals 85, Major Equals 75, Warning Equals 60; Notify-if-breach=5 min; Auto Clear=Never",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Threshold Alert'"
+      }
+    ],
+    "postcondition": "Policy created under Real User Monitoring/Threshold Alert",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-REA-BAS",
+    "title": "Create Real User Monitoring Baseline Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Real User Monitoring",
+    "condition": "Baseline Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Real User Monitoring source 'Customer Portal' exists"
+    ],
+    "data": {
+      "counter": "Page Load Time",
+      "filter": "Application",
+      "source": "Customer Portal"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Real User Monitoring' in the in-panel left nav",
+        "expected": "Real User Monitoring Policy form loads (stays in Create Policy, not the global Real User Monitoring module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Real-Baseline'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Baseline Alert'",
+        "expected": "'Baseline Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Page Load Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Application', Source = 'Customer Portal'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set baseline deviation params; Abnormality Occurrence=1; Auto Clear",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Baseline Alert'"
+      }
+    ],
+    "postcondition": "Policy created under Real User Monitoring/Baseline Alert",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-REA-ANO",
+    "title": "Create Real User Monitoring Anomaly policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Real User Monitoring",
+    "condition": "Anomaly",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Real User Monitoring source 'Customer Portal' exists"
+    ],
+    "data": {
+      "counter": "Page Load Time",
+      "filter": "Application",
+      "source": "Customer Portal"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Real User Monitoring' in the in-panel left nav",
+        "expected": "Real User Monitoring Policy form loads (stays in Create Policy, not the global Real User Monitoring module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Real-Anomaly'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Anomaly'",
+        "expected": "'Anomaly' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Page Load Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Application', Source = 'Customer Portal'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set Abnormality Occurrence threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Anomaly'"
+      }
+    ],
+    "postcondition": "Policy created under Real User Monitoring/Anomaly",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-REA-FOR",
+    "title": "Create Real User Monitoring Forecast policy via unified Set Conditions",
+    "family": "Create",
+    "module": "Real User Monitoring",
+    "condition": "Forecast",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "Real User Monitoring source 'Customer Portal' exists"
+    ],
+    "data": {
+      "counter": "Page Load Time",
+      "filter": "Application",
+      "source": "Customer Portal"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'Real User Monitoring' in the in-panel left nav",
+        "expected": "Real User Monitoring Policy form loads (stays in Create Policy, not the global Real User Monitoring module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-Real-Forecast'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Forecast'",
+        "expected": "'Forecast' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Page Load Time'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Application', Source = 'Customer Portal'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set forecast horizon / breach threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Forecast'"
+      }
+    ],
+    "postcondition": "Policy created under Real User Monitoring/Forecast",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-NET-THR",
+    "title": "Create NetRoute Threshold Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "NetRoute",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "NetRoute source 'WAN Interface' exists"
+    ],
+    "data": {
+      "counter": "Link Utilization",
+      "filter": "Interface",
+      "source": "WAN Interface"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'NetRoute' in the in-panel left nav",
+        "expected": "NetRoute Policy form loads (stays in Create Policy, not the global NetRoute module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-NetR-Threshold'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Threshold Alert'",
+        "expected": "'Threshold Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Link Utilization'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Interface', Source = 'WAN Interface'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set severity: Critical Equals 85, Major Equals 75, Warning Equals 60; Notify-if-breach=5 min; Auto Clear=Never",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Threshold Alert'"
+      }
+    ],
+    "postcondition": "Policy created under NetRoute/Threshold Alert",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-NET-BAS",
+    "title": "Create NetRoute Baseline Alert policy via unified Set Conditions",
+    "family": "Create",
+    "module": "NetRoute",
+    "condition": "Baseline Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "NetRoute source 'WAN Interface' exists"
+    ],
+    "data": {
+      "counter": "Link Utilization",
+      "filter": "Interface",
+      "source": "WAN Interface"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'NetRoute' in the in-panel left nav",
+        "expected": "NetRoute Policy form loads (stays in Create Policy, not the global NetRoute module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-NetR-Baseline'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Baseline Alert'",
+        "expected": "'Baseline Alert' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Link Utilization'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Interface', Source = 'WAN Interface'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set baseline deviation params; Abnormality Occurrence=1; Auto Clear",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Baseline Alert'"
+      }
+    ],
+    "postcondition": "Policy created under NetRoute/Baseline Alert",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-NET-ANO",
+    "title": "Create NetRoute Anomaly policy via unified Set Conditions",
+    "family": "Create",
+    "module": "NetRoute",
+    "condition": "Anomaly",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "NetRoute source 'WAN Interface' exists"
+    ],
+    "data": {
+      "counter": "Link Utilization",
+      "filter": "Interface",
+      "source": "WAN Interface"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'NetRoute' in the in-panel left nav",
+        "expected": "NetRoute Policy form loads (stays in Create Policy, not the global NetRoute module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-NetR-Anomaly'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Anomaly'",
+        "expected": "'Anomaly' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Link Utilization'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Interface', Source = 'WAN Interface'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set Abnormality Occurrence threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Anomaly'"
+      }
+    ],
+    "postcondition": "Policy created under NetRoute/Anomaly",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-CREATE-NET-FOR",
+    "title": "Create NetRoute Forecast policy via unified Set Conditions",
+    "family": "Create",
+    "module": "NetRoute",
+    "condition": "Forecast",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "A2",
+      "B2",
+      "B3"
+    ],
+    "precond": [
+      "logged in",
+      "NetRoute source 'WAN Interface' exists"
+    ],
+    "data": {
+      "counter": "Link Utilization",
+      "filter": "Interface",
+      "source": "WAN Interface"
+    },
+    "steps": [
+      {
+        "action": "Navigate: Settings > Policy Settings",
+        "expected": "Policy list opens"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Unified Create Policy screen opens with module left-nav"
+      },
+      {
+        "action": "Select module 'NetRoute' in the in-panel left nav",
+        "expected": "NetRoute Policy form loads (stays in Create Policy, not the global NetRoute module)"
+      },
+      {
+        "action": "Fill Policy Name = 'MOTADATA-8503-NetR-Forecast'",
+        "expected": "Name accepted"
+      },
+      {
+        "action": "Add tags (optional)",
+        "expected": "Tag chips render"
+      },
+      {
+        "action": "Select Set Conditions card 'Forecast'",
+        "expected": "'Forecast' card highlighted; its parameters shown"
+      },
+      {
+        "action": "Select Counter = 'Link Utilization'",
+        "expected": "Counter set; only module-eligible counters listed"
+      },
+      {
+        "action": "Set Source Filter = 'Interface', Source = 'WAN Interface'",
+        "expected": "Source list driven by filter; source selected"
+      },
+      {
+        "action": "set forecast horizon / breach threshold",
+        "expected": "Parameters accepted/persist"
+      },
+      {
+        "action": "Click 'Create Policy'",
+        "expected": "Success toast appears; redirect to policy list"
+      },
+      {
+        "action": "Search the new policy in the list",
+        "expected": "Policy visible, type='Forecast'"
+      }
+    ],
+    "postcondition": "Policy created under NetRoute/Forecast",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-NAME",
+    "title": "Policy Name required (validate-on-submit)",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "B1"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy (Metric)",
+        "expected": "Form loads"
+      },
+      {
+        "action": "Leave Policy Name empty; click 'Create Policy'",
+        "expected": "Button stays ENABLED but submit is blocked; required field highlighted; no policy created; stays on create screen"
+      },
+      {
+        "action": "Fill Policy Name; click 'Create Policy' with valid form",
+        "expected": "Submit proceeds"
+      }
+    ],
+    "postcondition": "No invalid policy created",
+    "automation": "Yes",
+    "impact": "B1 ships as validate-on-submit, NOT button-disable (confirmed live) \u2014 flag mechanism vs AC wording",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-COUNTER-THR",
+    "title": "Counter mandatory on 'Threshold Alert' card",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B2"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy; select 'Threshold Alert' card",
+        "expected": "Card selected"
+      },
+      {
+        "action": "Leave Counter empty; click 'Create Policy'",
+        "expected": "Counter field highlighted; save blocked"
+      }
+    ],
+    "postcondition": "Save blocked without counter",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-COUNTER-BAS",
+    "title": "Counter mandatory on 'Baseline Alert' card",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Baseline Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B2"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy; select 'Baseline Alert' card",
+        "expected": "Card selected"
+      },
+      {
+        "action": "Leave Counter empty; click 'Create Policy'",
+        "expected": "Counter field highlighted; save blocked"
+      }
+    ],
+    "postcondition": "Save blocked without counter",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-COUNTER-ANO",
+    "title": "Counter mandatory on 'Anomaly' card",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Anomaly",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B2"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy; select 'Anomaly' card",
+        "expected": "Card selected"
+      },
+      {
+        "action": "Leave Counter empty; click 'Create Policy'",
+        "expected": "Counter field highlighted; save blocked"
+      }
+    ],
+    "postcondition": "Save blocked without counter",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-COUNTER-FOR",
+    "title": "Counter mandatory on 'Forecast' card",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Forecast",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B2"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy; select 'Forecast' card",
+        "expected": "Card selected"
+      },
+      {
+        "action": "Leave Counter empty; click 'Create Policy'",
+        "expected": "Counter field highlighted; save blocked"
+      }
+    ],
+    "postcondition": "Save blocked without counter",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-SOURCE-REQ",
+    "title": "Source required when Source Filter != Everywhere/All",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B3"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Set Source Filter = Monitor (not Everywhere)",
+        "expected": "Source field becomes required"
+      },
+      {
+        "action": "Leave Source empty; click Create Policy",
+        "expected": "Source required; save blocked"
+      },
+      {
+        "action": "Set Source Filter = Everywhere",
+        "expected": "Source not required"
+      }
+    ],
+    "postcondition": "Source gating enforced",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-VAL-OPERATOR",
+    "title": "Severity operator dropdown works & persists",
+    "family": "Validation",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B4"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "On Threshold card, set Critical operator = Greater than, value 90",
+        "expected": "Operator selectable"
+      },
+      {
+        "action": "Save, reopen the policy",
+        "expected": "Operator + value persisted as Greater than / 90"
+      }
+    ],
+    "postcondition": "Operator persists",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-STRUCT-CARDS",
+    "title": "Set Conditions exposes four cards in correct order",
+    "family": "Structure",
+    "module": "(all)",
+    "condition": "-",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A2"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy (any module)",
+        "expected": "Form loads"
+      },
+      {
+        "action": "Inspect Set Conditions section",
+        "expected": "Exactly 4 cards: Threshold Alert | Baseline Alert | Anomaly | Forecast, in order"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-STRUCT-LAYOUT",
+    "title": "Same layout structure across Metric/APM/RUM/NetRoute",
+    "family": "Structure",
+    "module": "(all)",
+    "condition": "-",
+    "priority": "P1",
+    "severity": "Major",
+    "ac": [
+      "A1"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Create Policy for each of the 4 modules",
+        "expected": "Each shows header + basic fields + Set Conditions + downstream accordions"
+      },
+      {
+        "action": "Compare layouts",
+        "expected": "Consistent structure; only module-specific fields differ"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-STRUCT-ACCORDION-LABELS",
+    "title": "Downstream accordion labels per module (shipped wording)",
+    "family": "Structure",
+    "module": "(all)",
+    "condition": "-",
+    "priority": "P3",
+    "severity": "Minor",
+    "ac": [
+      "A1"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open Metric create",
+        "expected": "Shows 'Set Alert Message' accordion"
+      },
+      {
+        "action": "Open APM create",
+        "expected": "Shows 'Modify Default Alert' + Notification/Take Action/Declare Incident"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "No (visual/manual)",
+    "impact": "Label inconsistency Metric vs APM \u2014 flag to team; ticket wording matches neither",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-MOD-APM-POLICYTYPE",
+    "title": "APM Policy Type switch filters counters",
+    "family": "Module-specific",
+    "module": "APM",
+    "condition": "-",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "D1"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "APM create; set Policy Type = Trace Metrics",
+        "expected": "Counter list = Trace Metrics counters"
+      },
+      {
+        "action": "Switch Policy Type = Trace Analytics",
+        "expected": "Counter list changes to Trace Analytics counters"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-MOD-RUM-COUNTERS",
+    "title": "RUM shows only RUM-eligible counters/filters",
+    "family": "Module-specific",
+    "module": "Real User Monitoring",
+    "condition": "-",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "D2"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "RUM create; open Counter dropdown",
+        "expected": "Only RUM counters listed (no Metric/NetRoute counters)"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-MOD-NETROUTE-COUNTERS",
+    "title": "NetRoute shows only NetRoute-eligible counters/filters",
+    "family": "Module-specific",
+    "module": "NetRoute",
+    "condition": "-",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "D3"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "NetRoute create; open Counter dropdown",
+        "expected": "Only NetRoute counters listed"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes (after source harvest)",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-MOD-METRIC-REGRESSION",
+    "title": "Metric retains existing counters/sources (no regression)",
+    "family": "Module-specific",
+    "module": "Metric",
+    "condition": "-",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "D4"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Metric create; verify counters & source filters",
+        "expected": "All previously-available Metric counters/sources present"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Partial",
+    "impact": "Regression guard for existing Metric policy capability",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-EDIT-APM",
+    "title": "Edit existing APM Threshold policy in unified screen persists",
+    "family": "Persistence",
+    "module": "APM",
+    "condition": "Threshold Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "F1",
+      "B4"
+    ],
+    "precond": [
+      "logged in",
+      "an existing APM Threshold policy exists"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open an existing APM Threshold policy (edit)",
+        "expected": "Renders in unified layout, Threshold card selected, values prefilled"
+      },
+      {
+        "action": "Change a severity value; Save",
+        "expected": "Save succeeds"
+      },
+      {
+        "action": "Reopen the policy",
+        "expected": "Updated value persisted"
+      }
+    ],
+    "postcondition": "Policy updated",
+    "automation": "Yes (after source harvest)",
+    "impact": "F1 backward-compat",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-EDIT-REA",
+    "title": "Edit existing Real User Monitoring Threshold policy in unified screen persists",
+    "family": "Persistence",
+    "module": "Real User Monitoring",
+    "condition": "Threshold Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "F1",
+      "B4"
+    ],
+    "precond": [
+      "logged in",
+      "an existing Real User Monitoring Threshold policy exists"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open an existing Real User Monitoring Threshold policy (edit)",
+        "expected": "Renders in unified layout, Threshold card selected, values prefilled"
+      },
+      {
+        "action": "Change a severity value; Save",
+        "expected": "Save succeeds"
+      },
+      {
+        "action": "Reopen the policy",
+        "expected": "Updated value persisted"
+      }
+    ],
+    "postcondition": "Policy updated",
+    "automation": "Yes (after source harvest)",
+    "impact": "F1 backward-compat",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-EDIT-NET",
+    "title": "Edit existing NetRoute Threshold policy in unified screen persists",
+    "family": "Persistence",
+    "module": "NetRoute",
+    "condition": "Threshold Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "A1",
+      "F1",
+      "B4"
+    ],
+    "precond": [
+      "logged in",
+      "an existing NetRoute Threshold policy exists"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open an existing NetRoute Threshold policy (edit)",
+        "expected": "Renders in unified layout, Threshold card selected, values prefilled"
+      },
+      {
+        "action": "Change a severity value; Save",
+        "expected": "Save succeeds"
+      },
+      {
+        "action": "Reopen the policy",
+        "expected": "Updated value persisted"
+      }
+    ],
+    "postcondition": "Policy updated",
+    "automation": "Yes (after source harvest)",
+    "impact": "F1 backward-compat",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-BC-THRESHOLD",
+    "title": "Existing Threshold policies still function (no behavior change)",
+    "family": "Backward-compat",
+    "module": "(all)",
+    "condition": "Threshold Alert",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "F1"
+    ],
+    "precond": [
+      "pre-existing Threshold policies exist"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Open existing Threshold policies across modules",
+        "expected": "Open without error in unified screen"
+      },
+      {
+        "action": "Trigger a known breach condition (manual/backend)",
+        "expected": "Alert still generated as before"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "No (backend-dependent)",
+    "impact": "F1",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-BC-ANOMALY-FORECAST",
+    "title": "Existing Anomaly/Forecast policies continue to function",
+    "family": "Backward-compat",
+    "module": "(all)",
+    "condition": "Anomaly/Forecast",
+    "priority": "P1",
+    "severity": "Critical",
+    "ac": [
+      "F2",
+      "A3"
+    ],
+    "precond": [
+      "pre-existing Anomaly/Forecast policy exists"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Locate an existing Anomaly/Forecast policy",
+        "expected": "Listed"
+      },
+      {
+        "action": "Open it",
+        "expected": "Opens on matching card in unified screen; values intact; no error"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Manual first",
+    "impact": "F2",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-BC-OLD-ENTRYPOINTS",
+    "title": "Old standalone Anomaly/Forecast entry points removed/redirect",
+    "family": "Backward-compat",
+    "module": "(all)",
+    "condition": "-",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "A3"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Navigate to any old standalone Anomaly/Forecast create URL/bookmark",
+        "expected": "Redirects to unified flow or is gone; no broken page"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes",
+    "impact": "A3 \u2014 saved links/docs to old flows affected",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-NEG-DUP-NAME",
+    "title": "Duplicate policy name rejected",
+    "family": "Negative",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P2",
+    "severity": "Major",
+    "ac": [
+      "B1"
+    ],
+    "precond": [
+      "a policy with name X exists"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Create a new policy with the same name X",
+        "expected": "Validation/error: name not unique; not created"
+      }
+    ],
+    "postcondition": "No duplicate",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-NEG-SEVERITY-ORDER",
+    "title": "Invalid severity ordering handled",
+    "family": "Negative",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P3",
+    "severity": "Minor",
+    "ac": [
+      "B4"
+    ],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Set Warning > Critical (illogical ordering)",
+        "expected": "App validates/warns or accepts per spec \u2014 record actual behavior"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Manual first",
+    "impact": "behavior unspecified in ticket \u2014 confirm with team/KG",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  },
+  {
+    "id": "TC-NEG-RESET",
+    "title": "Reset/Cancel discards unsaved changes",
+    "family": "Negative",
+    "module": "Metric",
+    "condition": "Threshold Alert",
+    "priority": "P3",
+    "severity": "Minor",
+    "ac": [],
+    "precond": [
+      "logged in"
+    ],
+    "data": {},
+    "steps": [
+      {
+        "action": "Fill form partially; click Reset",
+        "expected": "Form cleared; no policy created"
+      }
+    ],
+    "postcondition": "-",
+    "automation": "Yes",
+    "impact": "",
+    "jira": "http://172.16.10.6:8080/browse/MOTADATA-8503"
+  }
+]

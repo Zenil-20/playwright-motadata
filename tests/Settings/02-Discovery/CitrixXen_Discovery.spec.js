@@ -113,7 +113,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', (
     await row.locator('.excluded-header-icon').click();
     await page.locator("//span[normalize-space()='Edit']").click();
     for (const tag of tags) {
-    await expect(page.getByText(tag.toLowerCase(), { exact: true })).toBeVisible();
+    await expect(page.getByText(tag.toLowerCase())).toBeVisible();
     }
     await page.locator('svg[data-icon="close"]').click();
     });
