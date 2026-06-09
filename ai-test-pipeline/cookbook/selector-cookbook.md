@@ -376,6 +376,74 @@ gotchas:
 
 ---
 
+## 16.RUM Register Application   (Settings → Real User Monitoring → Application → Create Application)
+screen: rum-register-application
+container_scope: .ant-drawer-open   (drawer titled "Register Application")
+controls:
+  create_application_btn:
+    locator:     "getByRole('button', { name: 'Create Application' })"
+    confidence:  high
+  application_name:
+    locator:     "page.locator('input#rum-application-name-id')"
+    confidence:  high
+  application_type_trigger:
+    locator:     "page.locator('[data-cy=\"dropdown-trigger-input\"]').first()"
+    confidence:  high
+    fallback:    "page.locator('.ant-drawer-open [data-cy=\"dropdown-trigger-input\"]').first()"
+  application_type_option:
+    locator:     "page.locator('.virtual-scrollable-dropdown-menu span[title=\"<JS|React|Vue|Angular|Next.js>\"]').last()"
+    confidence:  high
+    conditional: true
+    trigger:     "application_type_trigger clicked (floating ant-dropdown-menu open)"
+  deployment_nginx:
+    locator:     "page.locator('.ant-drawer-open label').filter({ hasText: /^Nginx$/ })"
+    confidence:  high      # Nginx is the DEFAULT selected toggle; Apache http | Other are siblings
+  domain_ip:
+    locator:     "page.locator('input#domain-name-id')"
+    confidence:  high      # placeholder https://motadata.com
+  version:
+    locator:     "page.locator('input#version-id')"
+    confidence:  high      # REQUIRED. '1.0.0' shown is PLACEHOLDER ONLY — must be filled or submit silently fails
+  environment:
+    locator:     "page.locator('input#environment-id')"
+    confidence:  high      # free-text input (no popover); type e.g. 'dev'
+  session_sample_rate:
+    locator:     "page.locator('input#session-sample-rate-id')"
+    confidence:  high      # defaults to 60
+  privacy_trigger:
+    locator:     "page.locator('[data-cy=\"dropdown-trigger-input\"]').last()"
+    confidence:  high
+  privacy_option:
+    locator:     "page.locator('.virtual-scrollable-dropdown-menu span[title=\"<All text available by default|All user input masked by default|All text masked by default>\"]').last()"
+    confidence:  high
+    conditional: true
+    trigger:     "privacy_trigger clicked"
+    # 'All text available by default' => defaultPrivacyLevel 'allow'
+  tags:
+    locator:     "page.locator('#tags')"
+    confidence:  medium    # ant-select multiple, optional
+  register_submit_btn:
+    locator:     "page.locator('#rum-application-submit-btn')"
+    confidence:  high
+  reset_btn:
+    locator:     "page.locator('#rum-application-reset-btn')"
+    confidence:  high
+# --- post-submit output drawer (title "Steps to Register Application") ---
+  steps_drawer_title:
+    locator:     "page.getByText('Steps to Register Application')"
+    confidence:  high
+    conditional: true
+    trigger:     "register_submit_btn clicked with all required fields valid"
+  steps_code_blocks:
+    locator:     "page.locator('.ant-drawer-open pre')"
+    confidence:  high      # [0]=nginx /api/v2/rum config, [1]=main.js motadataRum.init({...}) snippet
+  steps_copy_icon:
+    locator:     "page.locator('.ant-drawer-open .copy-icon')"
+    confidence:  medium    # two copy buttons, one per pre block
+# verified 2026-06-09
+
+---
+
 ## Append format for new entries
 
 Place the block under the correct module `#` heading (sidebar order). Update the coverage map row + status.

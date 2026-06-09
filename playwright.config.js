@@ -49,6 +49,10 @@ const settingsProjects = [
 {
   name: 'settings_13_Device_Monitoring',
   testMatch: ['tests/Settings/13-MonitorSettings/*.spec.js'],
+},
+{
+  name: 'settings_14_real_user_monitoring',
+  testMatch: ['tests/Settings/14-RealUserMonitoring/*.spec.js'],
 }
 ];
 

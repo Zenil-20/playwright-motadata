@@ -133,11 +133,18 @@ test.beforeAll(async () => {
   if (!masterIp)
     throw new Error('Master IP not found in SERVER_URL or Motadata_Aiops env');
 
+  // APM/multimaster host whose agent.json event hosts get the automation IP appended.
   const sshConfig = {
-    host: process.env.Agent_ip || '172.16.8.61',
-    username: process.env.Agent_username || 'root',
-    password: process.env.Agent_password || 'Mind@123',
+    host: process.env.Agent_APM_ip,
+    username: process.env.Agent_APM_username || 'root',
+    password: process.env.Agent_APM_password,
   };
+
+  if (!sshConfig.host || !sshConfig.password) {
+    throw new Error(
+      'Set Agent_APM_ip / Agent_APM_username / Agent_APM_password in .env'
+    );
+  }
 
   const remoteConfigPath = '/motadata/motadata/config/agent.json';
   const localConfigPath = path.join(__dirname, 'agent.json');
@@ -232,11 +239,13 @@ test.beforeAll(async () => {
       remotePath: remoteConfigPath,
     });
 
-    // Restart motadata service
+    // Restart motadata service: stop, then start (explicit stop -> start).
     const restartResult = await executeCommand({
       ...sshConfig,
       command: `
-      service motadata restart &&
+      service motadata stop &&
+      sleep 3 &&
+      service motadata start &&
 
 echo "Waiting for Motadata services to be fully ready..."
 
@@ -248,12 +257,12 @@ while [ $attempt -le $max_attempts ]; do
   if systemctl is-active --quiet motadata \
     && pgrep -f motadata-manager > /dev/null \
     && pgrep -f motadata-agent > /dev/null \
-    && pgrep -f metricagent > /dev/null; then
+    && pgrep -f motadata-metric-agent > /dev/null; then
 
       echo "✓ motadata service running"
       echo "✓ motadata-manager process running"
       echo "✓ motadata-agent process running"
-      echo "✓ metricagent process running"
+      echo "✓ motadata-metric-agent process running"
 
       echo "Motadata fully started"
       systemctl status motadata --no-pager
@@ -287,32 +296,34 @@ exit 1
 });
 
 // --- UI Tests ---
-test.describe.serial(
+// Not serial: each test runs and reports independently, so one failure does not
+// skip the others. Login is done once in beforeAll on the shared page, so the
+// functional tests don't depend on a preceding "Login" test.
+test.describe(
   'Motadata AIOps for Agent Monitoring Settings and Agent testing',
   () => {
+    let context;
     let page;
 
-    test.beforeAll(async ({ browser }) => {
-      const context = await browser.newContext();
+    // Fresh context + login before EACH test -> every test is fully independent.
+    test.beforeEach(async ({ browser }) => {
+      context = await browser.newContext();
       page = await context.newPage();
       page.setDefaultTimeout(500000);
+
+      await page.goto(MOTADATA_URL, { timeout: 500000 });
+      await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
+      await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
+      await page.getByTestId('login-btn-submit').click();
+      await page.waitForLoadState('networkidle');
     });
 
-    test.afterAll(async () => {
-      if (page) {
-        await page.close();
-      }
+    test.afterEach(async () => {
+      if (context) await context.close();
     });
 
     test('Login to Motadata AIOps', async () => {
-      await page.goto(MOTADATA_URL, { timeout: 500000 });
-
-       await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-      await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-
-      await page.getByTestId('login-btn-submit').click();
-
-      await page.waitForLoadState('networkidle');
+      await expect(page.locator("//img[@alt='Avatar']")).toBeVisible();
     });
 
     test(

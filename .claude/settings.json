@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node _scratch/explore-rum.mjs)",
+      "Bash(Motadata_Aiops=https://172.16.15.86 node _scratch/explore-rum.mjs)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(Motadata_Aiops=https://172.16.15.86 npx playwright test --project=settings_14_real_user_monitoring --headed --reporter=list)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(cat _scratch/rum-run.log)",
+      "Bash(ls -1 tests/Settings/14-RealUserMonitoring/rum-configs/)",
+      "Bash(rm -f tests/Settings/14-RealUserMonitoring/rum-configs/*.json)",
+      "Bash(node -e \"const a=require\\('./tests/Settings/14-RealUserMonitoring/rum-configs/rum-applications.json'\\); a.forEach\\(x=>console.log\\(x.applicationType.padEnd\\(8\\), x.applicationId.padEnd\\(4\\), x.clientToken, '|', x.service\\)\\); console.log\\('count:', a.length\\)\")",
+      "Bash(cd \"d:/Projects/playwright\" && rm -f _scratch/explore-rum*.mjs _scratch/rum-explore*.txt _scratch/rum-probe-name.txt _scratch/rum-error*.png _scratch/rum-rowmenu.png _scratch/rum-run.log && echo \"scratch cleaned\" && ls _scratch/ 2>/dev/null | head)",
+      "Bash(where ssh *)",
+      "Bash(python -c \"import paramiko; print\\('paramiko ok'\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(PYTHONIOENCODING=utf-8 python -c ' *)",
+      "Bash(npx playwright *)",
+      "Bash(node -e \"const a=require\\('./tests/Settings/14-RealUserMonitoring/rum-configs/rum-applications.json'\\); a.forEach\\(x=>console.log\\(x.applicationType.padEnd\\(8\\), 'id='+x.applicationId, 'site='+x.site, '| token='+x.clientToken.slice\\(0,12\\)+'...'\\)\\)\")",
+      "Bash(node -e \"try{const a=require\\('./tests/Settings/14-RealUserMonitoring/rum-configs/rum-applications.json'\\); a.forEach\\(x=>console.log\\(x.applicationType.padEnd\\(8\\),'id='+x.applicationId,'site='+x.site\\)\\)}catch\\(e\\){console.log\\('no combined file yet'\\)}\")",
+      "Bash(rm -f _scratch/explore-del.mjs _scratch/rum-del*.txt _scratch/rum-del*.png _scratch/rum-run.log)",
+      "Bash(ls _scratch/)",
+      "Bash(PYTHONIOENCODING=utf-8 python tests/Settings/14-RealUserMonitoring/push-config-to-234.py)",
+      "Bash(node tests/Settings/14-RealUserMonitoring/loadGeneratorSync.mjs)",
+      "Bash(node -e \"const p=require\\('./node_modules/node-ssh/package.json'\\); console.log\\('type:',p.type,'main:',p.main,'module:',p.module\\); console.log\\('exports:',JSON.stringify\\(p.exports\\)\\)\")",
+      "Bash(rm -f tests/Settings/14-RealUserMonitoring/loadGeneratorSync.mjs)",
+      "Bash(node tests/Settings/14-RealUserMonitoring/loadGeneratorSync.js)",
+      "Bash(node _scratch/verify-agent126.js)",
+      "Bash(node _scratch/run-agent126-sync.js)"
+    ],
+    "additionalDirectories": [
+      "D:\\Projects\\playwright\\_scratch"
+    ]
+  }
+}
