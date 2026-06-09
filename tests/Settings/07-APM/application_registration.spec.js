@@ -17,6 +17,7 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 
+
 dotenv.config({ path: '.env', quiet: true });
 
 test.describe.serial('Create Application Registration for APM Java, DotNet, NodeJS, Python, Ruby, PHP', () => {
@@ -56,7 +57,7 @@ test.describe.serial('Create Application Registration for APM Java, DotNet, Node
 
     await page.getByRole('button', { name: 'Application Registration', exact: true }).click();
     await page.locator("//input[@placeholder='Select Agent']").click();
-    await page.locator("//input[@id='assign-monitor-search']").fill('apmagentanant');
+    await page.locator("//input[@id='assign-monitor-search']").fill(process.env.APM_Agent);
 
     // Select APM Agent — scope to the agent-selection popup so we don't
     // also match rows from the main grid sitting behind the dropdown.
@@ -67,7 +68,7 @@ test.describe.serial('Create Application Registration for APM Java, DotNet, Node
     // Get the agent name text
     const agentName = rows.locator('td').nth(2).locator('span.text-ellipsis');
     // Verify the agent name
-    await expect(agentName).toHaveText(/apmagentanant/i);
+    await expect(agentName).toHaveText(new RegExp(process.env.APM_Agent, 'i'));
     // Perform operation only after validation
     await rows.locator('input[type="checkbox"]').first().click();
     await page.locator("//input[@placeholder='Enter your service name']").fill(serviceName);
@@ -128,7 +129,7 @@ await expect(serviceRow).toBeVisible({
   async function selectAgent() {
     await page.getByRole('button', { name: 'Application Registration', exact: true }).click();
     await page.locator("//input[@placeholder='Select Agent']").click();
-    await page.locator("//input[@id='assign-monitor-search']").fill('apmagentanant');
+    await page.locator("//input[@id='assign-monitor-search']").fill(process.env.APM_Agent);
 
     const agentPopup = page.locator('.ant-popover.picker-overlay.grid-dropdown:not(.ant-popover-hidden)');
     const rows = agentPopup.locator('tr.k-master-row');
