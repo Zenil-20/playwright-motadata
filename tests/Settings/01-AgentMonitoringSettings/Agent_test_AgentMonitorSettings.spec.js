@@ -19,6 +19,7 @@ import { Client } from 'ssh2';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
 
@@ -311,11 +312,7 @@ test.describe(
       page = await context.newPage();
       page.setDefaultTimeout(500000);
 
-      await page.goto(MOTADATA_URL, { timeout: 500000 });
-      await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-      await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-      await page.getByTestId('login-btn-submit').click();
-      await page.waitForLoadState('networkidle');
+      await login(page);
     });
 
     test.afterEach(async () => {
@@ -323,8 +320,8 @@ test.describe(
     });
 
     test('Login to Motadata AIOps', async () => {
-      await expect(page.locator("//img[@alt='Avatar']")).toBeVisible();
-    });
+    await login(page);
+  });
 
     test(
       'Navigate to Agent Monitor Settings and Test All Agent Functionality',

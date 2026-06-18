@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -164,20 +165,7 @@ test.describe.serial('Motadata AIOps Rule Based Tags flow', () => {
     }
   });
 
-  async function login() {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
-  }
-
-  async function logout() {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
-  }
+  // login(page) / logout(page) come from the shared ../../fixtures/auth.js helper.
 
   async function openRuleBasedTagsPage() {
     await page.locator("//a[@href='/settings/']").click();
@@ -367,7 +355,7 @@ test.describe.serial('Motadata AIOps Rule Based Tags flow', () => {
   }
 
   test('Login to Motadata AIOps', async () => {
-    await login();
+    await login(page);
   });
 
   for (const scenario of scenarios) {
@@ -408,6 +396,6 @@ test.describe.serial('Motadata AIOps Rule Based Tags flow', () => {
   }
 
   test('Logout from AIOps', async () => {
-    await logout();
+    await logout(page);
   });
 });

@@ -16,10 +16,11 @@ This skill harvests locators that are **guaranteed to match exactly one element*
 ### 1. Login (canonical block — do not vary)
 ```js
 await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-await page.locator("//button[@type='submit']").click();
-await expect(page.locator("//img[@alt='Avatar']")).toBeVisible();   // smart wait, never networkidle
+await page.locator("input[data-testid='login-input-username']").fill(process.env.Motadata_Username);
+await page.locator("input[data-testid='login-input-password']").fill(process.env.Motadata_Password);
+await page.locator("#login-btn-submit").click();   // Sign in — NEVER #login-btn-sso (SSO)
+await expect(page.locator("#user-avatar")).toBeVisible();   // smart wait, never networkidle
+// In specs, prefer the shared helper: import { login, logout } from '<rel>/fixtures/auth.js'
 ```
 
 ### 2. Navigate to the target screen

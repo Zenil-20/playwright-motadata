@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -36,11 +37,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Atlassian Jira Integrati
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Motadata Atlassian Jira Integration', async () => {
@@ -58,7 +55,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Atlassian Jira Integrati
 
     if (existingServerUrl) {
       console.log(`Atlassian Jira Server URL already configured ("${existingServerUrl}"). Skipping integration setup and logging out.`);
-      await page.locator("//img[@alt='Avatar']").click();
+      await page.locator("#user-avatar").click();
       await page.getByText('Logout').click();
       await page.context().clearCookies();
       await page.context().clearPermissions();
@@ -204,13 +201,6 @@ test.describe.serial('Motadata AIOps Discovery Flow For Atlassian Jira Integrati
   });
 
   test('Logout from AIOps', async () => {
-    if (alreadyLoggedOut) {
-      console.log('Already logged out during integration check. Skipping.');
-      return;
-    }
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

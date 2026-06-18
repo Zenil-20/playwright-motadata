@@ -26,7 +26,11 @@
       "Bash(rm -f tests/Settings/14-RealUserMonitoring/loadGeneratorSync.mjs)",
       "Bash(node tests/Settings/14-RealUserMonitoring/loadGeneratorSync.js)",
       "Bash(node _scratch/verify-agent126.js)",
-      "Bash(node _scratch/run-agent126-sync.js)"
+      "Bash(node _scratch/run-agent126-sync.js)",
+      "Bash(git rm *)",
+      "Bash(git add *)",
+      "Bash(tee _scratch/rum-run.log)",
+      "Bash(tee _scratch/rum-run2.log)"
     ],
     "additionalDirectories": [
       "D:\\Projects\\playwright\\_scratch"

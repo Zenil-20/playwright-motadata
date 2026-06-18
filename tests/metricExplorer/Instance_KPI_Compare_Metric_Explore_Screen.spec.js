@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const dotenv = require('dotenv');
 const path = require('path');
+const { login, logout } = require('../fixtures/auth.js');
 
 dotenv.config({
   path: path.resolve(process.cwd(), '.env'),
@@ -23,13 +24,7 @@ test.describe.serial('Motadata AIOps Metric Explorer Compare Data verification',
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
-
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Instance_KPI_Compare_Metric_Explore_Screen', async () => {
@@ -68,7 +63,7 @@ test.describe.serial('Motadata AIOps Metric Explorer Compare Data verification',
       console.error('No data found - failing test immediately');
 
       try {
-        await page.locator("//img[@alt='Avatar']").click();
+        await page.locator("#user-avatar").click();
         await page.getByText('Logout').click();
       } catch (e) {}
 
@@ -120,7 +115,7 @@ test.describe.serial('Motadata AIOps Metric Explorer Compare Data verification',
         console.error('No data found - failing test immediately');
 
         try {
-          await page.locator("//img[@alt='Avatar']").click();
+          await page.locator("#user-avatar").click();
           await page.getByText('Logout').click();
         } catch (e) {}
 
@@ -227,7 +222,7 @@ if (await noData.count() > 0) {
 
   // optional logout before fail
   try {
-    await page.locator("//img[@alt='Avatar']").click();
+    await page.locator("#user-avatar").click();
     await page.getByText('Logout').click();
   } catch (e) {
     console.error('Logout failed or UI not available');
@@ -272,7 +267,7 @@ await page.locator('button.squared-button:has(svg[data-icon="times"])').click();
         console.error('No data found - failing test immediately');
 
         try {
-          await page.locator("//img[@alt='Avatar']").click();
+          await page.locator("#user-avatar").click();
           await page.getByText('Logout').click();
         } catch (e) {}
 
@@ -326,7 +321,7 @@ await page.locator('button.squared-button:has(svg[data-icon="times"])').click();
     console.error('No data found - failing test immediately');
 
     try {
-      await page.locator("//img[@alt='Avatar']").click();
+      await page.locator("#user-avatar").click();
       await page.getByText('Logout').click();
     } catch (e) {}
 
@@ -396,9 +391,6 @@ await page.locator('button.squared-button:has(svg[data-icon="times"])').click();
 });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await context.clearCookies();
-    await context.clearPermissions();
+    await logout(page);
   });
 });

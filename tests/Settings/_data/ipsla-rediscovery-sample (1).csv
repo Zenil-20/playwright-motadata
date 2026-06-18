@@ -1,0 +1,4 @@
+WAN Probe Type,Source Interface IP,Source Router Location,Destination IP,Destination Router Location,Internet Service Provider
+rpmicmpping,70.70.70.2,,192.168.70.2,,Airtel180
+rpmicmpping,70.70.70.2,,192.168.70.2,,Airtel100
+rpmicmpping,70.70.70.2,,192.168.70.2,,Airtel190

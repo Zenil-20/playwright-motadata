@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const dotenv = require('dotenv');
 const path = require('path');
+const { login, logout } = require('../../fixtures/auth.js');
 
 dotenv.config({
 	path: path.resolve(process.cwd(), '.env'),
@@ -219,24 +220,8 @@ test.describe.serial('Motadata AIOps', () => {
 	});
 
 	test('Login to Motadata AIOps', async () => {
-		await page.goto(process.env.Motadata_Aiops, {
-			timeout: 500000
-		});
-
-		await page
-			.locator("//input[@placeholder='Username']")
-			.fill(process.env.Motadata_Username);
-
-		await page
-			.locator("//input[@placeholder='Password']")
-			.fill(process.env.Motadata_Password);
-
-		await page
-			.locator("//button[@type='submit']")
-			.click();
-
-		await page.waitForLoadState('networkidle');
-	});
+    await login(page);
+  });
 
 	test('Navigate to Metric Plugin and Create a Custom Metric Plugin which fetches hardware sensor data', async () => {
 		await page.locator("//a[@href='/settings/']").click();
@@ -447,15 +432,6 @@ test.describe.serial('Motadata AIOps', () => {
 	});
 
 	test('Logout from AIOps', async () => {
-		await page
-			.locator("//img[@alt='Avatar']")
-			.click();
-
-		await page
-			.getByText('Logout')
-			.click();
-
-		await page.context().clearCookies();
-		await page.context().clearPermissions();
-	});
+    await logout(page);
+  });
 });

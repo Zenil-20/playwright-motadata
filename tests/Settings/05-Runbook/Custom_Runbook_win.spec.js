@@ -17,6 +17,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -167,12 +168,8 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
     });
 
     test('Login to Motadata AIOps', async () => {
-        await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-        await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-        await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-        await page.locator("//button[@type='submit']").click();
-        await page.waitForLoadState('networkidle');
-    });
+    await login(page);
+  });
 
     test('Navigate to Runbook and Create a Custom Runbook which fetches all services for Windows', async () => {
         await page.locator("//a[@href='/settings/']").click();
@@ -209,12 +206,14 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
         await checkbox1.click();
           await page.locator("//button[@id='create-credential-profile-btn-id']").click();
           await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 300000 });
+          // Runbook creation runs asynchronously and can take a while; the create form only
+          // closes (navigating back to the runbook list) once it finishes. Wait for that —
+          // otherwise the next test's avatar click is intercepted by the still-open form.
+          await expect(page.getByRole('button', { name: 'Create Runbook Plugin' }))
+            .toBeHidden({ timeout: 300000 });
     });
 
     test('Logout from AIOps', async () => {
-        await page.locator("//img[@alt='Avatar']").click();
-        await page.getByText('Logout').click();
-        await page.context().clearCookies();
-        await page.context().clearPermissions();
-    });
+    await logout(page);
+  });
 });

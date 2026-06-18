@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -43,11 +44,7 @@ test.describe.serial('Motadata AIOps Service Rediscovery Flow', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 60000, waitUntil: 'domcontentloaded' });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForLoadState('domcontentloaded');
+    await login(page);
   });
 
   test('Add "SysMain" service in Service Monitor Settings', async () => {
@@ -244,9 +241,6 @@ test.describe.serial('Motadata AIOps Service Rediscovery Flow', () => {
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

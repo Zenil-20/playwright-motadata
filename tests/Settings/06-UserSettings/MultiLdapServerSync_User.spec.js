@@ -158,6 +158,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -198,11 +199,7 @@ test.describe.serial('Motadata AIOps Multi LDAP Server Sync for User Settings', 
   ldapServers.forEach((server) => {
     test(`Login, LDAP Server Sync, and Logout for ${server.name}`, async () => {
       // --- LOGIN ---
-      await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-       await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-      await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-      await page.locator("//button[@type='submit']").click();
-      await page.waitForLoadState('networkidle');
+      await login(page);
 
       // --- NAVIGATE TO LDAP SETTINGS ---
       await page.locator("//a[@href='/settings/']").click();
@@ -271,16 +268,7 @@ test.describe.serial('Motadata AIOps Multi LDAP Server Sync for User Settings', 
       }
 
       // --- LOGOUT ---
-      const avatar = page.locator("//img[@alt='Avatar']");
-      await expect(avatar).toBeVisible();
-      await avatar.click();
-
-      const logoutBtn = page.getByText('Logout');
-      await expect(logoutBtn).toBeVisible();
-      await logoutBtn.click();
-      // --- CLEAN CONTEXT ---
-      await page.context().clearCookies();
-      await page.context().clearPermissions();
+      await logout(page);
     });
   });
 });

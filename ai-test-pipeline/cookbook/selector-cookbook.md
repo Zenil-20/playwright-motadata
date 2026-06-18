@@ -33,13 +33,15 @@ Build: 8.2.4 · Legend: ✅ harvested · 🟡 partial · ⬜ not yet harvested
 # 0. Global / cross-screen
 
 ```yaml
+# Login/logout are centralized in tests/fixtures/auth.js — call login(page)/logout(page).
+# These hooks are verified to work on BOTH the old and redesigned login pages.
 login:
-  username:   "//input[@placeholder='Username']"
-  password:   "//input[@placeholder='Password']"
-  submit:     "//button[@type='submit']"
-  logged_in_marker: "//img[@alt='Avatar']"          # smart wait; never networkidle
+  username:   "input[data-testid='login-input-username']"  # scope to <input>: the form-item wrapper carries the same data-testid. verified 2026-06-16 (works on old + new login UI)
+  password:   "input[data-testid='login-input-password']"  # verified 2026-06-16
+  submit:     "#login-btn-submit"                     # Sign in — NEVER #login-btn-sso (Single Sign-On). id stable on both UIs (text 'Login'/'Sign in')
+  logged_in_marker: "#user-avatar"                    # smart wait; never networkidle. # verified 2026-06-15 (was //img[@alt='Avatar'])
 logout:
-  avatar:     "//img[@alt='Avatar']"
+  avatar:     "#user-avatar"                          # verified 2026-06-15
   menu_item:  "page.getByText('Logout')"
 settings_nav:                                         # the #phone-number focus is REQUIRED
   settings_link: "//a[@href='/settings/']"
@@ -203,6 +205,11 @@ controls:
   discovered_row:    "tr.k-master-row hasText:<IP>"
   success_toast:     "page.getByText('provisioned successfully').first()"
   close_results_x:   "svg[data-icon='times']  |  //i[@class='anticon text-neutral-light']//*[name()='svg']"
+  # Provision Status popup close: the popup is a role=DOCUMENT popover (NOT role=dialog),
+  # so getByRole('dialog',{name:'Provision Status'}) does NOT match and a bare
+  # svg[data-icon='times'] is ambiguous (a page-header icon also matches -> strict-mode
+  # violation / wrong-element click). Scope to the flex header that holds the heading:
+  close_provision_status: "page.locator('.flex.justify-between').filter({ has: page.getByRole('heading',{name:'Provision Status'}) }).locator('a:has(svg[data-icon=\"times\"])')"   # confidence: high; fallback: '.flex.justify-between > a'  # verified 2026-06-17
   result_search:     "//input[@name='discovery-search']"
 # verified 2026-05-27
 ```
@@ -376,6 +383,28 @@ gotchas:
 
 ---
 
+## 13.2 Device Monitor Settings — bulk action toolbar   (Settings > Monitor Settings > Device Monitor Settings, with grid rows selected)
+
+Verified from the failing-run a11y snapshot (build 8.2.4); the toolbar appears only once ≥1 row is selected.
+
+```yaml
+screen: Device Monitor Settings (grid, rows selected)
+controls:
+  bulk_tag_toggle:
+    locator:     "page.getByRole('button', { name: 'Tags', exact: true })"
+    confidence:  high
+    conditional: true
+    trigger:     "≥1 grid row checkbox ticked — bulk action toolbar renders"
+    # was previously the FABRICATED id '#bulk-tag-toggle' (matches nothing -> click
+    # auto-waits the whole test timeout, then fails as "Target closed"). Real control
+    # is the toolbar button with accessible name "Tags".
+gotchas:
+  - "locator(\"//input[@type='checkbox']\").first() resolves to the HEADER select-all checkbox, NOT the first data row — it selects ALL rows. Scope to a row checkbox if single-row selection is intended."
+# verified 2026-06-09
+```
+
+---
+
 ## 16.RUM Register Application   (Settings → Real User Monitoring → Application → Create Application)
 screen: rum-register-application
 container_scope: .ant-drawer-open   (drawer titled "Register Application")
@@ -466,3 +495,93 @@ Rules:
 - Conditional controls (discovered row, Conflict/Sync/Backup badges) MUST set `conditional: true` + `trigger`, verified against the seeded state — never an empty screen.
 - Positional/index XPath (`//div[13]//span[1]`) is BANNED. Re-scope to role/label/data-cy/row first.
 - Prefer storing `locator` + `fallback` so a single locator rot is self-healable.
+
+---
+
+## 18. Container Runtime — Docker container provisioning   (Monitors > open Linux server > "Container Runtime" button)
+
+Verified live against build 8.2.6 (a11y tree, monitor 172.16.15.234 / motadata234). This is
+the *Container Runtime* drawer reached from a server's detail page — NOT the network Discovery
+Profile flow (§16.1) and NOT the Metric Settings Docker tabs (§13.1).
+
+```yaml
+screen: Discover Container Runtime (drawer)
+container_scope: ".ant-drawer-open (use .last())"
+controls:
+  open_container_runtime: "page.getByRole('button', { name: 'Container Runtime' })"   # on the device detail page
+  runtime_select:    "drawer.getByRole('textbox', { name: 'Select Container Runtime' })"   # defaults to Docker
+  credential_picker: "#credential-profile-picker-id"                                  # opens an .ant-popover, NOT an ant-select
+  credential_search: "//input[@data-cy='dropdown-search-input']"                      # inside the popover; options are role=menuitem
+  create_credential_btn: "page.getByRole('button', { name: 'Create Credential Profile' })"
+  # create-credential sub-form (reuses §16.2 ids):
+  cred_name:         "//input[@id='credential-profile-name-id']"   # USE A UNIQUE NAME each run — a duplicate name silently fails to create
+  cred_username:     "//input[@id='username-id']"                  # motadata
+  cred_password:     "//input[@id='password-id']"                  # motadata
+  cred_submit:       "page.getByRole('button', { name: 'Create Credentials Profile' })"   # auto-selects the new cred
+  port:              "drawer textbox under 'Port *'"               # defaults to 2375
+  discover_all_states_toggle:
+    locator:     "#auto-sync-id"          # the only button[role=switch] in the drawer; textContent is 'OFF'/'ON'
+    note:        "ON = discover containers in ALL states (running, exited, paused, created); OFF = running only"
+  save_run:          "page.getByRole('button', { name: 'Save & Run' })"
+results_grid:                                # appears INSIDE the same drawer after Save & Run (Kendo grid, ~5s) — NOT a modal/popup
+  container_scope: ".ant-drawer-open (use .last())"
+  conditional: true
+  trigger:     "Save & Run with a VALID (freshly-created, unique-named) Docker credential; if the cred create failed the discovery returns the host and no grid appears"
+  docker_tab:        "drawer.getByRole('tab', { name: 'Docker' })"
+  grid_rows:         "drawer.locator('tr.k-master-row')"                              # one per available container
+  header_select_all: "drawer.locator(\".k-grid-header input[type='checkbox']\").first()"   # use .check({ force: true })
+  row_checkbox:      "row.locator(\"input[type='checkbox']\").first()"
+  provision_btn:     "drawer.getByRole('button', { name: 'Provision' })"
+  empty_or_done:     "drawer.getByRole('heading', { name: 'No data found' })"         # shown when all containers already provisioned (re-run-safe)
+  close_drawer:      ".ant-drawer-open svg[data-icon='times'] (.first(), bounded {timeout} + .catch)"   # getByRole('button',{name:'Close'}) is NOT present here -> a bare click HANGS
+gotchas:
+  - "The container list is a Kendo grid rendered INSIDE the drawer, not an ant-modal and not a popup window — scope to .ant-drawer-open, not .ant-modal."
+  - "Idempotency: provisioning removes containers from the 'available' list, so a 2nd run finds 'No data found'. Wait for grid-rows OR the 'No data found' heading and only provision when rows exist."
+  - "Close control: there is NO accessible button named 'Close' in the grid/no-data state; use svg[data-icon='times'] with a bounded click timeout (the page default is 500s, so a wrong locator hangs the whole test)."
+# verified 2026-06-15
+```
+
+---
+
+## 19. Add WAN Link   (Monitors > Network > open a router > "Add WAN Link" button)
+
+Verified live against build 8.2.6 (a11y tree, site1/site2/site3 routers). Used by the IPSLA /
+WAN-link suite. These label-scoped locators REPLACE the old banned positional/absolute XPaths
+(`//div[10]//div[2]//...`, `/html[1]/body[1]/div[2]/...`).
+
+```yaml
+screen: Add WAN Link (drawer)
+container_scope: ".ant-drawer-open (use .last())"
+controls:
+  open_form:        "page.getByRole('button', { name: 'Add WAN Link' })"   # on the device detail page
+  mode_single:      "page.getByText('Single WAN Link Configuration', { exact: true })"   # radio (default)
+  mode_bulk:        "page.getByText('Bulk WAN Link Configuration', { exact: true })"     # radio
+  credential_picker: "#credential-profile-picker-id"
+  credential_search: "//input[@data-cy='dropdown-search-input'] (.last())"               # popover search
+  credential_option: "page.locator('.ant-popover:visible').getByRole('menuitem', { name: <cred>, exact: true })"
+  wan_probe:        "drawer textbox 'Select WAN Probe' (default 'ICMP Echo')"
+  # field-by-label helper (the ONLY reliable way — inputs have no id/name except Destination IP):
+  field_by_label:   "drawer.locator(\"xpath=.//div[contains(@class,'ant-form-item')][.//label[normalize-space()='<LABEL>']]//input\")"
+  isp:              "field_by_label('Internet Service Provider')"
+  destination_ip:   "drawer.locator(\"input[name='ip-host']\")"   # the one input that DOES have a name
+  frequency:        "field_by_label('Frequency')"
+  operation_timeout: "field_by_label('Operation Timeout')"
+  timeout:          "field_by_label('Timeout')"        # exact match → does NOT collide with 'Operation Timeout'
+  csv_upload:       "page.locator(\"input[type='file']\")"   # bulk mode; hidden input, setInputFiles works
+  submit_single:    "//button[@id='submit-btn']"
+  submit_bulk:      "drawer.getByRole('button', { name: 'Add WAN Link' })"   # page-level there are TWO; scope to the drawer
+rediscovery_panel:                            # appears after submit (post-WAN-link rediscovery)
+  conditional: true
+  trigger:     "after submitting a WAN link; toast 'Initializing WAN-Link configuration on source: <device>'"
+  minimized_box:   "#rediscovery-minimized-box"
+  expand_btn:      "page.locator('#rediscovery-minimized-box button').filter({ has: page.locator(\"svg[data-icon='window-restore']\") })"
+  results_checkbox: "input[type='checkbox'].ant-checkbox-input (.first())"
+  provision_btn:   "page.getByRole('button', { name: 'Provision' })"
+  done_marker:     "page.locator('h1', { hasText: 'No data found' })"   # after provisioning (or immediately if nothing new)
+  close_panel:     "button:has(svg[data-icon='times']) (.first(), bounded timeout)"
+gotchas:
+  - "Bulk-mode param fields (Frequency/Operation Timeout) only render AFTER the CSV is parsed — wait for the field, don't blind-sleep."
+  - "Device grid search races with a late reload: fill the search, then RETRY (expect(...).toPass) until the device row link is visible, else the row stays off the (paginated) page and the click hangs 500s."
+  - "Credentials referenced by exact title (write public/write private/Sybase_linux_ip) must pre-exist; create idempotently (see §16.x credential create-if-not-exists)."
+# verified 2026-06-15
+```

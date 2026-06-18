@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click hits the wrong
+// (page-level) icon. Target the cross <a> inside the flex header that holds the
+// "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery', () => {
   let page;
@@ -37,12 +49,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
   });
 
 test('Login to Motadata AIOps', async () => {
-      await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-      await page.getByRole('textbox', { name: 'Username' }).fill(process.env.Motadata_Username);
-      await page.getByRole('textbox', { name: 'Password' }).fill(process.env.Motadata_Password);
-      await page.getByTestId('login-btn-submit').click();
-      await page.waitForLoadState('networkidle');
-    });
+    await login(page);
+  });
 
   test('Navigate to Discovery Profile', async () => {
     await page.locator("//a[@href='/settings/']").click();
@@ -72,17 +80,16 @@ test('Login to Motadata AIOps', async () => {
     await page.locator("//input[@name='discovery-search']").fill('Kubernetes Discovery');
     await page.getByRole('row', { name: /Kubernetes Discovery/i }).locator('svg').first().click();
     // await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.Kubernetes_Master_Node_IP)).toBeVisible();
+    // The discovery scan runs server-side and can take minutes before the result row
+    // surfaces, so the default 5s expect timeout is far too short — wait it out.
+    await expect(page.getByRole('gridcell', { name: process.env.Kubernetes_Master_Node_IP, exact: true }).first()).toBeVisible({ timeout: 480000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

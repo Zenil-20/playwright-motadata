@@ -47,8 +47,98 @@ const SLO_CONSTANTS_1 = {
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 import { NodeSSH } from 'node-ssh';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// ---------------------------------------------------------------------------
+// SLO Performance condition helpers (multi-metric).
+//
+// Availability SLOs are unchanged. A Performance SLO now supports MULTIPLE metric
+// conditions: each condition is a self-contained card (Counter, Operator, Value,
+// Source Filter, Source). Extra conditions are added with the "Add New Condition"
+// link, and each card must use a DIFFERENT counter (the UI removes an already-picked
+// counter from the remaining cards).
+// ---------------------------------------------------------------------------
+
+// Select a main-form dropdown by its visible label (e.g. 'Frequency', 'SLO For').
+async function selectFormDropdown(page, label, optionTitle, { search } = {}) {
+  const item = page
+    .locator(`xpath=//div[contains(@class,'ant-form-item')][.//label[normalize-space()='${label}']]`)
+    .first();
+  await item.locator("[data-cy='dropdown-trigger-input']").first().click();
+  if (search) await page.locator("//input[@data-cy='dropdown-search-input']").last().fill(search);
+  await page.locator(`//span[@title='${optionTitle}']`).last().click();
+}
+
+// Open the Source picker and tick "Select All" (the first checkbox = every
+// monitor/group). `root` is the page (main form) or a condition card. Clicking the
+// Ant wrapper LABEL is required — clicking the hidden <input> doesn't fire Ant's
+// select-all handler.
+async function pickAllSources(page, root) {
+  const sourceInput = root
+    .locator(`xpath=.//div[contains(@class,'ant-form-item')][.//label[normalize-space()='Source']]`)
+    .first()
+    .locator('input')
+    .first();
+  await sourceInput.click();
+  const picker = page.locator('.ant-popover:visible').last();
+  // Wait for the list/grid DATA to load — the second checkbox is the first real row
+  // (the first is Select-All). Clicking Select-All before rows exist selects nothing
+  // (the Monitor grid loads slower than the Group list).
+  await expect(picker.getByRole('checkbox').nth(1)).toBeVisible();
+  await picker.locator('label.ant-checkbox-wrapper').first().click();
+  // Wait for the selection to COMMIT (the trigger shows e.g. "xen71master (+26)")
+  // before closing — otherwise Escape can fire before the slower Monitor grid commits.
+  await expect(sourceInput).not.toHaveValue('');
+  await page.keyboard.press('Escape');
+}
+
+// Fill the Nth (0-based) Performance "SLO Condition" card. Generic + scoped to the
+// card, so it works for one condition or many.
+async function fillSloCondition(page, index, { counter, operator, value, sourceFilter, source }) {
+  const card = page.locator('.bordered.rounded.relative').nth(index);
+  const field = (label) =>
+    card.locator(`xpath=.//div[contains(@class,'ant-form-item')][.//label[normalize-space()='${label}']]`).first();
+  const openDropdown = (label) => field(label).locator("[data-cy='dropdown-trigger-input']").first().click();
+  const searchInput = () => page.locator("//input[@data-cy='dropdown-search-input']").last();
+  const pickOption = (title) => page.locator(`//span[@title='${title}']`).last().click();
+
+  // Counter + Operator are searchable dropdowns.
+  await openDropdown('Counter');
+  await searchInput().fill(counter);
+  await pickOption(counter);
+
+  await openDropdown('Operator');
+  await searchInput().fill(operator);
+  await pickOption(operator);
+
+  await field('Value').locator('input.ant-input').fill(value);
+
+  // Source Filter is a plain menu (Monitor / Group / ...).
+  await openDropdown('Source Filter');
+  await pickOption(sourceFilter);
+
+  // Source: Select All (`source` just documents the label that then shows, e.g.
+  // "xen71master (+26)" / "Oracle WebLogic (+153)").
+  await pickAllSources(page, card);
+}
+
+// Add Performance conditions in order (first card exists by default; the rest are
+// added via "Add New Condition"). Pass an array of condition objects.
+async function fillSloConditions(page, conditions) {
+  for (let i = 0; i < conditions.length; i++) {
+    if (i > 0) await page.getByText('Add New Condition', { exact: false }).click();
+    await fillSloCondition(page, i, conditions[i]);
+  }
+}
+
+// The 3 multi-metric Performance conditions (each a distinct metric, per the spec).
+const PERFORMANCE_CONDITIONS = [
+  { counter: 'system.cpu.percent',         operator: 'Greater Than',          value: '49', sourceFilter: 'Monitor', source: 'xen71master' },
+  { counter: 'system.disk.used.percent',   operator: 'Greater Than or Equal', value: '55', sourceFilter: 'Group',   source: 'Oracle WebLogic' },
+  { counter: 'system.memory.used.percent', operator: 'Greater Than',          value: '45', sourceFilter: 'Group',   source: 'Oracle WebLogic' },
+];
 
 test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
     let page;
@@ -76,12 +166,8 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
     });
 
     test('Login to Motadata AIOps', async () => {
-        await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-        await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-        await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-        await page.locator("//button[@type='submit']").click();
-        await page.waitForLoadState('networkidle');
-    });
+    await login(page);
+  });
 
     test('Pre-check: ensure automation SLO profiles do not already exist', async () => {
         const sloNames = [
@@ -115,7 +201,7 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
             console.log('Logging out now...');
             console.log('================================================================');
 
-            await page.locator("//img[@alt='Avatar']").click();
+            await page.locator("#user-avatar").click();
             await page.getByText('Logout').click();
             await page.context().clearCookies();
             await page.context().clearPermissions();
@@ -136,18 +222,10 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("input#business-service-name-id").fill(SLO_CONSTANTS.BUSINESS_SERVICE);
         await page.locator("input#slo-target-id").fill(SLO_CONSTANTS.TARGET);
         await page.locator("input#slo-warning-id").fill(SLO_CONSTANTS.WARNING);
-        //frequency
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(0).click();
-        await page.locator("//span[@title='Daily']").click();
-        //SLO For
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(2).click();
-        await page.locator("//span[@title='Monitor']").click();
-        //Source Filter
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(4).click();
-        await page.locator("//span[@title='Group']").click();
-        //Source
-        await page.locator("//input[@placeholder=' ']").click();
-        await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
+        await selectFormDropdown(page, 'SLO For', 'Monitor');
+        await selectFormDropdown(page, 'Source Filter', 'Group');
+        await pickAllSources(page, page);
+        await selectFormDropdown(page, 'Frequency', 'Daily');
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
         await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
@@ -175,18 +253,10 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("input#business-service-name-id").fill(SLO_CONSTANTS.BUSINESS_SERVICE);
         await page.locator("input#slo-target-id").fill(SLO_CONSTANTS.TARGET);
         await page.locator("input#slo-warning-id").fill(SLO_CONSTANTS.WARNING);
-        //frequency
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(0).click();
-        await page.locator("//span[@title='Daily']").click();
-        //SLO For
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(2).click();
-        await page.locator("//span[@title='Interface']").click();
-        //Source Filter
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(4).click();
-        await page.locator("//span[@title='Group']").click();
-        //Source
-        await page.locator("//input[@placeholder=' ']").click();
-        await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
+        await selectFormDropdown(page, 'SLO For', 'Interface');
+        await selectFormDropdown(page, 'Source Filter', 'Group');
+        await pickAllSources(page, page);
+        await selectFormDropdown(page, 'Frequency', 'Daily');
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
         await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
@@ -215,30 +285,17 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("input#business-service-name-id").fill(SLO_CONSTANTS_1.BUSINESS_SERVICE);
         await page.locator("input#slo-target-id").fill(SLO_CONSTANTS_1.TARGET);
         await page.locator("input#slo-warning-id").fill(SLO_CONSTANTS_1.WARNING);
-        //frequency
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(0).click();
-        await page.locator("//span[@title='Daily']").click();
-        //SLO For
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(2).click();
-        await page.locator("//span[@title='Interface']").click();
-        //counter
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(4).click();
-        await page.locator("//input[@data-cy='dropdown-search-input']").fill('interface.error.packets');
-        await page.locator("//span[@title='interface.error.packets']").click();
-        //Operator
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(6).click();
-        await page.locator("//input[@data-cy='dropdown-search-input']").fill("greater than");
-        await page.locator("//span[@title='Greater Than or Equal']").click();
-        //value
-        await page.locator('div.ant-row.ant-form-item', {
-            has: page.locator('label.ant-form-item-required', { hasText: /^\s*Value\s*$/ }),
-        }).locator('input.ant-input').fill('0');
-        //Source Filter
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(8).click();
-        await page.locator("//span[@title='Group']").click();
-        //Source
-        await page.locator("//input[@placeholder=' ']").click();
-        await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
+        await selectFormDropdown(page, 'Frequency', 'Daily');
+        await selectFormDropdown(page, 'SLO For', 'Interface');
+
+        // Single Performance condition (same generic helper as the multi-metric test).
+        await fillSloCondition(page, 0, {
+            counter: 'interface.error.packets',
+            operator: 'Greater Than or Equal',
+            value: '0',
+            sourceFilter: 'Group',
+            source: 'Oracle WebLogic',
+        });
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
         await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
@@ -267,30 +324,13 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
         await page.locator("input#business-service-name-id").fill(SLO_CONSTANTS_1.BUSINESS_SERVICE);
         await page.locator("input#slo-target-id").fill(SLO_CONSTANTS_1.TARGET);
         await page.locator("input#slo-warning-id").fill(SLO_CONSTANTS_1.WARNING);
-        //frequency
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(0).click();
-        await page.locator("//span[@title='Daily']").click();
-        //SLO For
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(2).click();
-        await page.locator("//span[@title='Monitor']").click();
-        //counter
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(4).click();
-        await page.locator("//input[@data-cy='dropdown-search-input']").fill('ping.min.latency.ms');
-        await page.locator("//span[@title='ping.min.latency.ms']").click();
-        //Operator
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(6).click();
-        await page.locator("//input[@data-cy='dropdown-search-input']").fill("greater than");
-        await page.locator("//span[@title='Greater Than or Equal']").click();
-        //value
-        await page.locator('div.ant-row.ant-form-item', {
-            has: page.locator('label.ant-form-item-required', { hasText: /^\s*Value\s*$/ }),
-        }).locator('input.ant-input').fill('1');
-        //Source Filter
-        await page.locator('[data-cy="dropdown-trigger-input"]').nth(8).click();
-        await page.locator("//span[@title='Group']").click();
-        //Source
-        await page.locator("//input[@placeholder=' ']").click();
-        await page.locator("//div[@class='w-full']//input[@type='checkbox']").click();
+        // Frequency + SLO For (SLO For must be set before the counters — it
+        // determines which counters are available).
+        await selectFormDropdown(page, 'Frequency', 'Daily');
+        await selectFormDropdown(page, 'SLO For', 'Monitor');
+
+        // Multi-metric: three distinct conditions (cpu / disk / memory).
+        await fillSloConditions(page, PERFORMANCE_CONDITIONS);
         //Start Date
         await page.locator("//i[@class='anticon ant-calendar-picker-icon']//*[name()='svg']").click();
         await page.locator('td.ant-calendar-cell:not(.ant-calendar-last-month-cell):not(.ant-calendar-next-month-btn-day) div.ant-calendar-date:not([aria-disabled="true"])', {
@@ -343,9 +383,6 @@ test.describe.serial('Motadata AIOps SLO Profile Creation TestCase', () => {
     });
 
     test('Logout from AIOps', async () => {
-        await page.locator("//img[@alt='Avatar']").click();
-        await page.getByText('Logout').click();
-        await page.context().clearCookies();
-        await page.context().clearPermissions();
-    });
+    await logout(page);
+  });
 });

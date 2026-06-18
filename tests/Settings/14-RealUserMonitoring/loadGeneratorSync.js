@@ -30,8 +30,13 @@ const SSH_PASS = 'motadata'; // also the sudo password
 const REMOTE = '/home/motadata/rum-test-site/config.json';
 const SERVICES = ['rum-ui', 'rum-load'];
 
-// applicationType (from UI) -> config.json apps key
-const TYPE_TO_KEY = { Vue: 'vue', React: 'react', JS: 'js', Angular: 'angular', 'Next.js': 'nextjs' };
+// applicationType (from UI) -> config.json apps key. The UI renamed the framework
+// tiles, so accept both the new labels (JavaScript / Next.JS) and the old ones.
+const TYPE_TO_KEY = {
+  Vue: 'vue', React: 'react', Angular: 'angular',
+  JavaScript: 'js', JS: 'js',
+  'Next.JS': 'nextjs', 'Next.js': 'nextjs',
+};
 
 const REPO_ROOT = path.resolve(__dirname, '../../..');
 const CAPTURED = path.join(REPO_ROOT, 'tests/Settings/14-RealUserMonitoring/rum-configs/rum-applications.json');

@@ -7,7 +7,7 @@
 
 import { expect, test } from '@playwright/test';
 import { openDashboardForDevice, waitForDashboardSettled } from './dashboard.helpers.js';
-import { logoutFromDashboard } from './auth.js';
+import { logout } from '../../fixtures/auth.js';
 
 const LINUX_OVERVIEW_HEADERS = [
   'CPU',
@@ -457,5 +457,5 @@ export async function validateLinuxDashboardE2E(page, device) {
   await runTabSafely('Metric Explorer', () => expectMetricExplorer(page));
   await runTabSafely('Active Alerts', () => expectActiveAlerts(page));
   await runTabSafely('Configured Policy', () => expectConfiguredPolicy(page));
-  await runTabSafely('Logout', () => logoutFromDashboard(page));
+  await runTabSafely('Logout', () => logout(page));
 }

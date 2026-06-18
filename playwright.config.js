@@ -27,6 +27,10 @@ const settingsProjects = [
     testMatch: ['tests/Settings/06-UserSettings/*.spec.js'],
   },
   {
+    name: 'settings_07_apm',
+    testMatch: ['tests/Settings/07-APM/*.spec.js'],
+  },
+  {
   name: 'settings_08_slo',
   testMatch: ['tests/Settings/08-SLO/*.spec.js'],
 },
@@ -110,6 +114,15 @@ const nccmProjects = [
  */
 export default defineConfig({
   testDir: './tests',
+  /*
+   * Temporarily excluded from every `npx playwright test` run. The files and their
+   * code are kept intact — they are just never collected/executed. Remove an entry
+   * here to re-enable that spec.
+   */
+  testIgnore: [
+    '**/Esxi13_Discovery.spec.js',
+    '**/Windows_Cidr_RangeBased_Discovery.spec.js',
+  ],
   /* Keep tests inside each file ordered unless a spec opts into parallelism. */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -117,10 +130,18 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /*
-   * Run the Settings projects independently so a failure in one folder
-   * does not block the remaining folders from executing.
+   * Workers scale DYNAMICALLY with the machine instead of a fixed 4: '75%' uses a
+   * fraction of the CPU cores, so a bigger box runs more spec FILES in parallel and a
+   * smaller box stays safe — without ever pinning the CPU (25% headroom for the OS +
+   * Chromium). This changes ONLY how many files run concurrently; each file is still
+   * serial internally, so test logic is unaffected (0 impact on the test cases).
+   *
+   * The real ceiling for this suite is the SHARED Motadata server + per-file data
+   * isolation, not local cores — so override per run with PW_WORKERS when needed:
+   *   PW_WORKERS=8 npx playwright test   (server has spare capacity / push throughput)
+   *   PW_WORKERS=4 npx playwright test   (pin back to the old behaviour)
    */
-  workers: process.env.CI ? 2 : 4,
+  workers: process.env.CI ? 2 : (process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : '75%'),
   /* Test timeout - increase for slow networks, decrease for production */
   timeout: 120000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */

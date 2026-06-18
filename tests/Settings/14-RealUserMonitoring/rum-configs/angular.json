@@ -6,13 +6,13 @@
   "version": "1.0.0",
   "environment": "dev",
   "privacyOption": "All text available by default",
-  "applicationId": "19",
-  "clientToken": "pub4b02964c4893ef04d6caa5f9cd26b087",
+  "applicationId": "4",
+  "clientToken": "pubc2b8190a43bacb774759cd50a6e2013f",
   "site": "http://localhost:6920",
   "service": "Playwright Angular Application@1.0.0:dev",
   "env": "dev",
   "sessionSampleRate": 60,
   "defaultPrivacyLevel": "allow",
-  "nginxConfig": "location /api/v2/rum {\n    add_header Access-Control-Allow-Headers \"*\" always;\n    proxy_pass https://172.16.15.86:9477;\n    proxy_set_header Host $host;\n    proxy_set_header X-Real-IP $remote_addr;\n    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n    proxy_set_header X-Forwarded-Proto $scheme;\n    proxy_http_version 1.1;\n    proxy_set_header Upgrade $http_upgrade;\n    proxy_set_header Connection \"upgrade\";\n}",
-  "mainJsSnippet": "import { motadataRum } from '@motadata365/browser-rum';\n\nmotadataRum.init({\n  applicationId: '19',\n  clientToken: 'pub4b02964c4893ef04d6caa5f9cd26b087',\n  site: 'http://localhost:6920',\n  service: 'Playwright Angular Application@1.0.0:dev',\n  env: 'dev',\n  version: '1.0.0',\n  sessionSampleRate: 60,\n  trackUserInteractions: true,\n  trackResources: true,\n  trackLongTasks: true,\n  defaultPrivacyLevel: 'allow',\n  trackBfcacheViews: true,\n\n  allowedTracingUrls: [\n    {\n      match: 'http://localhost:6920',\n      propagatorTypes: ['tracecontext']\n    }\n  ]\n});"
+  "nginxConfig": "location /api/v2/rum {\n    add_header Access-Control-Allow-Headers \"*\" always;\n    proxy_pass https://10.20.40.119:9477;\n    proxy_set_header Host $host;\n    proxy_set_header X-Real-IP $remote_addr;\n    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n    proxy_set_header X-Forwarded-Proto $scheme;\n    proxy_http_version 1.1;\n    proxy_set_header Upgrade $http_upgrade;\n    proxy_set_header Connection \"upgrade\";\n}",
+  "mainJsSnippet": "import { motadataRum } from '@motadata365/browser-rum';\n\nmotadataRum.init({\n  applicationId: '4',\n  clientToken: 'pubc2b8190a43bacb774759cd50a6e2013f',\n  site: 'http://localhost:6920',\n  service: 'Playwright Angular Application@1.0.0:dev',\n  env: 'dev',\n  version: '1.0.0',\n  sessionSampleRate: 60,\n  trackUserInteractions: true,\n  trackResources: true,\n  trackLongTasks: true,\n  defaultPrivacyLevel: 'allow',\n  trackBfcacheViews: true,\n\n  allowedTracingUrls: [\n    {\n      match: 'http://localhost:6920',\n      propagatorTypes: ['tracecontext']\n    }\n  ]\n});"
 }

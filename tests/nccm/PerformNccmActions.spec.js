@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -36,11 +37,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await expect(page.locator("//img[@alt='Avatar']")).toBeVisible();
+    await login(page);
   });
 
   test('Set the 172.16.14.6 as a baseline', async () => {
@@ -272,9 +269,6 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });
