@@ -195,28 +195,84 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
       const search = page.locator("//input[@data-cy='dropdown-search-input']").last();
       await expect(search).toBeVisible();
       await search.fill(value);
-      const option = page.locator(`//span[@title='${value}']`).first();
+      // New build renders Default Fields options as a hierarchy tree (li.sortable-item with a
+      // clickable, upper-cased title span); other dropdowns still use span[title]. Click the
+      // title span — clicking the <li> hits the expand chevron. Match either, case-insensitively.
+      const valueRx = new RegExp(`^\\s*${value}\\s*$`, 'i');
+      const option = page
+        .locator(`//span[@title='${value}']`)
+        .or(page.locator('li.sortable-item span.cursor-pointer').filter({ hasText: valueRx }))
+        .first();
       await expect(option).toBeVisible();
       await option.click();
     };
 
-    // Impact
-    await selectDropdownValue('Impact', 'On Department');
+    // --- new-build helpers: locate a control by label proximity; scope option clicks to the
+    // VISIBLE popover (Ant keeps hidden stale popovers in the DOM). Works for Default + Custom. ---
+    const escRx = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const trigByLabel = (label) =>
+      page.locator(`xpath=(//*[normalize-space(text())='${label}']/following::input[@data-cy='dropdown-trigger-input'])[1]`).first();
+    const inputByLabel = (label) =>
+      page.locator(`xpath=(//*[normalize-space(text())='${label}']/following::*[self::input or self::textarea][1])`).first();
+    const visiblePopover = () => page.locator('.ant-popover-inner-content.picker-overlay:visible').last();
+    const openDropdownByLabel = async (label) => {
+      await trigByLabel(label).evaluate((el) => {
+        const w = el.closest('.ant-input-affix-wrapper, .ant-select, [class*="dropdown"]') || el.parentElement;
+        w?.click(); el.click();
+      });
+    };
+    const selectByLabel = async (label, value) => {
+      await openDropdownByLabel(label);
+      const pop = visiblePopover();
+      const search = pop.locator("input[data-cy='dropdown-search-input']");
+      if (await search.isVisible().catch(() => false)) await search.fill(value);
+      const rx = new RegExp(`^\\s*${escRx(value)}\\s*$`, 'i');
+      const option = pop
+        .locator(`span[title=${JSON.stringify(value)}]`)
+        .or(pop.locator('li.sortable-item span.cursor-pointer').filter({ hasText: rx }))
+        .first();
+      await expect(option).toBeVisible();
+      await option.click();
+      await page.keyboard.press('Escape').catch(() => {});
+    };
+    const fillByLabel = (label, value) => inputByLabel(label).fill(value);
+
+    // Severity → Impact & Urgency (MOTADATA-9017): Impact/Urgency moved out of the flat
+    // Default Fields into this section. "For all Severity" (= lock on first trigger) renders a
+    // single "All Severity" row (.sp-row) holding an Impact dropdown (1st) and Urgency (2nd).
+    await page.getByText('For all Severity', { exact: true }).click();
+    const allSeverityRow = page.locator('.sp-row', { hasText: 'All Severity' }).first();
+    const selectAllSeverity = async (index, value) => {
+      await allSeverityRow.locator('input[data-cy="dropdown-trigger-input"]').nth(index).click();
+      const sevSearch = page.locator("//input[@data-cy='dropdown-search-input']").last();
+      if (await sevSearch.isVisible().catch(() => false)) await sevSearch.fill(value);
+      const option = page.locator(`//span[@title='${value}']`).first();
+      await expect(option).toBeVisible();
+      await option.click();
+    };
+    await selectAllSeverity(0, 'On Department'); // Impact
+    await selectAllSeverity(1, 'Medium');        // Urgency
+
     // Location
     await selectDropdownValue('Location', 'Asia');
     // Category
     await selectDropdownValue('Category', 'Software');
     // Department
     await selectDropdownValue('Department', 'IT');
-    // Urgency
-    await selectDropdownValue('Urgency', 'Medium');
+    // Technician Group / Assignee / Vendor (data-driven dropdowns — first valid value each)
+    await selectByLabel('Technician Group', 'qa');
+    await selectByLabel('Assignee', 'Yash Patel (yash)');
+    await selectByLabel('Vendor', 'V1');
 
-    // Group (text input)
+    // Group (plain text input). EXACT label match — has-text('Group') also matches the new
+    // "Technician Group" dropdown (readonly), which made .fill() target the wrong field.
     await page
-      .locator('.ant-form-item:has(label:has-text("Group"))')
-      .locator('input')
+      .locator(`xpath=//div[contains(@class,'ant-form-item') and .//label[normalize-space()='Group']]//input`)
       .first()
       .fill('tags');
+
+    // Tag (free-text input)
+    await fillByLabel('Tag', 'automation');
 
     // Auto Close Ticket — leave ON (it's the default). Toggle only if currently OFF.
     const autoCloseTicket = page
@@ -229,6 +285,27 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
 
     // Ticket Status — pick "Closed" radio (already default, but assert/select for safety)
     await page.getByRole('radio', { name: 'Closed' }).check();
+
+    // --- Custom Fields (fill every one so the profile isn't left empty) ---
+    await fillByLabel('TEST TEXT INPUT', 'automation test input');
+    await fillByLabel('New Text Area', 'automation text area');
+    await selectByLabel('New Dropdown', 'opt 1');
+    await selectByLabel('New Multi-Select Dropdown', 'red');
+    await fillByLabel('New Number', '5');
+    // New Dependent is a 2-level hierarchy: expand the 'red' parent, then pick its child 'green'.
+    await openDropdownByLabel('New Dependent');
+    {
+      const pop = visiblePopover();
+      await pop.locator('li.sortable-item').filter({ hasText: /red/i }).first()
+        .locator('div.cursor-pointer').first().click();           // expand 'red'
+      await pop.locator('li.sortable-item span.cursor-pointer')
+        .filter({ hasText: /^\s*green\s*$/i }).first().click();   // pick leaf 'green'
+      await page.keyboard.press('Escape').catch(() => {});
+    }
+    // New Checkbox — tick opt 1
+    await page
+      .locator(`xpath=(//*[normalize-space(text())='New Checkbox']/following::*[normalize-space(text())='opt 1'])[1]`)
+      .click();
 
     await page.locator("//button[@id='external-storage-btn']").click();
 

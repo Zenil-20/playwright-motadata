@@ -585,3 +585,33 @@ gotchas:
   - "Credentials referenced by exact title (write public/write private/Sybase_linux_ip) must pre-exist; create idempotently (see §16.x credential create-if-not-exists)."
 # verified 2026-06-15
 ```
+
+## ServiceOps Integration Profile — Severity → Impact & Urgency  (MOTADATA-9017, build 8.2.6+)
+
+```yaml
+screen: Settings → Integration Profile → Create Integration Profile (Integration Type = ServiceOps)
+container_scope: ".sp-row (div grid, NOT a <tr>) — one row per severity"
+controls:
+  # Impact/Urgency moved OUT of flat Default Fields into this section. Pick a mode first.
+  mode_for_all_severity:  "page.getByText('For all Severity', { exact: true })"   # = lock on first trigger (default)
+  mode_customise:         "page.getByText('Customise by Severity', { exact: true })" # = update on every flap (Critical/Major/Warning/Clear/Down rows)
+  all_severity_row:       ".sp-row hasText:'All Severity'  (.first())"
+  impact_dropdown:        "<row>.locator('input[data-cy=\"dropdown-trigger-input\"]').nth(0)"   # column 'Impact *'
+  urgency_dropdown:       "<row>.locator('input[data-cy=\"dropdown-trigger-input\"]').nth(1)"   # column 'Urgency'
+  dropdown_option:        "//span[@title='<value>']  (.first(); search box //input[@data-cy='dropdown-search-input'].last() if present)"
+  save:                   "#external-storage-btn  (text 'Create Integration Profile')"          # NB: list-page open button is #create-user-btn (same text)
+impact_values:  [Low, "On Users", "On Department", ...]   # 'On Department' still valid
+urgency_values: [Low, Medium, High, ...]
+gotchas:
+  - "Readonly trigger inputs open on a plain .click() (no wrapper-eval needed for the .sp-row dropdowns)."
+  - "Two buttons read 'Create Integration Profile': #create-user-btn opens the form (list page), #external-storage-btn submits it."
+  - "Default Fields (Location/Category/Department) remain label-scoped ant-form-items — unchanged by this feature."
+# verified 2026-06-18 (live 172.16.15.247)
+```
+
+# Default Fields (Location/Category/Department) on this form are MIXED dropdown styles:
+#   - Location = hierarchy tree -> options are 'li.sortable-item span.cursor-pointer' with an
+#     UPPER-CASED title (e.g. 'ASIA'); click the SPAN, not the <li> (the <li> hits the expand chevron).
+#   - Category/Department = flat -> options are '//span[@title=<value>]'.
+# Robust select: page.locator("//span[@title='<v>']").or(page.locator("li.sortable-item span.cursor-pointer").filter({hasText:/^<v>$/i})).first()
+# verified 2026-06-18 (live 172.16.15.247)

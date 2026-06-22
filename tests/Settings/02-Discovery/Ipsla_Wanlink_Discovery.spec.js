@@ -75,7 +75,7 @@ async function openNetworkInventory(page) {
 // these by exact title, so the names must stay fixed — which means a blind create fails
 // with a duplicate-name error on any re-run / parallel run. Create only when missing.
 async function ensureSnmpV2cCredential(page, name, community) {
-  const search = page.locator("//input[@name='search']");
+  const search = page.locator("//input[@name='search']").first();
   await expect(search).toBeVisible({ timeout: 120000 });
   await search.fill(name);
 
@@ -98,11 +98,26 @@ async function ensureSnmpV2cCredential(page, name, community) {
   await page.locator("//span[@title='V2c']").click();
   await page.locator("//input[@id='community-id']").fill(community);
   await page.locator("//input[@id='write-community-id']").fill(community);
-  await page.locator("//button[@id='credential-profile-submit-btn']").click();
-  // Completion gate that does NOT depend on grid pagination: the create drawer
-  // closes, so its submit button detaches from the DOM.
-  await expect(page.locator("//button[@id='credential-profile-submit-btn']"))
-    .toBeHidden({ timeout: 60000 });
+  const submitBtn = page.locator("//button[@id='credential-profile-submit-btn']");
+  await submitBtn.click();
+  // Completion gate (no grid-pagination dependency): on success the create drawer closes, so
+  // its submit button detaches. The existence pre-check above can race a parallel run, so a
+  // duplicate-name error is still possible — treat "Profile Name is not unique" as
+  // already-present, close the drawer and return (mirrors the ServiceOps credential flow).
+  const dupMsg = page.locator('.ant-message-error', { hasText: /not unique|already exists/i });
+  const outcome = await Promise.race([
+    submitBtn.waitFor({ state: 'hidden', timeout: 60000 }).then(() => 'created').catch(() => null),
+    dupMsg.first().waitFor({ state: 'visible', timeout: 60000 }).then(() => 'duplicate').catch(() => null),
+  ]);
+  if (outcome === 'duplicate') {
+    await page.locator("//button[@aria-label='Close' and contains(@class,'ant-drawer-close')]")
+      .first().click({ timeout: 10000 }).catch(() => {});
+    await expect(submitBtn).toBeHidden({ timeout: 30000 });
+    return;
+  }
+  if (outcome !== 'created') {
+    throw new Error(`Credential "${name}" create: drawer neither closed nor showed a duplicate error within 60s`);
+  }
 }
 
 // --- WAN-link helpers. These replace the banned positional/absolute XPaths
