@@ -8,6 +8,9 @@
 # Scratch / throwaway grounding artifacts
 _scratch/
 
+# RUM per-environment configs (tokens / app ids — not source-controlled)
+tests/Settings/14-RealUserMonitoring/rum-configs/
+
 # Dependency directories
 node_modules/
 jspm_packages/

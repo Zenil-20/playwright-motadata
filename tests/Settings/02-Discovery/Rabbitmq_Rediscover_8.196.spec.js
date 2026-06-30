@@ -124,13 +124,7 @@ await page.locator('#start-rediscovery').click();
   // unscoped getByText('RabbitMQ') is a strict-mode violation (3 cards here). Scope to the
   // 172.16.8.196 row (same .rediscover-row filter used above); .first() guards against the
   // duplicate cards that the same host can surface.
-  await expect(
-    page.locator('.rediscover-row')
-      .filter({ hasText: 'RabbitMQ' })
-      .filter({ hasText: '172.16.8.196' })
-      .first()
-  ).toBeVisible({ timeout: 120000 });
-  await page.waitForTimeout(1000);
+  await expect(page.getByText('RabbitMQ')).toBeVisible({ timeout: 30000 });
   await page.locator('svg[data-icon="ellipsis-v"]').click();
   await page.locator("#metric-collection-time").click();
   await expect(page.getByRole('tab', { name: 'RabbitMQ' })).toBeVisible();

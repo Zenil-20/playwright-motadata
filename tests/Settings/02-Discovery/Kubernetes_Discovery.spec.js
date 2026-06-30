@@ -83,6 +83,22 @@ test('Login to Motadata AIOps', async () => {
     // The discovery scan runs server-side and can take minutes before the result row
     // surfaces, so the default 5s expect timeout is far too short — wait it out.
     await expect(page.getByRole('gridcell', { name: process.env.Kubernetes_Master_Node_IP, exact: true }).first()).toBeVisible({ timeout: 480000 });
+
+    // Hostname 'motadata' is already provisioned — rename it inline before adding.
+// Clicking the name span turns it into an input; do not click elsewhere in between.
+const discoveredRow = page.locator('tr.k-master-row', {
+  has: page.locator('td', { hasText: process.env.Kubernetes_Master_Node_IP })
+}).first();
+await discoveredRow.locator('span.text-ellipsis').first().click();      // ← opens the inline editor (pencil affordance)
+// The first input in the row is the row checkbox; the name field is the textbox.
+const nameInput = discoveredRow.getByRole('textbox').first();
+await expect(nameInput).toBeVisible({ timeout: 10000 });
+await nameInput.fill('kubernetes');                                        // ← new monitor name
+await nameInput.press('Enter');
+await expect(discoveredRow.locator('span.text-ellipsis', { hasText: 'kubernetes' }).first())
+  .toBeVisible({ timeout: 10000 });                                     // ← verify rename stuck
+
+
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });

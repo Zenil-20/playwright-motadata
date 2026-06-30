@@ -99,7 +99,19 @@ metric_description_popover:                                       # THE feature 
 # verified 2026-06-02
 ```
 
-# 2. Monitors (Inventory)   ⬜ not yet harvested
+# 2. Monitors (Inventory)
+
+## 2.1 Inventory grid — view toggle   (/inventory/Server/groups, and sibling /inventory/<type>/groups)
+screen: Server inventory landing
+notes:
+  - "The page can load in the DASHBOARD view (donut + hexagon widgets) which has NO Search box; the searchable LIST/table view has the Search box (//input[@placeholder='Search'])."
+  - "The view toggle is a SINGLE Ant circle-button whose title reflects the OTHER view: in dashboard view it reads title='Grid' (click → list/table view); in list view it reads title='Dashboard' (click → dashboard view). There is NO title='List' button."
+  - "Detect list view by Search-box presence; if absent, click button[title='Grid']. Helper: ensureListView(page) in tests/fixtures/auth.js."
+locators:
+  to_list_toggle:   "button[title='Grid']"        # shown in dashboard view; click → searchable list/table view   # confidence high  # verified 2026-06-29 (DevTools $0)
+  to_dashboard_toggle: "button[title='Dashboard']" # shown in list view; click → dashboard/hexagon view            # confidence high  # verified 2026-06-29
+  list_search:      "//input[@placeholder='Search']"   # only present in LIST/table view
+
 # 3. Alerts   ⬜ not yet harvested
 # 4. SLO   ⬜ not yet harvested
 # 5. Reports   ⬜ not yet harvested

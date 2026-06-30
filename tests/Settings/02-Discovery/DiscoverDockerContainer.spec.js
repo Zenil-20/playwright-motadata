@@ -16,7 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
-import { login, logout } from '../../fixtures/auth.js';
+import { login, logout, ensureListView } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -105,9 +105,9 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server 172.16.15.2
     test.setTimeout(300000);
     // Navigate to the Server inventory on the master server set in .env (not a hardcoded IP).
     await page.goto(`${BASE_URL}/inventory/Server/groups`);
-    // Smart wait — the inventory SPA shows "Loading..." first, so allow time for the
-    // Search box to render (expect() ignores page.setDefaultTimeout — it defaults to 5s).
-    await expect(page.locator("//input[@placeholder='Search']")).toBeVisible({ timeout: 120000 });
+    // The inventory can land in GRID/Dashboard view (no Search box). Force LIST view first,
+    // otherwise the Search wait below hangs. ensureListView no-ops when already in list view.
+    await ensureListView(page);
     await page.locator("//input[@placeholder='Search']").fill('motadata234');
     // Wait for the grid to filter down to the searched device, then open that device.
     await expect(page.getByRole('link', { name: 'motadata234' })).toBeVisible({ timeout: 60000 });

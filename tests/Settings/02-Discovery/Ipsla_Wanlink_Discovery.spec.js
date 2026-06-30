@@ -167,25 +167,34 @@ async function provisionRediscovery(page) {
   await page.locator('#rediscovery-minimized-box').click();
   await page.locator('#rediscovery-minimized-box button')
     .filter({ has: page.locator("svg[data-icon='window-restore']") }).click();
-  // The rediscovery runs ASYNCHRONOUSLY (~25s) and only then surfaces the WAN-link
-  // row(s). The panel shows a TRANSIENT "No data found" first, so we must wait for
-  // the actual rows — otherwise provisioning is silently skipped.
-  await expect.poll(async () => page.locator('tr.k-master-row').count(), { timeout: 150000 })
-    .toBeGreaterThan(0);
-  // Select EVERY discovered WAN link (the Provision button only appears once a
-  // selection exists) so all of them get provisioned, not just the first.
-  const rowCheckboxes = page.locator('tr.k-master-row').getByRole('checkbox');
-  const count = await rowCheckboxes.count();
-  for (let i = 0; i < count; i++) await rowCheckboxes.nth(i).check();
+  // The rediscovery runs ASYNCHRONOUSLY and can take a while (tens of seconds to a few
+  // minutes). The panel flaps through states — it can show STALE rows, then a TRANSIENT
+  // "No data found", then the REAL WAN-link row(s). Acting on the stale/transient grid is
+  // what made this fail early ("No data found" while waiting for Provision). So retry the
+  // whole select-and-enable cycle until the grid settles into its final populated state
+  // where a real selection makes the Provision button appear + enabled.
   const provisionBtn = page.getByRole('button', { name: 'Provision' });
-  await expect(provisionBtn).toBeEnabled();
+  await expect(async () => {
+    // Select EVERY discovered WAN link (the Provision button only appears once a
+    // selection exists) so all of them get provisioned, not just the first.
+    const rowCheckboxes = page.locator('tr.k-master-row').getByRole('checkbox');
+    const count = await rowCheckboxes.count();
+    expect(count, 'WAN-link rediscovery rows not surfaced yet').toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) await rowCheckboxes.nth(i).check();
+    await expect(provisionBtn).toBeEnabled({ timeout: 5000 });
+  }).toPass({ timeout: 240000, intervals: [3000, 5000, 5000] });
   await provisionBtn.click();
   // Once provisioned, the rediscovery grid clears back to "No data found". Scope to
   // the level-1 heading: the device-overview page in the background has its own
   // "No data found" widget heading (an <h5>), so an unscoped heading match is ambiguous.
   await expect(page.getByRole('heading', { name: 'No data found', level: 1 })).toBeVisible({ timeout: 120000 });
-  await page.locator("button:has(svg[data-icon='times'])").first()
-    .click({ timeout: 10000 }).catch(() => {});
+  // Close the WAN-Link result panel via its distinctive CIRCULAR X button. The old
+  // `button:has(svg[data-icon='times']).first()` grabbed a different times icon on the page
+  // (and swallowed the failure), so the panel never closed. Target the circle/transparent
+  // close button specifically.
+  const closePanel = page.locator('button.ant-btn-circle:has(svg[data-icon="times"])').first();
+  await expect(closePanel).toBeVisible({ timeout: 30000 });
+  await closePanel.click();
 }
 
 test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {

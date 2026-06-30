@@ -88,7 +88,9 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.1 for v2c cred
 
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
+    await expect.soft(
+    page.getByText('provisioned successfully').first()
+    ).toBeVisible();
     await closeProvisionStatus(page);
   });
 

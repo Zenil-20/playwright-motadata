@@ -20,6 +20,20 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env', quiet: true });
 
+// Guard: strip any trailing slash(es) from the base URL. If .env has
+// "Motadata_Aiops=https://host/", then `${Motadata_Aiops}/settings/...` becomes
+// "https://host//settings/..." which the app 404s on. Normalising here ONCE means
+// every spec that imports this module gets a clean base URL via process.env — no
+// per-spec edits, and it no longer matters whether .env was typed with a trailing /.
+// (dotenv defaults to override:false, so a spec's later dotenv.config won't undo this.)
+if (process.env.Motadata_Aiops) {
+  process.env.Motadata_Aiops = process.env.Motadata_Aiops.replace(/\/+$/, '');
+}
+
+/** Normalised AIOps base URL (no trailing slash). Import this if you prefer an
+ *  explicit constant over reading process.env directly. */
+export const BASE_URL = process.env.Motadata_Aiops || '';
+
 /**
  * Log in to Motadata AIOps. Credentials default to the .env values; pass explicit
  * ones for multi-user flows (e.g. UserLogin).
@@ -41,6 +55,38 @@ export async function login(
   // Pass { waitForAvatar: false } for flows that don't land on the dashboard, e.g. a
   // first-time login that's redirected to a forced "change password" page.
   if (waitForAvatar) await expect(page.locator('#user-avatar')).toBeVisible({ timeout: 60000 });
+}
+
+/**
+ * Ensure the inventory page (e.g. /inventory/Server/groups) is in the searchable LIST/table
+ * view before searching. The page can load in the DASHBOARD view (donut + hexagon widgets),
+ * which renders NO Search box — so a bare expect(Search).toBeVisible() hangs there for the
+ * full default timeout.
+ *
+ * The view toggle is a SINGLE Ant circle-button whose title reflects the OTHER view:
+ *   - in the dashboard/hexagon view (no search box) it reads title="Grid"  → click it to
+ *     flip to the searchable table view;
+ *   - in the table/list view (search box present) it reads title="Dashboard".
+ * There is no title="List" button. List view ⇔ the Search box is present; if it isn't, we're
+ * in the dashboard view and click button[title="Grid"] to switch over.
+ *
+ * We race the Search box against the Grid toggle so we don't wait the full SPA "Loading..."
+ * budget, then only click when the search box is absent. Every wait is bounded so a wrong/
+ * absent toggle fails fast instead of hanging 500s.
+ */
+export async function ensureListView(page) {
+  const search = page.locator("//input[@placeholder='Search']");
+  // Present only in the dashboard/hexagon view; clicking it flips to the table (search) view.
+  const gridToggle = page.locator("button[title='Grid']");
+  // Let the inventory SPA settle: whichever of (Search box | Grid toggle) renders first wins.
+  await Promise.race([
+    search.waitFor({ state: 'visible', timeout: 120000 }).catch(() => {}),
+    gridToggle.waitFor({ state: 'visible', timeout: 120000 }).catch(() => {}),
+  ]);
+  if (await search.isVisible()) return; // already list view — leave it alone
+  // Dashboard/hexagon view → flip to the table view, then wait for the Search box to render.
+  await gridToggle.click({ timeout: 30000 });
+  await expect(search).toBeVisible({ timeout: 120000 });
 }
 
 /**
