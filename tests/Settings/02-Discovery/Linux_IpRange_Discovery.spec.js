@@ -68,7 +68,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     // Exclude IP range
     await page.locator("//div[@id='exclude-ipType']//span[contains(text(),'IP Range')]").click();
     await page.locator("//input[@placeholder='e.g. IP Range']").fill(process.env.Linux_IpRange_Discovery_Excluded_ip_range);
-    await page.locator("//form[@class='flex-grow flex ant-form ant-form-vertical']//button[@type='submit']")
+    await page.locator("//form[@class='flex-grow flex ant-form ant-form-vertical']//button[@type='submit']").click();
     await page.locator('#create-credential-btn-id').click();
     await page.locator("//input[@id='credential-profile-name-id']").fill('Linux Device IP Range Credential');
     await page.locator("//input[@id='username-id']").fill(process.env.Linux_IpRange_Discovery_Credential_username);
@@ -84,7 +84,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await expect(page.locator("//div[contains(text(),'Discovered Objects')]")).toBeVisible({ timeout: 120000 });
     await page.locator('input[type="checkbox"]').nth(0).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
+    await expect.soft(page.getByText('provisioned successfully').first()).toBeVisible();
     await closeProvisionStatus(page);
   });
 

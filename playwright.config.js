@@ -141,7 +141,7 @@ export default defineConfig({
    *   PW_WORKERS=8 npx playwright test   (server has spare capacity / push throughput)
    *   PW_WORKERS=4 npx playwright test   (pin back to the old behaviour)
    */
-  workers: process.env.CI ? 2 : (process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : '75%'),
+  workers: process.env.CI ? 5 : (process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : '55%'),
   /* Test timeout - increase for slow networks, decrease for production */
   timeout: 120000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */

@@ -16,7 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
-import { login, logout } from '../../fixtures/auth.js';
+import { login, logout, ensureListView } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -190,6 +190,10 @@ test.describe.serial('Motadata AIOps Custom Monitoring Field flow', () => {
       timeout: 60000,
       waitUntil: 'domcontentloaded',
     });
+    // The inventory page can land in the dashboard/hexagon view (no table, no Search box),
+    // where .k-master-row never renders. Force the searchable table/list view first; no-op
+    // when already in list view.
+    await ensureListView(page);
     await expect(page.locator('.k-master-row').first()).toBeVisible({ timeout: 60000 });
   }
 

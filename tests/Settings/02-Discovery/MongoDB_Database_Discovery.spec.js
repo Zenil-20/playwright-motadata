@@ -60,11 +60,12 @@ test.describe.serial('Motadata AIOps Discovery Flow For MongoDB Discovery', () =
     await page.locator("//input[@id='username-id']").fill(process.env.MongoDB_username);
     await page.locator("//input[@id='password-id']").fill(process.env.MongoDB_password);
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+    await page.locator("//input[@id='port-id']").fill(process.env.MongoDB_port || '27017');
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.MongoDB_ip).first()).toBeVisible();
+    await expect.soft(page.getByText(process.env.MongoDB_ip).first()).toBeVisible();
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
+    await expect.soft(page.getByText('provisioned successfully')).toBeVisible();
     await page.locator("//i[@class='anticon text-neutral-light']//*[name()='svg']").click();
     await page.locator("//input[@name='discovery-search']").fill(process.env.MongoDB_ip);
     await expect(page.getByRole('gridcell', { name: process.env.MongoDB_ip })).toBeVisible();

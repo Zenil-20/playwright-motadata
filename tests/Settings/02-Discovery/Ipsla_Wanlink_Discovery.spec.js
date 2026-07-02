@@ -18,7 +18,7 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 import { time } from 'node:console';
-import { login, logout } from '../../fixtures/auth.js';
+import { login, logout, ensureListView } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -144,8 +144,10 @@ async function selectWanCredential(page, name) {
 async function openDeviceWanForm(page, deviceIp, deviceLink) {
   await page.getByRole('menuitem', { name: 'Monitors' }).click();
   await page.getByRole('tab', { name: 'Network' }).click();
+  // The Network tab can land in dashboard view (no Search box). Force the table/list view
+  // first, otherwise the search below never finds its input. No-ops when already in list view.
+  await ensureListView(page);
   const search = page.locator("//input[@placeholder='Search']").first();
-  await expect(search).toBeVisible({ timeout: 60000 });
   const link = page.getByRole('link', { name: deviceLink, exact: true });
   // The grid search races with a late reload that repopulates the full device list,
   // so a single fill can be silently undone. Retry the filter until the row appears.

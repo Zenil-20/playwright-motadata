@@ -75,9 +75,11 @@ export async function login(
  * absent toggle fails fast instead of hanging 500s.
  */
 export async function ensureListView(page) {
-  const search = page.locator("//input[@placeholder='Search']");
+  // .first() — some inventory screens (e.g. Monitors > Network) render more than one
+  // placeholder='Search' input, so a bare locator would trip strict mode.
+  const search = page.locator("//input[@placeholder='Search']").first();
   // Present only in the dashboard/hexagon view; clicking it flips to the table (search) view.
-  const gridToggle = page.locator("button[title='Grid']");
+  const gridToggle = page.locator("button[title='Grid']").first();
   // Let the inventory SPA settle: whichever of (Search box | Grid toggle) renders first wins.
   await Promise.race([
     search.waitFor({ state: 'visible', timeout: 120000 }).catch(() => {}),
