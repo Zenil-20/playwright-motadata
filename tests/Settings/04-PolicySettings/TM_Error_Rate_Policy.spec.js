@@ -48,7 +48,7 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
     await page.locator('a[href="/settings/policy-settings/apm"]').click();
     await page.getByRole('button', { name: 'Create Policy' }).click();
 
-    await page.locator('input#policy-name').fill('APM Playwright Policy');
+    await page.locator('input#policy-name').fill('Error Rate Playwright Policy');
 
     const tags = ['apm', 'automation', 'trace metric'];
     const tagBox = page.locator('[role="combobox"]');
@@ -60,8 +60,8 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
 
     // Select Counter
     await page.locator("//input[@placeholder='Select Counter']").click();
-    await page.locator("//input[@placeholder='Search']").fill('service.traces.volume.bytes');
-    await page.getByText('service.traces.volume.bytes', { exact: true }).click();
+    await page.locator("//input[@placeholder='Search']").fill('service.trace.error.rate');
+    await page.getByText('service.trace.error.rate', { exact: true }).click();
 
     // Source Filter -> Monitor, then select all monitors
     await page.locator("//input[@placeholder='Select']").first().click();
@@ -81,18 +81,18 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
     const majorRow = page.locator('text=major').locator('xpath=ancestor::*[self::div][1]');
     const warningRow = page.locator('text=warning').locator('xpath=ancestor::*[self::div][1]');
 
-    await setThreshold(criticalRow, '10240');
-    await setThreshold(majorRow, '5124');
-    await setThreshold(warningRow, '3068');
+    await setThreshold(criticalRow, '50');
+    await setThreshold(majorRow, '20');
+    await setThreshold(warningRow, '10');
 
     // Set Alert Message, Notification, and Declare Incident are left at their
-    // default values — no changes made to those sections.
+    // default values â no changes made to those sections.
 
     await page.getByRole('button', { name: 'Create Policy' }).click();
 
     // Verify the policy was created
     await expect(
-      page.locator('td', { hasText: 'APM Playwright Policy' })
+      page.locator('td', { hasText: 'Error Rate Playwright Policy' })
     ).toBeVisible();
   });
 });
