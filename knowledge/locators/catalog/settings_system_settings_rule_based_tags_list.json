@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | System Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "rule-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-create-rule-tag",
+  "start-rediscovery"
+ ],
+ "buttons": [
+  "Create Rule"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Rule Name",
+  "description",
+  "Operation",
+  "Qualified Count",
+  "tag",
+  "Last Ran At",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 14,
+ "route": "/settings/system-settings/rule-based-tags-list"
+}

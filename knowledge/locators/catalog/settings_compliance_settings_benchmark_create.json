@@ -1,0 +1,47 @@
+{
+ "title": "Motadata ObserveOps | Compliance Settings",
+ "labels": [
+  "Benchmark Name",
+  "Description",
+  "Tags"
+ ],
+ "inputs": [
+  {
+   "name": "bencmark-name",
+   "type": "text",
+   "id": "",
+   "placeholder": "Benchmark Name"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Description"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Enter Name"
+  }
+ ],
+ "buttonIds": [
+  "add-rule-group",
+  "reset-btn",
+  "create-snmp-device-catalog-btn"
+ ],
+ "buttons": [
+  "Add Rule Group",
+  "Reset",
+  "Create Benchmark"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 1,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/compliance-settings/benchmark/create"
+}

@@ -1,0 +1,63 @@
+{
+ "title": "Motadata ObserveOps | Integration",
+ "labels": [
+  "Application Name",
+  "Credential Profile",
+  "Auto Sync",
+  "Sync Every",
+  "Use Proxy Server"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "observeops-app-manifest"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "generate-manifest-btn",
+  "create-credential-btn-id",
+  "auto-sync-id",
+  "proxy-server-id",
+  "reset-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "Generate Manifest",
+  "Create Credential Profile",
+  "ON",
+  "OFF",
+  "Reset",
+  "Save"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 2,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/integration/slack"
+}

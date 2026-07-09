@@ -1,0 +1,31 @@
+{
+ "title": "Motadata ObserveOps | Alert Dashboard",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [
+  "Reload everything (counts ",
+  "Reload pie \u00b7 alert overvie",
+  "Reload column \u00b7 by policy ",
+  "Reload historic \u00b7 today tr",
+  "ALL parallel"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [
+  "Metric",
+  "Log",
+  "Flow",
+  "Trap",
+  "NetRoute",
+  "APM",
+  "Network Config",
+  "Real User Monitoring"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/alerts/"
+}

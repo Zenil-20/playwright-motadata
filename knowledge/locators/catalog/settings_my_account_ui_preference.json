@@ -1,0 +1,50 @@
+{
+ "title": "Motadata ObserveOps | UI Preferences",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "default",
+  "save"
+ ],
+ "buttons": [
+  "OFF",
+  "Reset to default",
+  "Save"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 3,
+ "checkboxes": 0,
+ "route": "/settings/my-account/ui-preference"
+}

@@ -1,0 +1,37 @@
+{
+ "title": "Motadata ObserveOps | Column Mappers",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "btn-filter-mappers"
+ ],
+ "buttons": [],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Key",
+  "mapper.plugin.ids",
+  "mapper.status",
+  "mapper.data.categories",
+  "mapper.instance",
+  "mapper.plugin.name",
+  "Plugin ID \u2192 Name",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 1,
+ "checkboxes": 0,
+ "route": "/dashboard/column-mappers"
+}

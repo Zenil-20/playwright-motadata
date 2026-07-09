@@ -1,0 +1,37 @@
+{
+ "title": "Motadata ObserveOps | DNS Resolver",
+ "labels": [
+  "IP Address/Host Name"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "172.31.11.52"
+  }
+ ],
+ "buttonIds": [
+  "utility-dns-resolver-reset-btn",
+  "utility-dns-resolver-test-btn"
+ ],
+ "buttons": [
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/utility/dns-resolver"
+}

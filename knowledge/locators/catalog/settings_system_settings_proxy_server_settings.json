@@ -1,0 +1,59 @@
+{
+ "title": "Motadata ObserveOps | System Settings",
+ "labels": [
+  "Proxy Server Enable",
+  "Proxy Server",
+  "Proxy Server Port",
+  "Timeout (sec)",
+  "Proxy Type",
+  "Authentication Requires"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "proxy-server",
+   "type": "text",
+   "id": "smtp-server-id",
+   "placeholder": ""
+  },
+  {
+   "name": "proxy-server-port",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "timeout",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "smtp-server-requires-authentication-btn-",
+  "reset-btn",
+  "test-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "ON",
+  "OFF",
+  "Reset",
+  "Test",
+  "Save Proxy Server Settings"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 2,
+ "radios": 3,
+ "checkboxes": 0,
+ "route": "/settings/system-settings/proxy-server-settings"
+}

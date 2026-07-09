@@ -1,0 +1,41 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-monitor-template",
+   "type": "text",
+   "id": "",
+   "placeholder": "search"
+  }
+ ],
+ "buttonIds": [
+  "create-monitor-template-btn"
+ ],
+ "buttons": [
+  "Create New Template"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Template Name",
+  "Template Type",
+  "Description",
+  "Used Count",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/monitor-templates"
+}

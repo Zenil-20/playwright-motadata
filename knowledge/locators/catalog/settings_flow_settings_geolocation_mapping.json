@@ -1,0 +1,42 @@
+{
+ "title": "Motadata ObserveOps | Flow",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-protocol-list",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-protocol-btn"
+ ],
+ "buttons": [
+  "Create Geolocation Mapping"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Profile Name",
+  "Description",
+  "Country",
+  "City",
+  "IP Details",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/flow-settings/geolocation-mapping"
+}

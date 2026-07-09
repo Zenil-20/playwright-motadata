@@ -1,0 +1,41 @@
+{
+ "title": "Motadata ObserveOps | Compliance Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "rule-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-create-rule"
+ ],
+ "buttons": [
+  "Create Rule"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Rule",
+  "description",
+  "tag",
+  "Rule Type",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/compliance-settings/rules"
+}

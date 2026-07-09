@@ -1,0 +1,42 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-process-list",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn",
+  "btn-create-process"
+ ],
+ "buttons": [
+  "Create Process",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Process",
+  "Application Type",
+  "OS Type",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/processes"
+}

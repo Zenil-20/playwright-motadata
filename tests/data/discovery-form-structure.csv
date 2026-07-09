@@ -1,0 +1,7 @@
+check,kind,target,locator,expected
+profile_name,field,Discovery Profile Name,//input[@id='profile-id'] | //input[@name='profile-name'],visible
+ip_host,field,IP / Host,//input[@id='ip-address-id'],visible
+db_service_name,field,DB Service / Instance Name,//input[@id='db-service-name-id'],visible
+port,field,Port,//input[@id='port-id'],visible
+create_credential,button,Create Credential (+),//button[@id='create-credential-btn-id'],visible
+save_run,button,Save and Run,#save-run-btn-id,visible

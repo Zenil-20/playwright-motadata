@@ -1,0 +1,39 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-business-hour",
+   "type": "text",
+   "id": "",
+   "placeholder": "search"
+  }
+ ],
+ "buttonIds": [
+  "create-business-hour-btn"
+ ],
+ "buttons": [
+  "Create Monitoring Hour"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Monitoring Hour Name",
+  "Used Count",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/monitoring-hours"
+}

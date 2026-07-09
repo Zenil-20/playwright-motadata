@@ -1,0 +1,32 @@
+{
+ "title": "Motadata ObserveOps | Metric Explorer",
+ "labels": [
+  "Select Monitor"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "5m",
+  "Save View"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [
+  "Metric 1"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 4,
+ "checkboxes": 0,
+ "route": "/metric-explorer/"
+}

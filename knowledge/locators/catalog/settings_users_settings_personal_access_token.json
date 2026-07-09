@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "access-token-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-access-token-btn"
+ ],
+ "buttons": [
+  "Create Token"
+ ],
+ "dataCy": [],
+ "dataTestid": [
+  "pat-search-input",
+  "pat-export-pdf-btn",
+  "pat-export-csv-btn",
+  "pat-create-btn"
+ ],
+ "gridHeaders": [
+  "Name",
+  "Description",
+  "User Name",
+  "Validity",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/personal-access-token"
+}

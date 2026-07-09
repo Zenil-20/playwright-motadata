@@ -1,0 +1,29 @@
+{
+ "title": "Motadata ObserveOps | Plugin Library",
+ "labels": [
+  "Name",
+  "Script"
+ ],
+ "inputs": [
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Reset",
+  "Save & Run"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/plugin-library/log-parsers/create"
+}

@@ -1,0 +1,60 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [
+  "Server IP",
+  "Authentication Port",
+  "Server Secret",
+  "Protocol"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "server-ip",
+   "type": "text",
+   "id": "server-ip-id",
+   "placeholder": "e.g. 172.16.18.11"
+  },
+  {
+   "name": "authentication-port",
+   "type": "text",
+   "id": "authentication-port-id",
+   "placeholder": ""
+  },
+  {
+   "name": "server-secret",
+   "type": "text",
+   "id": "server-secret-id",
+   "placeholder": ""
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "reset-btn",
+  "save-radius-server-btn"
+ ],
+ "buttons": [
+  "Reset",
+  "Save Radius Server"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/radius-server-settings"
+}

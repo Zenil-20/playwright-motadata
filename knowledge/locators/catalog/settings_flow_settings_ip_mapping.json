@@ -1,0 +1,38 @@
+{
+ "title": "Motadata ObserveOps | Flow",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-protocol-list",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-protocol-btn"
+ ],
+ "buttons": [
+  "Create IP Mapping"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Profile Name",
+  "Description",
+  "Source",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/flow-settings/ip-mapping"
+}

@@ -1,0 +1,47 @@
+{
+ "title": "Motadata ObserveOps | Flow",
+ "labels": [
+  "sFlow Port",
+  "Netflow Port",
+  "Aggregation Time (Min)",
+  "sFlow v5 Traffic Direction",
+  "BGP Port Enable"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "port",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "port",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "smtp-server-requires-authentication-btn-",
+  "btn-save-my-profile"
+ ],
+ "buttons": [
+  "OFF",
+  "Update Flow Settings"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/settings/flow-settings/flow-settings"
+}

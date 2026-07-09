@@ -1,0 +1,47 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [
+  "Service Provider Entity ID",
+  "Redirect URL",
+  "Service Provider Login URL",
+  "Service Provider Logout URL",
+  "Identity Provider",
+  "Identify Provider Configuratio",
+  "Identity Provider Metadata Fil",
+  "Enable User Import"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "reset-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "OFF",
+  "Reset",
+  "Save"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/single-sign-on"
+}

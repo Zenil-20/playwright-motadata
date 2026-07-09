@@ -1,0 +1,35 @@
+{
+ "title": "Motadata ObserveOps | Log Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Create Log Directory Path"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Application",
+  "Log Path Directory",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/log-settings/directory-paths"
+}

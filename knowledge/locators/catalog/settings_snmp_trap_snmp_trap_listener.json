@@ -1,0 +1,41 @@
+{
+ "title": "Motadata ObserveOps | Snmp Trap",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-trap-listener",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-create-trap-listener"
+ ],
+ "buttons": [
+  "Create SNMP Trap Listener"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "NAME",
+  "DESCRIPTION",
+  "SNMP VERSION",
+  "PORT",
+  "ACTIONS"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/snmp-trap/snmp-trap-listener"
+}

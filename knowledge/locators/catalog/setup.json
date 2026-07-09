@@ -1,0 +1,19 @@
+{
+ "title": "Motadata ObserveOps | Setup",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [
+  "Let's start",
+  "Skip setup"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 2,
+ "route": "/setup/"
+}

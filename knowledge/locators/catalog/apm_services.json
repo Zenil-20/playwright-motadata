@@ -1,0 +1,30 @@
+{
+ "title": "Motadata ObserveOps | Apm",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Filter"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [
+  "Services",
+  "Explorer",
+  "Error Tracker",
+  "Compare"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/apm/services"
+}

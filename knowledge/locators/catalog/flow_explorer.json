@@ -1,0 +1,56 @@
+{
+ "title": "Motadata ObserveOps | Flow Explorer",
+ "labels": [
+  "Counter",
+  "Aggregation",
+  "Flow Source",
+  "Result by"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": " "
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Save as Widget"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [
+  "flow-top-tab-bar"
+ ],
+ "gridHeaders": [],
+ "tabs": [
+  "Dashboard",
+  "Flow Analytics",
+  "Explorer"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 7,
+ "checkboxes": 0,
+ "route": "/flow/explorer"
+}

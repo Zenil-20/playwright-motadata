@@ -1,0 +1,91 @@
+{
+ "title": "Motadata ObserveOps | Plugin Library",
+ "labels": [
+  "Runbook Name",
+  "Description",
+  "Runbook Category",
+  "Monitors",
+  "Credential Profile",
+  "Port",
+  "Timeout",
+  "SSH Script",
+  "Script Language",
+  "Parsing Script"
+ ],
+ "inputs": [
+  {
+   "name": "runbook-name",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "runbook-description",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "port",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "timeout",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Add Variable",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 6,
+ "checkboxes": 0,
+ "route": "/settings/plugin-library/runbooks/create"
+}

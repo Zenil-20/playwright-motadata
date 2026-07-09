@@ -1,0 +1,42 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-service-list",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn",
+  "btn-create-service"
+ ],
+ "buttons": [
+  "Create Service",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Service",
+  "Application Type",
+  "OS Type",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/services"
+}

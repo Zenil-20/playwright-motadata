@@ -1,0 +1,39 @@
+{
+ "title": "Motadata ObserveOps | Group",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Monitor",
+  "Monitor Type",
+  "Assigned Groups",
+  "Monitoring",
+  "Log",
+  "Flow",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 102,
+ "route": "/settings/group-settings/data-security"
+}

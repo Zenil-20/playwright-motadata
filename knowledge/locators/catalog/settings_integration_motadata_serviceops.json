@@ -1,0 +1,64 @@
+{
+ "title": "Motadata ObserveOps | Integration",
+ "labels": [
+  "Server URL",
+  "URL Time Out",
+  "Credential Profiles",
+  "Source",
+  "Fail Over Email",
+  "Auto Sync",
+  "Sync Every",
+  "Use Proxy Server"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": " "
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Schedule Every"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "auto-sync-id",
+  "reset-btn",
+  "test-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "ON",
+  "Reset",
+  "Test",
+  "Save"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 2,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/settings/integration/motadata-serviceops"
+}

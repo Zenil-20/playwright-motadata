@@ -1,0 +1,42 @@
+{
+ "title": "Motadata ObserveOps | NCCM Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn"
+ ],
+ "buttons": [
+  "Create Template",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Template",
+  "Vendor",
+  "OS Type",
+  "Devices",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 86,
+ "route": "/settings/nccm-settings/device-template"
+}

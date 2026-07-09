@@ -1,0 +1,37 @@
+{
+ "title": "Motadata ObserveOps | Approval",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "filter-btn"
+ ],
+ "buttons": [
+  "Filter"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Approvals",
+  "Device Name",
+  "Device Type",
+  "Approver",
+  "Status",
+  "Type",
+  "Requested On",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/ncm-approval"
+}

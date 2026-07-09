@@ -1,0 +1,41 @@
+{
+ "title": "Motadata ObserveOps | NCCM",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "filter by name\u2026"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Type",
+  "Vendor",
+  "Os Type",
+  "Number of Devices",
+  "Host Name",
+  "IP",
+  "Type",
+  "Vendor",
+  "Last Backup Time",
+  "Device",
+  "Type",
+  "Vendor",
+  "Last Backup Time"
+ ],
+ "tabs": [
+  "Overview",
+  "Compliance",
+  "Explorer"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/nccm/"
+}

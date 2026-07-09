@@ -1,0 +1,52 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "create-user-btn",
+  "start-rediscovery"
+ ],
+ "buttons": [
+  "Add LDAP Server"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [
+  "ldap-grid-container",
+  "ldap-search-input",
+  "ldap-column-selector",
+  "ldap-export-pdf-btn",
+  "ldap-export-csv-btn",
+  "ldap-create-btn",
+  "ldap-sync-trigger"
+ ],
+ "gridHeaders": [
+  "ip/Host",
+  "fqdn",
+  "LDAP Groups",
+  "Last Sync At",
+  "Sync",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/ldap-server-settings"
+}

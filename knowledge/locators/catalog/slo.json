@@ -1,0 +1,19 @@
+{
+ "title": "Motadata ObserveOps | Slo",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [
+  "Create an SLO",
+  "Documentation"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/slo/"
+}

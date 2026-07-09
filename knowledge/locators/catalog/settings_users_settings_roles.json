@@ -1,0 +1,43 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "role-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-role-btn"
+ ],
+ "buttons": [
+  "Create Role"
+ ],
+ "dataCy": [],
+ "dataTestid": [
+  "roles-search-input",
+  "roles-export-pdf-btn",
+  "roles-export-csv-btn",
+  "roles-create-btn"
+ ],
+ "gridHeaders": [
+  "Role Name",
+  "Description",
+  "Used Count",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/roles"
+}

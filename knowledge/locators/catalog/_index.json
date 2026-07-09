@@ -1,0 +1,1682 @@
+[
+ {
+  "route": "/alerts",
+  "title": "Motadata ObserveOps | Alert Dashboard",
+  "inputs": 0,
+  "buttons": 5,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/alerts/",
+  "title": "Motadata ObserveOps | Alert Dashboard",
+  "inputs": 0,
+  "buttons": 5,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/apm",
+  "title": "Motadata ObserveOps | Apm",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/apm/",
+  "title": "Motadata ObserveOps | Apm",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/apm/compare",
+  "title": "Motadata ObserveOps | Apm",
+  "inputs": 4,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/apm/error-tracker",
+  "title": "Motadata ObserveOps | Apm",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 7
+ },
+ {
+  "route": "/apm/explorer",
+  "title": "Motadata ObserveOps | Apm",
+  "inputs": 4,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/apm/services",
+  "title": "Motadata ObserveOps | Apm",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/audit",
+  "title": "Motadata ObserveOps | Audit",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 7
+ },
+ {
+  "route": "/audit/",
+  "title": "Motadata ObserveOps | Audit",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 7
+ },
+ {
+  "route": "/dashboard",
+  "title": "Motadata ObserveOps | shivani",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/dashboard/column-mappers",
+  "title": "Motadata ObserveOps | Column Mappers",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/dashboard/socket-playground",
+  "title": "Motadata ObserveOps | Socket Playground",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/flow",
+  "title": "Motadata ObserveOps | Flow Dashboard",
+  "inputs": 3,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/flow/",
+  "title": "Motadata ObserveOps | Flow Dashboard",
+  "inputs": 3,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/flow/analytics",
+  "title": "Motadata ObserveOps | Flow Explorer",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/flow/analytics/detail",
+  "title": "Motadata ObserveOps | Flow Explorer",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/flow/dashboard",
+  "title": "Motadata ObserveOps | Flow Dashboard",
+  "inputs": 3,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/flow/explorer",
+  "title": "Motadata ObserveOps | Flow Explorer",
+  "inputs": 4,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/health/",
+  "title": "Motadata ObserveOps | Health",
+  "inputs": 4,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 18
+ },
+ {
+  "route": "/inventory",
+  "title": "Motadata ObserveOps | All",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 9
+ },
+ {
+  "route": "/inventory/",
+  "title": "Motadata ObserveOps | All",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 9
+ },
+ {
+  "route": "/log",
+  "title": "Motadata ObserveOps | Log Explorer",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/log/",
+  "title": "Motadata ObserveOps | Log Explorer",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/log/live-tail",
+  "title": "Motadata ObserveOps | Log Explorer",
+  "inputs": 4,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/log/pattern-matched-log",
+  "title": "Motadata ObserveOps | Page Not Found",
+  "inputs": 0,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/log/search",
+  "title": "Motadata ObserveOps | Log Search",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/metric-explorer",
+  "title": "Motadata ObserveOps | Metric Explorer",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/metric-explorer/",
+  "title": "Motadata ObserveOps | Metric Explorer",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/nccm",
+  "title": "Motadata ObserveOps | NCCM",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 13
+ },
+ {
+  "route": "/nccm/",
+  "title": "Motadata ObserveOps | NCCM",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 13
+ },
+ {
+  "route": "/nccm/compliance",
+  "title": "Motadata ObserveOps | NCCM",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 6
+ },
+ {
+  "route": "/nccm/explorer",
+  "title": "Motadata ObserveOps | NCCM",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 13
+ },
+ {
+  "route": "/nccm/overview",
+  "title": "Motadata ObserveOps | NCCM",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 13
+ },
+ {
+  "route": "/ncm-approval",
+  "title": "Motadata ObserveOps | Approval",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 8
+ },
+ {
+  "route": "/netroute",
+  "title": "Motadata ObserveOps | NetRoute",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/netroute/",
+  "title": "Motadata ObserveOps | NetRoute",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/notifications",
+  "title": "Motadata ObserveOps",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/reports",
+  "title": "Motadata ObserveOps | Report",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/reports/",
+  "title": "Motadata ObserveOps | Report",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/reports/create",
+  "title": "Motadata ObserveOps | Report",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/rum",
+  "title": "Motadata ObserveOps | RUM",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/rum/",
+  "title": "Motadata ObserveOps | RUM",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings",
+  "title": "Motadata ObserveOps | My Profile",
+  "inputs": 6,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/",
+  "title": "Motadata ObserveOps | My Profile",
+  "inputs": 6,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/ai",
+  "title": "Motadata ObserveOps | Ai",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/ai/",
+  "title": "Motadata ObserveOps | Ai",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/ai/dependency-mapper",
+  "title": "Motadata ObserveOps | Ai",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/apm-settings",
+  "title": "Motadata ObserveOps | Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/apm-settings/",
+  "title": "Motadata ObserveOps | Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/apm-settings/application-registration",
+  "title": "Motadata ObserveOps | Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/compliance-settings",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/compliance-settings/",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/compliance-settings/audit-policy",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/compliance-settings/benchmark",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/compliance-settings/benchmark/create",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 3,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/compliance-settings/rules",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/compliance-settings/rules/create",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 4,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/compliance-settings/weighted-calculation",
+  "title": "Motadata ObserveOps | Compliance Settings",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/digital-experience-monitoring",
+  "title": "Motadata ObserveOps | Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 10
+ },
+ {
+  "route": "/settings/digital-experience-monitoring/",
+  "title": "Motadata ObserveOps | Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 10
+ },
+ {
+  "route": "/settings/digital-experience-monitoring/rum-applications",
+  "title": "Motadata ObserveOps | Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 10
+ },
+ {
+  "route": "/settings/flow-settings",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 3,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/flow-settings/",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 3,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/flow-settings/application-mapping",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/flow-settings/as-mapping",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 5
+ },
+ {
+  "route": "/settings/flow-settings/domain-mapping",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 4
+ },
+ {
+  "route": "/settings/flow-settings/flow-settings",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 3,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/flow-settings/geolocation-mapping",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/flow-settings/ip-mapping",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 4
+ },
+ {
+  "route": "/settings/flow-settings/protocol-mapping",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 3
+ },
+ {
+  "route": "/settings/flow-settings/sampling-rate",
+  "title": "Motadata ObserveOps | Flow",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 9
+ },
+ {
+  "route": "/settings/group-settings",
+  "title": "Motadata ObserveOps | Group",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/group-settings/",
+  "title": "Motadata ObserveOps | Group",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/group-settings/data-security",
+  "title": "Motadata ObserveOps | Group",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/integration",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 4,
+  "buttons": 5,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/integration/",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 4,
+  "buttons": 5,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/integration/atlassian-jira",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 4,
+  "buttons": 5,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/integration/integration-profile",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/integration/lama",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 9
+ },
+ {
+  "route": "/settings/integration/microsoft-teams",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 3,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/integration/motadata-serviceops",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 4,
+  "buttons": 5,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/integration/service-now",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 4,
+  "buttons": 5,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/integration/slack",
+  "title": "Motadata ObserveOps | Integration",
+  "inputs": 4,
+  "buttons": 6,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/log-settings",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/log-settings/",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/log-settings/directory-paths",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 3
+ },
+ {
+  "route": "/settings/log-settings/log-collection-profile",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/log-settings/log-forwarder",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 6
+ },
+ {
+  "route": "/settings/log-settings/log-inventory",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/log-settings/log-parsers",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/log-settings/log-parsers/create",
+  "title": "Motadata ObserveOps | Log Settings",
+  "inputs": 5,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/monitoring",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 9
+ },
+ {
+  "route": "/settings/monitoring/",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 9
+ },
+ {
+  "route": "/settings/monitoring/agent-monitor-settings",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 12
+ },
+ {
+  "route": "/settings/monitoring/cloud-monitor-settings",
+  "title": "Motadata ObserveOps",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/monitoring/custom-monitoring-field",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 2
+ },
+ {
+  "route": "/settings/monitoring/device-monitor-settings",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 9
+ },
+ {
+  "route": "/settings/monitoring/file-directory-list",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/monitoring/monitor-templates",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/monitoring/monitoring-hours",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 3
+ },
+ {
+  "route": "/settings/monitoring/monitoring-hours/create",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/monitoring/netroute-setting",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/monitoring/processes",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/monitoring/rediscover-setting",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/monitoring/service-check-monitor-settings",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/monitoring/services",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/monitoring/snmp-device-catalog",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/monitoring/snmp-device-catalog/create",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 7,
+  "buttons": 6,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/monitoring/topology-scanner",
+  "title": "Motadata ObserveOps | Monitoring",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/my-account",
+  "title": "Motadata ObserveOps | My Profile",
+  "inputs": 6,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/my-account/",
+  "title": "Motadata ObserveOps | My Profile",
+  "inputs": 6,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/my-account/license",
+  "title": "Motadata ObserveOps | My Account",
+  "inputs": 0,
+  "buttons": 5,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/my-account/my-profile",
+  "title": "Motadata ObserveOps | My Profile",
+  "inputs": 6,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/my-account/ui-preference",
+  "title": "Motadata ObserveOps | UI Preferences",
+  "inputs": 4,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/nccm-settings",
+  "title": "Motadata ObserveOps | NCCM Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 10
+ },
+ {
+  "route": "/settings/nccm-settings/",
+  "title": "Motadata ObserveOps | NCCM Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 10
+ },
+ {
+  "route": "/settings/nccm-settings/device-inventory",
+  "title": "Motadata ObserveOps | NCCM Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 10
+ },
+ {
+  "route": "/settings/nccm-settings/device-template",
+  "title": "Motadata ObserveOps | NCCM Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/nccm-settings/device-template/create",
+  "title": "Motadata ObserveOps | NCCM Settings",
+  "inputs": 4,
+  "buttons": 8,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/nccm-settings/firmware-update-profile",
+  "title": "Motadata ObserveOps | NCCM Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 4
+ },
+ {
+  "route": "/settings/network-discovery",
+  "title": "Motadata ObserveOps | Discovery",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/network-discovery/",
+  "title": "Motadata ObserveOps | Discovery",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/network-discovery/credential-profiles",
+  "title": "Motadata ObserveOps | Discovery",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/network-discovery/network-discovery-profiles",
+  "title": "Motadata ObserveOps | Discovery",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 2,
+  "grid": 7
+ },
+ {
+  "route": "/settings/network-discovery/network-discovery-profiles/create",
+  "title": "Motadata ObserveOps | Discovery",
+  "inputs": 10,
+  "buttons": 6,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/observability-pipeline",
+  "title": "Motadata ObserveOps | Observability Pipeline",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/observability-pipeline/",
+  "title": "Motadata ObserveOps | Observability Pipeline",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/observability-pipeline/log-collector-plugin",
+  "title": "Motadata ObserveOps | Observability Pipeline",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/observability-pipeline/log-ingestion",
+  "title": "Motadata ObserveOps | Observability Pipeline",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/observability-pipeline/log-pipeline",
+  "title": "Motadata ObserveOps | Observability Pipeline",
+  "inputs": 1,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/plugin-library",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 2,
+  "grid": 8
+ },
+ {
+  "route": "/settings/plugin-library/",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 2,
+  "grid": 8
+ },
+ {
+  "route": "/settings/plugin-library/log-parsers",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 2
+ },
+ {
+  "route": "/settings/plugin-library/log-parsers/create",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/plugin-library/metrics",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/plugin-library/metrics/create",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 8,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/plugin-library/runbooks",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 2,
+  "grid": 8
+ },
+ {
+  "route": "/settings/plugin-library/runbooks/create",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 9,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/plugin-library/topology-plugins",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/plugin-library/topology-plugins/create",
+  "title": "Motadata ObserveOps | Plugin Library",
+  "inputs": 8,
+  "buttons": 6,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/policy-settings",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/policy-settings/",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/policy-settings/apm",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/policy-settings/flow",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/policy-settings/log",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/policy-settings/metric",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/policy-settings/netroute",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 9
+ },
+ {
+  "route": "/settings/policy-settings/network-config",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/policy-settings/real-user-monitoring",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/policy-settings/trap",
+  "title": "Motadata ObserveOps | Policy Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/service-level-objective",
+  "title": "Motadata ObserveOps | Service Level Objective",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 8
+ },
+ {
+  "route": "/settings/service-level-objective/",
+  "title": "Motadata ObserveOps | Service Level Objective",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 8
+ },
+ {
+  "route": "/settings/service-level-objective/correction-profile",
+  "title": "Motadata ObserveOps | Service Level Objective",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 5
+ },
+ {
+  "route": "/settings/service-level-objective/penalty-profile",
+  "title": "Motadata ObserveOps | Service Level Objective",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/service-level-objective/slo-profile",
+  "title": "Motadata ObserveOps | Service Level Objective",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 8
+ },
+ {
+  "route": "/settings/snmp-trap",
+  "title": "Motadata ObserveOps",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/snmp-trap/",
+  "title": "Motadata ObserveOps | Snmp Trap",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/snmp-trap/snmp-trap-forwarder",
+  "title": "Motadata ObserveOps | Snmp Trap",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 5
+ },
+ {
+  "route": "/settings/snmp-trap/snmp-trap-listener",
+  "title": "Motadata ObserveOps | Snmp Trap",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/snmp-trap/snmp-trap-profiles",
+  "title": "Motadata ObserveOps | Snmp Trap",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/system-settings",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 4,
+  "buttons": 4,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 4,
+  "buttons": 4,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/backup-profiles",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/system-settings/data-retention",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/dns-server-profiles",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/system-settings/external-storage-profile",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 4
+ },
+ {
+  "route": "/settings/system-settings/mac-address-scanner",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 5
+ },
+ {
+  "route": "/settings/system-settings/mail-server-settings",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 4,
+  "buttons": 4,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/motadata-collector",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 0,
+  "dataCy": 1,
+  "grid": 8
+ },
+ {
+  "route": "/settings/system-settings/proxy-server-settings",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 4,
+  "buttons": 5,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/rebranding",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 1,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/rule-based-tags-list",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 7
+ },
+ {
+  "route": "/settings/system-settings/sms-server-settings",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 2,
+  "buttons": 4,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/ssh-security-settings",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 5,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/system-settings/two-factor-authentication",
+  "title": "Motadata ObserveOps | System Settings",
+  "inputs": 1,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/users-settings",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 11
+ },
+ {
+  "route": "/settings/users-settings/",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 11
+ },
+ {
+  "route": "/settings/users-settings/ldap-server-settings",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 1,
+  "grid": 6
+ },
+ {
+  "route": "/settings/users-settings/password-settings",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/users-settings/personal-access-token",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 5
+ },
+ {
+  "route": "/settings/users-settings/radius-server-settings",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 5,
+  "buttons": 2,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/users-settings/roles",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 4
+ },
+ {
+  "route": "/settings/users-settings/single-sign-on",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/users-settings/user-profiles",
+  "title": "Motadata ObserveOps | Users Settings",
+  "inputs": 2,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 6
+ },
+ {
+  "route": "/settings/utility",
+  "title": "Motadata ObserveOps | Ping",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/",
+  "title": "Motadata ObserveOps | Ping",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/cli-command",
+  "title": "Motadata ObserveOps | CLI Command",
+  "inputs": 3,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/dns-resolver",
+  "title": "Motadata ObserveOps | DNS Resolver",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/mac-address-resolver",
+  "title": "Motadata ObserveOps | MAC Address Resolver",
+  "inputs": 3,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/ping",
+  "title": "Motadata ObserveOps | Ping",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/power-shell-command",
+  "title": "Motadata ObserveOps | Power Shell Command",
+  "inputs": 3,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/snmp-community-check",
+  "title": "Motadata ObserveOps | SNMP Community Check",
+  "inputs": 3,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/snmp-ping",
+  "title": "Motadata ObserveOps | SNMP Ping",
+  "inputs": 3,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/snmp-walk",
+  "title": "Motadata ObserveOps | SNMP Walk",
+  "inputs": 4,
+  "buttons": 3,
+  "dataCy": 1,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/telnet",
+  "title": "Motadata ObserveOps | Telnet",
+  "inputs": 3,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/settings/utility/traceroute",
+  "title": "Motadata ObserveOps | TraceRoute",
+  "inputs": 2,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/setup",
+  "title": "Motadata ObserveOps | Setup",
+  "inputs": 0,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/setup/",
+  "title": "Motadata ObserveOps | Setup",
+  "inputs": 0,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/setup/flow",
+  "title": "Motadata ObserveOps | Setup",
+  "inputs": 0,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/setup/log",
+  "title": "Motadata ObserveOps | Setup",
+  "inputs": 0,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/setup/metric",
+  "title": "Motadata ObserveOps | Setup",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/slo",
+  "title": "Motadata ObserveOps | Slo",
+  "inputs": 0,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/slo/",
+  "title": "Motadata ObserveOps | Slo",
+  "inputs": 0,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/topology",
+  "title": "Motadata ObserveOps | Topology",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/trap-explorer",
+  "title": "Motadata ObserveOps | Trap Explorer",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 8
+ },
+ {
+  "route": "/trap-explorer/",
+  "title": "Motadata ObserveOps | Trap Explorer",
+  "inputs": 1,
+  "buttons": 2,
+  "dataCy": 0,
+  "grid": 8
+ },
+ {
+  "route": "/trap-explorer/live-trap-viewer",
+  "title": "Motadata ObserveOps | Trap Explorer",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 5
+ },
+ {
+  "route": "/unauthorized",
+  "title": "Motadata ObserveOps | Unauthorized Access",
+  "inputs": 0,
+  "buttons": 1,
+  "dataCy": 0,
+  "grid": 0
+ },
+ {
+  "route": "/upgrade",
+  "title": "Motadata ObserveOps",
+  "inputs": 0,
+  "buttons": 0,
+  "dataCy": 0,
+  "grid": 0
+ }
+]

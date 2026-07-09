@@ -1,0 +1,58 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn",
+  "create-role-btn",
+  "start-rediscovery"
+ ],
+ "buttons": [
+  "Create Scheduler",
+  "Filter",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Scheduler Type",
+  "Start Date",
+  "Triggers",
+  "Apps",
+  "Result",
+  "Actions"
+ ],
+ "tabs": [
+  "Application",
+  "Cloud",
+  "Virtualization",
+  "HCI",
+  "Interface",
+  "Access Point",
+  "Process",
+  "Service",
+  "Network Service",
+  "File/Directory",
+  "Container"
+ ],
+ "selects": 0,
+ "switches": 2,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/rediscover-setting"
+}

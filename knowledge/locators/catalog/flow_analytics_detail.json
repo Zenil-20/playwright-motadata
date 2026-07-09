@@ -1,0 +1,27 @@
+{
+ "title": "Motadata ObserveOps | Flow Explorer",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [],
+ "dataTestid": [
+  "flow-analytics-detail-tab-bar"
+ ],
+ "gridHeaders": [],
+ "tabs": [
+  "Summary",
+  "Traffic",
+  "Interface",
+  "Application",
+  "Source",
+  "Destination",
+  "Conversion",
+  "AS Details"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/flow/analytics/detail"
+}

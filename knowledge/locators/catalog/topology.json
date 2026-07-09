@@ -1,0 +1,32 @@
+{
+ "title": "Motadata ObserveOps | Topology",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "OFF",
+  "Create Topology View"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [
+  "Network",
+  "SDN",
+  "Cloud",
+  "Virtualization",
+  "HCI"
+ ],
+ "selects": 0,
+ "switches": 1,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/topology"
+}

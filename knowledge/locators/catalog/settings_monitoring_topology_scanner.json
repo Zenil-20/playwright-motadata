@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-scheduler-btn",
+  "start-topology-schedule"
+ ],
+ "buttons": [
+  "Create Scheduler",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Entry Points",
+  "Scheduler Type",
+  "Start Date",
+  "Triggers",
+  "Total Runtime",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 3,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/topology-scanner"
+}

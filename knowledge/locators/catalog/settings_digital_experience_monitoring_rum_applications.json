@@ -1,0 +1,47 @@
+{
+ "title": "Motadata ObserveOps | Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-rum-application",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "create-rum-application-btn-id"
+ ],
+ "buttons": [
+  "Create Application"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Application Name",
+  "Application Type",
+  "Version",
+  "Environment",
+  "Session Sample Rate",
+  "Privacy",
+  "Last Event Received at",
+  "Application Status",
+  "Tags",
+  "Action"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/digital-experience-monitoring/rum-applications"
+}

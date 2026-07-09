@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "netroute-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-netroute-btn"
+ ],
+ "buttons": [
+  "Create NetRoute",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Route Name",
+  "Source",
+  "Destination",
+  "Port",
+  "Tag",
+  "Manage Status",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/netroute-setting"
+}

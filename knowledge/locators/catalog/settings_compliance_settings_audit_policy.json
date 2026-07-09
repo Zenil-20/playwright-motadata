@@ -1,0 +1,47 @@
+{
+ "title": "Motadata ObserveOps | Compliance Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-audit-policy",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "filter-btn",
+  "create-audit-policy-btn-id"
+ ],
+ "buttons": [
+  "Create Compliance Policy",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Policy Name",
+  "DESCRIPTION",
+  "CREATED TIME",
+  "Used Count",
+  "Tag",
+  "Schedule",
+  "Benchmark",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/compliance-settings/audit-policy"
+}

@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Integration",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "filter-btn",
+  "create-user-btn"
+ ],
+ "buttons": [
+  "Create Integration Profile",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Profile Name",
+  "Description",
+  "Integration Type",
+  "Used Count",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 12,
+ "route": "/settings/integration/integration-profile"
+}

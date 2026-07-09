@@ -1,0 +1,60 @@
+{
+ "title": "Motadata ObserveOps | Log Settings",
+ "labels": [
+  "Log Parser Name",
+  "Log Parser Type",
+  "Type",
+  "Vendor",
+  "Log File",
+  "Log"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select Vendor"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Text"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Reset",
+  "Create Log Parser & Upload",
+  "Create Log Parser"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/log-settings/log-parsers/create"
+}

@@ -1,0 +1,40 @@
+{
+ "title": "Motadata ObserveOps | Plugin Library",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-topology-plugin-btn"
+ ],
+ "buttons": [
+  "Create Topology Plugin"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Name",
+  "Protocol Type",
+  "Used Count",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/plugin-library/topology-plugins"
+}

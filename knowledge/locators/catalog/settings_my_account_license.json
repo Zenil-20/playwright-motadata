@@ -1,0 +1,25 @@
+{
+ "title": "Motadata ObserveOps | My Account",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [
+  "Export",
+  "Upgrade Now",
+  "7d",
+  "15d",
+  "30d"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [
+  "License & Quota Usage",
+  "EPS Trend Breakdown"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/my-account/license"
+}

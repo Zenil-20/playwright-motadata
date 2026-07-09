@@ -1,0 +1,34 @@
+{
+ "title": "Motadata ObserveOps | Plugin Library",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Create Log Parser Plugin"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Name",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/plugin-library/log-parsers"
+}

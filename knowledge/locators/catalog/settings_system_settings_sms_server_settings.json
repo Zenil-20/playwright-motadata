@@ -1,0 +1,42 @@
+{
+ "title": "Motadata ObserveOps | System Settings",
+ "labels": [
+  "SMS Gateway URL",
+  "Use Proxy Server"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "sms-gateway-url",
+   "type": "text",
+   "id": "sms-gateway-url-id",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "auto-sync-id",
+  "reset-btn",
+  "test-btn",
+  "save-btn"
+ ],
+ "buttons": [
+  "OFF",
+  "Reset",
+  "Test",
+  "Save SMS Server Settings"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/system-settings/sms-server-settings"
+}

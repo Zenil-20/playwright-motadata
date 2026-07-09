@@ -1,0 +1,36 @@
+{
+ "title": "Motadata ObserveOps | Socket Playground",
+ "labels": [
+  "Event Type",
+  "Excluded Events"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Event Type"
+  },
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Send",
+  "Reset",
+  "Clear Events"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/dashboard/socket-playground"
+}

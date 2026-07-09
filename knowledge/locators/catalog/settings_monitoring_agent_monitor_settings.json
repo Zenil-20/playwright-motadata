@@ -1,0 +1,51 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-agent",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "bulk-tag-import",
+  "btn-tag-inventory",
+  "btn-filter-agent"
+ ],
+ "buttons": [
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Monitor",
+  "IP",
+  "Instances Count",
+  "Groups",
+  "Type",
+  "Health",
+  "Status",
+  "Duration",
+  "State",
+  "Version",
+  "Configuration",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 16,
+ "route": "/settings/monitoring/agent-monitor-settings"
+}

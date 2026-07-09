@@ -1,0 +1,46 @@
+{
+ "title": "Motadata ObserveOps | Observability Pipeline",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-toggle-expand-all",
+  "btn-show-hide-columns"
+ ],
+ "buttons": [
+  "Log Type",
+  "Add Source",
+  "OFF"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "expandableField",
+  "SOURCE NAME",
+  "IP",
+  "LOG TYPES",
+  "LAST LOG RECEIVED",
+  "ENABLE",
+  "ACTION"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 50,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/observability-pipeline/log-ingestion"
+}

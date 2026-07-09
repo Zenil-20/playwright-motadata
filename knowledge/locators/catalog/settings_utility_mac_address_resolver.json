@@ -1,0 +1,48 @@
+{
+ "title": "Motadata ObserveOps | MAC Address Resolver",
+ "labels": [
+  "IP Address",
+  "Credential Profile"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "192.16.18.10"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "utility-mac-address-resolver-reset-btn",
+  "utility-mac-address-resolver-resolve-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/utility/mac-address-resolver"
+}

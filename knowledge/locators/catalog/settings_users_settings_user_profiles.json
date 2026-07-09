@@ -1,0 +1,45 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "user-profile-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-user-profile-btn"
+ ],
+ "buttons": [
+  "Create User Profile"
+ ],
+ "dataCy": [],
+ "dataTestid": [
+  "user-profiles-search-input",
+  "user-profiles-export-pdf-btn",
+  "user-profiles-export-csv-btn",
+  "user-profiles-create-btn"
+ ],
+ "gridHeaders": [
+  "User Profile",
+  "Description",
+  "Scope By",
+  "Role",
+  "Used Count",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/user-profiles"
+}

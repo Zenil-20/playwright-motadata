@@ -1,0 +1,52 @@
+{
+ "title": "Motadata ObserveOps | NCCM Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "btn-tag-inventory",
+  "filter-btn",
+  "true"
+ ],
+ "buttons": [
+  "Filter",
+  "OFF",
+  "ON",
+  "Failed"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Device",
+  "IP/Host",
+  "System OID",
+  "Vendor",
+  "Template",
+  "Manage NCCM Status",
+  "Credential Status",
+  "Scheduler",
+  "Type",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 50,
+ "radios": 0,
+ "checkboxes": 102,
+ "route": "/settings/nccm-settings/"
+}

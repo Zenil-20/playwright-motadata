@@ -1,0 +1,25 @@
+{
+ "title": "Motadata ObserveOps | NetRoute",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Reload netroute data (late"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/netroute/"
+}

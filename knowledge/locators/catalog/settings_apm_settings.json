@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-application-registration",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-application-registration-btn-id"
+ ],
+ "buttons": [
+  "Application Registration"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Services Name",
+  "Type",
+  "IP",
+  "Language",
+  "Status",
+  "Service Attributes",
+  "Last Received Trace",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/apm-settings/"
+}

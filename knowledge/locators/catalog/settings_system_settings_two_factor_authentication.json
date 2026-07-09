@@ -1,0 +1,31 @@
+{
+ "title": "Motadata ObserveOps | System Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "Two Factor Authentication",
+  "reset-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "OFF",
+  "Reset",
+  "Save"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/system-settings/two-factor-authentication"
+}

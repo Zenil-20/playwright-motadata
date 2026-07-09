@@ -1,0 +1,80 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [
+  "System OID",
+  "Name",
+  "Vendor",
+  "Type",
+  "Metric Group Name"
+ ],
+ "inputs": [
+  {
+   "name": "system-oid",
+   "type": "text",
+   "id": "",
+   "placeholder": "e.g. .1.3.6.1.4.1.47387"
+  },
+  {
+   "name": "catalog-name",
+   "type": "text",
+   "id": "",
+   "placeholder": "Name"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "metric-group-name",
+   "type": "text",
+   "id": "",
+   "placeholder": "Must be unique within the catalog"
+  },
+  {
+   "name": "counter-name",
+   "type": "text",
+   "id": "",
+   "placeholder": "e.g. system.cpu.percent"
+  },
+  {
+   "name": "oid",
+   "type": "text",
+   "id": "",
+   "placeholder": "e.g. 1.3.6.1.4.1.116.5.11.4.1.1.5"
+  }
+ ],
+ "buttonIds": [
+  "btn-test-oid",
+  "remove-metric-group",
+  "add-new-metric-group",
+  "reset-btn",
+  "create-snmp-device-catalog-btn"
+ ],
+ "buttons": [
+  "Test OID Group",
+  "Choose OID",
+  "Assign Key-Value",
+  "Add Metric Group",
+  "Reset",
+  "Create SNMP Device Catalog"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/snmp-device-catalog/create"
+}

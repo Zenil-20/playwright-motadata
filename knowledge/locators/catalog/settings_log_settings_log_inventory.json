@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Log Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn",
+  "create-group-btn"
+ ],
+ "buttons": [
+  "Create Log Inventory",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Source",
+  "Source Type",
+  "Assigned Parsers",
+  "Category",
+  "Group",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/log-settings/log-inventory"
+}

@@ -1,0 +1,76 @@
+{
+ "title": "Motadata ObserveOps | Users Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "create-user-btn",
+  "1234",
+  "2345",
+  "abhishek",
+  "admin",
+  "anant",
+  "ansh",
+  "bhavya",
+  "chaitas",
+  "chandresh",
+  "chandu",
+  "deven",
+  "gaurang",
+  "Manish",
+  "nandini-shah-ldap",
+  "ronak",
+  "rum1",
+  "rum9",
+  "user1",
+  "zenil",
+  "zenil.local.20260630134427",
+  "zenil20",
+  "zenilrad"
+ ],
+ "buttons": [
+  "Create User",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [
+  "users-search-input",
+  "users-export-pdf-btn",
+  "users-export-csv-btn",
+  "users-create-btn"
+ ],
+ "gridHeaders": [
+  "User Name",
+  "First Name",
+  "Last Name",
+  "Mobile Number",
+  "Role",
+  "Type",
+  "Groups",
+  "User Profile",
+  "Status",
+  "Email",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 22,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/users-settings/"
+}

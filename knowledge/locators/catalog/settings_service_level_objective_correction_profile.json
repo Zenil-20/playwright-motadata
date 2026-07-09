@@ -1,0 +1,39 @@
+{
+ "title": "Motadata ObserveOps | Service Level Objective",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-correction-profile",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-correction-profile-btn-id"
+ ],
+ "buttons": [
+  "Create Correction Profile"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Correction Profile Name",
+  "Category",
+  "Recurring Type",
+  "Remarks",
+  "Action"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/service-level-objective/correction-profile"
+}

@@ -1,0 +1,60 @@
+{
+ "title": "Motadata ObserveOps | System Settings",
+ "labels": [
+  "SMTP Server",
+  "Use Proxy Server",
+  "Security Type",
+  "SMTP Server Port",
+  "Authentication Type",
+  "From Email",
+  "Authentication Requires"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "smtp-server",
+   "type": "text",
+   "id": "smtp-server-id",
+   "placeholder": "e.g. smtp.google.com"
+  },
+  {
+   "name": "smtp-server-port",
+   "type": "text",
+   "id": "smtp-server-port-id",
+   "placeholder": ""
+  },
+  {
+   "name": "email",
+   "type": "text",
+   "id": "email-id",
+   "placeholder": "Valid email address"
+  }
+ ],
+ "buttonIds": [
+  "auto-sync-id",
+  "smtp-server-requires-authentication-btn-",
+  "reset-btn",
+  "test-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "OFF",
+  "Reset",
+  "Test",
+  "Save Mail Server Settings"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 2,
+ "radios": 5,
+ "checkboxes": 0,
+ "route": "/settings/system-settings/"
+}

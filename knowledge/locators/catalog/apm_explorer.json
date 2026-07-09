@@ -1,0 +1,59 @@
+{
+ "title": "Motadata ObserveOps | Apm",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "filter by name\u2026"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns"
+ ],
+ "buttons": [
+  "Save View"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Timestamp",
+  "Services",
+  "Duration",
+  "Status",
+  "Resource",
+  "Spans"
+ ],
+ "tabs": [
+  "Services",
+  "Explorer",
+  "Error Tracker",
+  "Compare"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/apm/explorer"
+}

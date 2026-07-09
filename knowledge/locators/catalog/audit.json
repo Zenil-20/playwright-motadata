@@ -1,0 +1,35 @@
+{
+ "title": "Motadata ObserveOps | Audit",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn"
+ ],
+ "buttons": [
+  "Filter"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Timestamp",
+  "Module",
+  "Operation Type",
+  "User",
+  "Remote IP",
+  "Message",
+  "Status"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/audit/"
+}

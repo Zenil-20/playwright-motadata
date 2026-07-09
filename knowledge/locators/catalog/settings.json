@@ -1,0 +1,68 @@
+{
+ "title": "Motadata ObserveOps | My Profile",
+ "labels": [
+  "First Name",
+  "Last Name",
+  "User Name",
+  "Email Address",
+  "Mobile Number",
+  "Change Password"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "first-name",
+   "type": "text",
+   "id": "first-name",
+   "placeholder": ""
+  },
+  {
+   "name": "last-name",
+   "type": "text",
+   "id": "last-name",
+   "placeholder": ""
+  },
+  {
+   "name": "user-name",
+   "type": "text",
+   "id": "user-name",
+   "placeholder": "Must be unique"
+  },
+  {
+   "name": "email-address",
+   "type": "text",
+   "id": "email-address",
+   "placeholder": ""
+  },
+  {
+   "name": "phone-number",
+   "type": "text",
+   "id": "phone-number",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "change-password-switch",
+  "btn-cancel-my-profile",
+  "btn-save-my-profile"
+ ],
+ "buttons": [
+  "OFF",
+  "Reset",
+  "Update My Profile"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/"
+}

@@ -1,0 +1,86 @@
+{
+ "title": "Motadata ObserveOps | Report",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "create-report-btn",
+  "filter-btn",
+  "10000000010378",
+  "10000000010362",
+  "10000000010350",
+  "10000000010382",
+  "10000000010379",
+  "10000000000055",
+  "10000000000081",
+  "10000000010348",
+  "10000000010356",
+  "10000000010349",
+  "10000000000022",
+  "10000000000010",
+  "10000000010359",
+  "10000000010353",
+  "10000000010380",
+  "10000000010372",
+  "10000000010381",
+  "10000000010364",
+  "10000000000084",
+  "100000000103106",
+  "100000000103109",
+  "110357093148",
+  "110357093589",
+  "110357093153",
+  "10000000000034",
+  "100000000103105",
+  "100000000103108",
+  "10000000000104"
+ ],
+ "buttons": [
+  "Create Custom Report",
+  "Filter",
+  "OFF",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Name",
+  "Description",
+  "Type",
+  "Report Type",
+  "Schedule",
+  "Download",
+  "Actions"
+ ],
+ "tabs": [
+  "Metric",
+  "Log",
+  "Flow",
+  "Trap",
+  "Audit",
+  "NCCM",
+  "APM",
+  "RUM",
+  "NetRoute",
+  "Log Compliance"
+ ],
+ "selects": 0,
+ "switches": 50,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/reports/"
+}

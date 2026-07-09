@@ -1,0 +1,41 @@
+{
+ "title": "Motadata ObserveOps | Flow",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-sampling-rate",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Interface Index",
+  "Source",
+  "Interface Name",
+  "Interface Description",
+  "Interface Alias",
+  "Interface Speed",
+  "Sampling Rate",
+  "Custom Sampling Rate",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/flow-settings/sampling-rate"
+}

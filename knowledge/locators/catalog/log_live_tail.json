@@ -1,0 +1,49 @@
+{
+ "title": "Motadata ObserveOps | Log Explorer",
+ "labels": [
+  "Highlight Keywords"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Keywords"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Keywords"
+  }
+ ],
+ "buttonIds": [
+  "create-log-parser"
+ ],
+ "buttons": [
+  "Create Log Parser Plugin"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/log/live-tail"
+}

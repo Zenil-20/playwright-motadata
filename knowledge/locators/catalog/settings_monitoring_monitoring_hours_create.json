@@ -1,0 +1,31 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [
+  "Monitoring Hour Name"
+ ],
+ "inputs": [
+  {
+   "name": "business-hour-name",
+   "type": "text",
+   "id": "business-hour-name-id",
+   "placeholder": "Monitoring Hour Name"
+  }
+ ],
+ "buttonIds": [
+  "reset-btn",
+  "create-business-hour-btn-id"
+ ],
+ "buttons": [
+  "Reset",
+  "Create Monitoring Hour"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 398,
+ "route": "/settings/monitoring/monitoring-hours/create"
+}

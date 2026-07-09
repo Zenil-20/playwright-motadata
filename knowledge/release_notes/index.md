@@ -1,0 +1,3 @@
+# knowledge/release_notes
+
+RAG corpus — release_notes. Retrieval is deterministic: structured lookup by key before any embedding search. Populate incrementally; every entry carries provenance (source + version + verified date).

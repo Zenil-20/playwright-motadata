@@ -1,0 +1,50 @@
+{
+ "title": "Motadata ObserveOps | SNMP Community Check",
+ "labels": [
+  "IP Address/Host Name",
+  "Credential Profile",
+  "Timeout",
+  "SNMP Retries"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "192.16.14.10"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "utility-snmp-community-check-reset-btn",
+  "utility-snmp-community-check-test-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/settings/utility/snmp-community-check"
+}

@@ -1,0 +1,49 @@
+{
+ "title": "Motadata ObserveOps | Power Shell Command",
+ "labels": [
+  "IP Address/Host Name",
+  "Credential Profile",
+  "PowerShell Command"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "172.31.11.52"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "utility-power-shell-command-reset-btn",
+  "utility-power-shell-command-test-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/utility/power-shell-command"
+}

@@ -1,0 +1,51 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "bulk-interface-speed",
+  "bulk-tag-import",
+  "bulk-metric-collection-type",
+  "btn-show-hide-columns",
+  "btn-tag-inventory",
+  "export-pdf-btn",
+  "export-csv-btn",
+  "filter-btn"
+ ],
+ "buttons": [
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Monitor",
+  "Agent",
+  "Type",
+  "Host",
+  "Groups",
+  "Target",
+  "Status",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 22,
+ "route": "/settings/monitoring/service-check-monitor-settings"
+}

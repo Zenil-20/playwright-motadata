@@ -1,0 +1,46 @@
+{
+ "title": "Motadata ObserveOps | Ai",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "role-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "filter-btn"
+ ],
+ "buttons": [
+  "Create Relationship",
+  "Filter",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Parent Monitor",
+  "Parent Interface",
+  "Child Monitor",
+  "Child Interface",
+  "Type",
+  "Link Layer",
+  "Status",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 39,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/ai/"
+}

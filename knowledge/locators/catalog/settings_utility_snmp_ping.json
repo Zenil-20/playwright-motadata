@@ -1,0 +1,48 @@
+{
+ "title": "Motadata ObserveOps | SNMP Ping",
+ "labels": [
+  "Monitor",
+  "Credential Profile"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select Monitor"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "utility-snmp-ping-reset-btn",
+  "utility-snmp-ping-test-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 2,
+ "checkboxes": 0,
+ "route": "/settings/utility/snmp-ping"
+}

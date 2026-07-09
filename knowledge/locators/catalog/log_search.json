@@ -1,0 +1,42 @@
+{
+ "title": "Motadata ObserveOps | Log Search",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns"
+ ],
+ "buttons": [
+  "Save Query",
+  "Execute",
+  "Save as Report"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [
+  "Overview",
+  "Log Search",
+  "Type",
+  "Group",
+  "Event Log",
+  "Log Pattern"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 7,
+ "checkboxes": 2,
+ "route": "/log/search"
+}

@@ -1,0 +1,53 @@
+{
+ "title": "Motadata ObserveOps | Compliance Settings",
+ "labels": [
+  "Condition",
+  "Result Pattern",
+  "Occurrence"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": " "
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "runook-credential-btn-id"
+ ],
+ "buttons": [
+  "Create Runbook",
+  "Reset",
+  "Next"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 4,
+ "checkboxes": 0,
+ "route": "/settings/compliance-settings/rules/create"
+}

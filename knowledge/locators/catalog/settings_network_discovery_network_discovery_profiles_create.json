@@ -1,0 +1,104 @@
+{
+ "title": "Motadata ObserveOps | Discovery",
+ "labels": [
+  "Discovery Profile Name",
+  "IP/Host",
+  "Collector Type",
+  "Collectors",
+  "Groups",
+  "Credential Profiles",
+  "Tags",
+  "Port",
+  "Ping Check",
+  "Notify"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "profile-name",
+   "type": "text",
+   "id": "profile-id",
+   "placeholder": "Must be unique"
+  },
+  {
+   "name": "ip-address",
+   "type": "text",
+   "id": "ip-address-id",
+   "placeholder": "e.g. 192.168.1.1 or fd00::1"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "port",
+   "type": "",
+   "id": "port-id",
+   "placeholder": ""
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "@User or Email or /Handle or #User Profi"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "ping-check-btn",
+  "save-exit-btn-id",
+  "save-schedule-btn-id",
+  "reset-btn-id",
+  "save-run-btn-id"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "ON",
+  "Save and Exit",
+  "Save and Schedule",
+  "Reset",
+  "Save and Run"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 1,
+ "switches": 1,
+ "radios": 4,
+ "checkboxes": 0,
+ "route": "/settings/network-discovery/network-discovery-profiles/create"
+}

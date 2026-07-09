@@ -1,0 +1,39 @@
+{
+ "title": "Motadata ObserveOps | Observability Pipeline",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [
+  "Create Log Collection Plug"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "PROFILE NAME",
+  "DESCRIPTION",
+  "CATEGORY",
+  "TAGS",
+  "ACTION"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/observability-pipeline/log-collector-plugin"
+}

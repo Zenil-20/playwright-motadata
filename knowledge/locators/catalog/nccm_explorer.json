@@ -1,0 +1,58 @@
+{
+ "title": "Motadata ObserveOps | NCCM",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "btn-tag-inventory",
+  "compare-btn"
+ ],
+ "buttons": [
+  "Compare",
+  "Backup Successful",
+  "Conflict Detected",
+  "Backup Failed"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Device",
+  "IP",
+  "Current Version",
+  "Config Conflict",
+  "Last Performed Action",
+  "Last Backup Status",
+  "Last Firmware Upgrade Stat",
+  "Last Backup Time",
+  "Last Action Time",
+  "Current Firmware",
+  "Latest Firmware",
+  "Baseline Version",
+  "Actions"
+ ],
+ "tabs": [
+  "Overview",
+  "Compliance",
+  "Explorer"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 40,
+ "route": "/nccm/explorer"
+}

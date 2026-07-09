@@ -1,0 +1,45 @@
+{
+ "title": "Motadata ObserveOps | Discovery",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "discovery-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "create-network-discovery-profile-btn"
+ ],
+ "buttons": [
+  "Create Discovery Profile"
+ ],
+ "dataCy": [
+  "rerun",
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Discovery Profile Name",
+  "IP/Host/IP Range/CIDR/CSV",
+  "Type",
+  "Discovered Objects",
+  "Status",
+  "Scheduler",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/network-discovery/network-discovery-profiles"
+}

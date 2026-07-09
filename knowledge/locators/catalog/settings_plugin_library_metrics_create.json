@@ -1,0 +1,87 @@
+{
+ "title": "Motadata ObserveOps | Plugin Library",
+ "labels": [
+  "Metric Plugin Name",
+  "Description",
+  "Type",
+  "Monitors",
+  "Port",
+  "Timeout",
+  "Credential Profile",
+  "SSH Script",
+  "Script Language",
+  "Parsing Script"
+ ],
+ "inputs": [
+  {
+   "name": "metric-name",
+   "type": "text",
+   "id": "",
+   "placeholder": "Must be unique"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "port",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "timeout",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "reset-btn-id",
+  "test-btn-id"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Add Variable",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 5,
+ "checkboxes": 0,
+ "route": "/settings/plugin-library/metrics/create"
+}

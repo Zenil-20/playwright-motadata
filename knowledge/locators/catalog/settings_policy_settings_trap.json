@@ -1,0 +1,47 @@
+{
+ "title": "Motadata ObserveOps | Policy Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "filter-btn",
+  "create-policy-btn"
+ ],
+ "buttons": [
+  "Create Policy",
+  "Filter",
+  "ON"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Policy Name",
+  "Used Counts",
+  "Severity",
+  "Policy Type",
+  "Tag",
+  "Status",
+  "Action"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 3,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/policy-settings/trap"
+}

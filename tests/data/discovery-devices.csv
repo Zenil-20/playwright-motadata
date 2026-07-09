@@ -1,0 +1,17 @@
+key,category,subtype,profile_name,ip_env,cred_type,community_env,user_env,pass_env,port_env,instance_env,test,verify_text,run
+aruba_wireless,Wireless,Aruba Wireless,discover-aruba,Aruba_Wireless_172_16_10_242,snmp_v2c,Aruba_Wireless_community,,,,,yes,Aruba Wireless,yes
+cisco_wireless,Wireless,Cisco Wireless,discover-cisco,Cisco_Wireless_ip,snmp_v2c,Cisco_Wireless_community,,,,,yes,Cisco Wireless,yes
+ruckus_wireless,Wireless,Ruckus Wireless,discover-ruckus,Ruckus_Wireless_ip,snmp_v2c,Ruckus_Wireless_community,,,,,yes,Ruckus Wireless,yes
+mongodb,Database,MongoDB,MongoDB Database,MongoDB_ip,userpass,,MongoDB_username,MongoDB_password,,,no,MongoDB,yes
+sqlserver,Database,SQL Server,SQL Server Database,SqlServer_ip,userpass,,SqlServer_username,SqlServer_password,SqlServer_port,SqlServer_instance,yes,SQL Server,yes
+elasticsearch,Database,ElasticSearch,ElasticSearch Database,ElasticSearch_ip,userpass,,ElasticSearch_username,ElasticSearch_password,ElasticSearch_port,,no,ElasticSearch,yes
+sybase,Database,Sybase,Sybase Database,Sybase_ip,userpass,,Sybase_username,Sybase_password,Sybase_port,Sybase_instance,no,Sybase,yes
+rabbitmq,Database,RabbitMQ,RabbitMQ Database,Rabbitmq_ip,userpass,,Rabbitmq_username,Rabbitmq_password,Rabbitmq_port,,no,RabbitMQ,yes
+vcenter,Virtualization,VMWare,vCenter,vCenter_Server_172_16_10_180,userpass,,vCenter_Server_172_16_10_180_username,vCenter_Server_172_16_10_180_password,,,no,VMWare,yes
+proxmox,Virtualization,Proxmox,Proxmox,Proxmox_ip,userpass,,Proxmox_username,Proxmox_password,,,no,Proxmox,yes
+esxi,Virtualization,ESXi,ESXi Host,Esxi_ip,userpass,,Esxi_username,Esxi_password,,,no,ESXi,yes
+hci_nutanix,Virtualization,Nutanix,Nutanix HCI,Nutanix_ip,userpass,,Nutanix_username,Nutanix_password,,,no,Nutanix,yes
+citrix_xen,Virtualization,Citrix XenServer,Citrix Xen,CitrixXen_ip,userpass,,CitrixXen_username,CitrixXen_password,,,no,Citrix,yes
+linux,Network,Linux,Linux Server,Linux_ip,ssh,,Linux_username,Linux_password,,,no,Linux,yes
+windows,Network,Windows,Windows Server,Windows_ip,userpass,,Windows_username,Windows_password,,,no,Windows,yes
+network_v2c,Network,Network,Network Device v2c,Network_v2c_ip,snmp_v2c,Network_v2c_community,,,,,yes,Network,yes

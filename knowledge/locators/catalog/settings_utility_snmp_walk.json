@@ -1,0 +1,56 @@
+{
+ "title": "Motadata ObserveOps | SNMP Walk",
+ "labels": [
+  "IP Address/Host Name",
+  "Credential Profile",
+  "OID",
+  "Timeout"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "172.31.11.52"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "1.3.6.1.2.1"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "utility-snmp-walk-reset-btn",
+  "utility-snmp-walk-run-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Reset",
+  "Test"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/utility/snmp-walk"
+}

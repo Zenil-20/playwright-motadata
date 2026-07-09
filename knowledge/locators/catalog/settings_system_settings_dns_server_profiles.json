@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | System Settings",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "dns-server-search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-create-dns-server"
+ ],
+ "buttons": [
+  "Create DNS Server Profile"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "DNS Server Profile Name",
+  "Description",
+  "DNS Server IP",
+  "Port",
+  "Type",
+  "Used Count",
+  "Last Sync At",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/system-settings/dns-server-profiles"
+}

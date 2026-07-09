@@ -1,0 +1,34 @@
+{
+ "title": "Motadata ObserveOps | NCCM",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Compliance Policy",
+  "Compliance Score",
+  "Device Severity",
+  "Used Count",
+  "Benchmark",
+  "Last Scan At"
+ ],
+ "tabs": [
+  "Overview",
+  "Compliance",
+  "Explorer"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/nccm/compliance"
+}

@@ -1,0 +1,72 @@
+{
+ "title": "Motadata ObserveOps | Health",
+ "labels": [
+  "Motadata Application"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "search-rpe",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "filter by name\u2026"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Server",
+  "IP",
+  "Type",
+  "Deployment",
+  "Duration",
+  "State",
+  "Datastore",
+  "Pending Events",
+  "Queued Events",
+  "Finished Events",
+  "Engine Type",
+  "Pending Events",
+  "Queued Events",
+  "Finished Events",
+  "Dropped Events",
+  "Engine Type",
+  "Pending Events",
+  "Dropped Events"
+ ],
+ "tabs": [
+  "Health Overview",
+  "Application",
+  "Database",
+  "Live Session",
+  "Alert",
+  "Upgrade",
+  "Restore"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/health/"
+}

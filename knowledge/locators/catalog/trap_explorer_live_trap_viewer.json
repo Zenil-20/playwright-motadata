@@ -1,0 +1,22 @@
+{
+ "title": "Motadata ObserveOps | Trap Explorer",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "expandableField",
+  "Received Time",
+  "Trap OID",
+  "source",
+  "message"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/trap-explorer/live-trap-viewer"
+}

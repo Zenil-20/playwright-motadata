@@ -1,0 +1,52 @@
+{
+ "title": "Motadata ObserveOps | Integration",
+ "labels": [
+  "Credential Profiles",
+  "Time Out",
+  "Auto Sync",
+  "Sync Every"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Schedule Every"
+  }
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "auto-sync-id",
+  "reset-btn",
+  "configure-btn"
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "ON",
+  "Reset",
+  "Save"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/integration/microsoft-teams"
+}

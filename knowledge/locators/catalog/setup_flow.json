@@ -1,0 +1,19 @@
+{
+ "title": "Motadata ObserveOps | Setup",
+ "labels": [],
+ "inputs": [],
+ "buttonIds": [],
+ "buttons": [
+  "Skip Flow Ingestion",
+  "Next"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/setup/flow"
+}

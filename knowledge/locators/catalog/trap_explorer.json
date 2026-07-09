@@ -1,0 +1,38 @@
+{
+ "title": "Motadata ObserveOps | Trap Explorer",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "filter-btn"
+ ],
+ "buttons": [
+  "Live Trap Viewer",
+  "Filter"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Trap Name",
+  "Trap OID",
+  "Source",
+  "Count",
+  "Message",
+  "Timestamp",
+  "Acknowledged",
+  "Action"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/trap-explorer/"
+}

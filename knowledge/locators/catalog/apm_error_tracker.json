@@ -1,0 +1,44 @@
+{
+ "title": "Motadata ObserveOps | Apm",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "filter by name\u2026"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns"
+ ],
+ "buttons": [],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "Issue / Exception Name",
+  "Language",
+  "Services Name",
+  "Category",
+  "Status Code",
+  "Occurrences",
+  "Last Seen"
+ ],
+ "tabs": [
+  "Services",
+  "Explorer",
+  "Error Tracker",
+  "Compare"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/apm/error-tracker"
+}

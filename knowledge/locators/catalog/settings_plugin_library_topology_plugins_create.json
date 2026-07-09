@@ -1,0 +1,90 @@
+{
+ "title": "Motadata ObserveOps | Plugin Library",
+ "labels": [
+  "Name",
+  "Vendor",
+  "Make & Model",
+  "Monitor",
+  "Layer Protocol",
+  "Protocol Type",
+  "Script Language",
+  "Timeout",
+  "Parser Script"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "topology-name",
+   "placeholder": "Enter Name"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select Vendor"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select Make & Model"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "counter-name",
+   "type": "text",
+   "id": "",
+   "placeholder": "e.g. CPU (%)"
+  },
+  {
+   "name": "oid",
+   "type": "text",
+   "id": "",
+   "placeholder": "e.g. 1.3.6.1.4.1.9.2.1.58.0"
+  },
+  {
+   "name": "timeout",
+   "type": "text",
+   "id": "",
+   "placeholder": ""
+  },
+  {
+   "name": "codemirror",
+   "type": "",
+   "id": "",
+   "placeholder": ""
+  }
+ ],
+ "buttonIds": [
+  "remove-metric-group",
+  "add-new-metric-group",
+  "reset-btn-id",
+  "test-btn-id",
+  "submit-btn-id"
+ ],
+ "buttons": [
+  "Choose OID",
+  "Add OID Group",
+  "Add Variable",
+  "Reset",
+  "Test",
+  "Create Topology Plugin"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 12,
+ "checkboxes": 0,
+ "route": "/settings/plugin-library/topology-plugins/create"
+}

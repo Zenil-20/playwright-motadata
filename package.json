@@ -1,13 +1,25 @@
 {
-  "name": "playwright",
+  "name": "playwright-motadata",
   "version": "1.0.0",
-  "description": "",
+  "description": "Motadata AIOps Playwright QA — data-driven suite + AI test pipeline",
   "main": "index.js",
-  "scripts": {},
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:discovery": "playwright test --project discovery_data_driven",
+    "test:settings": "playwright test --project settings_02_discovery",
+    "report": "playwright show-report",
+    "pipeline": "node framework/core/orchestration/daily-pipeline.mjs",
+    "pipeline:dry": "node framework/core/orchestration/daily-pipeline.mjs --dry",
+    "test:gates": "node --test governance/validation/validators.test.js",
+    "gate": "node governance/validation/cli.mjs",
+    "compile": "playwright test --list",
+    "sync:claude": "node scripts/sync-claude.mjs",
+    "gen:screens": "node scripts/gen-screen-knowledge.mjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.2.3"

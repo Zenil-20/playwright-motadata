@@ -1,0 +1,64 @@
+{
+ "title": "Motadata ObserveOps | NCCM Settings",
+ "labels": [
+  "Device Template Name",
+  "Description",
+  "Vendor",
+  "OS Type",
+  "Delay Time (ms)",
+  "Command",
+  "Timeout (ms)",
+  "Prompt",
+  "Prompt Command"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Vendor"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Write text here"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  },
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Select"
+  }
+ ],
+ "buttonIds": [
+  "remove-metric-group"
+ ],
+ "buttons": [
+  "Add Operation",
+  "SCP/SFTP",
+  "TFTP",
+  "No protocol",
+  "OFF",
+  "Select From Catalog",
+  "Reset",
+  "Save"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [],
+ "tabs": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/nccm-settings/device-template/create"
+}

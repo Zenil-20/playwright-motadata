@@ -1,0 +1,43 @@
+{
+ "title": "Motadata ObserveOps | Service Level Objective",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-slo-profile",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "create-slo-profile-btn-id"
+ ],
+ "buttons": [
+  "Create SLO Profile"
+ ],
+ "dataCy": [],
+ "dataTestid": [],
+ "gridHeaders": [
+  "SLO Name",
+  "SLO Type",
+  "Frequency",
+  "Warning",
+  "Target",
+  "Business Service Name",
+  "Start Date",
+  "Action"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/service-level-objective/slo-profile"
+}

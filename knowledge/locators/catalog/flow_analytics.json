@@ -1,0 +1,32 @@
+{
+ "title": "Motadata ObserveOps | Flow Explorer",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "search-flow-analytics-kpi",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [],
+ "buttons": [],
+ "dataCy": [],
+ "dataTestid": [
+  "flow-top-tab-bar",
+  "flow-analytics-kpi-search-input",
+  "flow-analytics-switch-to-grid",
+  "flow-analytics-card"
+ ],
+ "gridHeaders": [],
+ "tabs": [
+  "Dashboard",
+  "Flow Analytics",
+  "Explorer"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/flow/analytics"
+}

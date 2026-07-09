@@ -1,0 +1,45 @@
+{
+ "title": "Motadata ObserveOps | Monitoring",
+ "labels": [],
+ "inputs": [
+  {
+   "name": "",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  },
+  {
+   "name": "search-snmp-device-catalog",
+   "type": "text",
+   "id": "",
+   "placeholder": "Search"
+  }
+ ],
+ "buttonIds": [
+  "show-filter",
+  "btn-create-snmp-device-catalog"
+ ],
+ "buttons": [
+  "Create SNMP Device Catalog",
+  "Filter"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [],
+ "gridHeaders": [
+  "SNMP Device Catalog Name",
+  "Vendor",
+  "Type",
+  "Used Count",
+  "System OID",
+  "Created By",
+  "Actions"
+ ],
+ "tabs": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "route": "/settings/monitoring/snmp-device-catalog"
+}
