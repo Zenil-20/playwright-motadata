@@ -6,6 +6,8 @@
  */
 
 import { expect, test } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
 import {
   DASHBOARD_LOADING_SELECTOR,
   DEFAULT_TIMEOUT,
@@ -13,7 +15,26 @@ import {
   LOADING_STATE_PATTERNS,
   VALUE_PATTERNS,
 } from './dashboard.constants.js';
-import { getDashboardBaseUrl } from './auth.js';
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
+
+// Dashboard base URL (env-driven, trailing slash stripped) for deep-link navigation.
+// Lives here now that auth is unified under the shared fixtures/auth.js helper.
+const DASHBOARD_URL =
+  process.env.Motadata_Aiops ||
+  process.env.SERVER_URL ||
+  process.env.Server_url ||
+  process.env.server_url;
+
+export function getDashboardBaseUrl() {
+  if (!DASHBOARD_URL) {
+    throw new Error(
+      'Dashboard base URL is missing. Set Motadata_Aiops or SERVER_URL in .env.'
+    );
+  }
+
+  return DASHBOARD_URL.replace(/\/+$/, '');
+}
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

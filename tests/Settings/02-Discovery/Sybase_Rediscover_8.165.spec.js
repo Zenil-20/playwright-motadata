@@ -16,8 +16,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery', () => {
   let page;
@@ -28,12 +40,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
    page = await context.newPage();
    page.setDefaultTimeout(500000);
 
-   await page.goto(process.env.Motadata_Aiops);
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-   await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-   await page.locator("//button[@type='submit']").click();
-   await page.waitForLoadState('networkidle');
-});
+   await login(page);
+  });
 
   test('Navigate to Discovery Profile', async () => {
     await page.locator("//a[@href='/settings/']").click();
@@ -61,7 +69,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully')).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
   });
 
   test('Rediscover for Sybase Database', async () => {
@@ -98,7 +106,10 @@ await page.locator('#start-rediscovery').click();
   await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
   await page.waitForTimeout(1000);
   await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.165', { timeout: 128000 } );
-  await expect(page.getByText('Sybase')).toBeVisible({ timeout: 120000 });
+  // The Rediscover Result drawer surfaces a "Sybase" card per discovered host (here
+  // 172.16.8.165 and 172.21.0.1), so an unscoped getByText is a strict-mode violation.
+  // The first card is the searched host (172.16.8.165) — scope to it.
+  await expect(page.getByText('Sybase').first()).toBeVisible({ timeout: 120000 });
   await page.waitForTimeout(1000);
   await page.locator('svg[data-icon="ellipsis-v"]').click();
   await page.locator("#metric-collection-time").click();

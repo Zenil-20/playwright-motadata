@@ -1,0 +1,209 @@
+[
+  {
+    "tag": "button",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "button",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "button",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "button",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": "policy-name",
+    "name": "policy-name",
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "div",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": "combobox",
+    "text": "Add Tags"
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select Metric",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": "critical",
+    "placeholder": "Value",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": "major",
+    "placeholder": "Value",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": "warning",
+    "placeholder": "Value",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "input",
+    "id": null,
+    "name": null,
+    "placeholder": "Select",
+    "aria": null,
+    "role": null,
+    "text": null
+  },
+  {
+    "tag": "button",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": "Create Policy"
+  },
+  {
+    "tag": "button",
+    "id": null,
+    "name": null,
+    "placeholder": null,
+    "aria": null,
+    "role": null,
+    "text": "Reset"
+  }
+]

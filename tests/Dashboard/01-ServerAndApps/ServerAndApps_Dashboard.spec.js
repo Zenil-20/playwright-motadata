@@ -5,7 +5,7 @@
  */
 
 import { test } from '@playwright/test';
-import { loginToDashboard, logoutFromDashboard } from '../_core/auth.js';
+import { login, logout } from '../../fixtures/auth.js';
 import { validateDashboard } from '../_core/dashboard.helpers.js';
 import { validateLinuxDashboardE2E } from '../_core/linux.dashboard.helpers.js';
 import { dashboardCatalog } from '../_data/dashboard.devices.js';
@@ -32,12 +32,12 @@ test.describe.serial('Dashboard | Server and Apps', () => {
     });
     page = await context.newPage();
     page.setDefaultTimeout(120000);
-    await loginToDashboard(page);
+    await login(page);
   });
 
   test.afterAll(async () => {
     if (page && !page.isClosed()) {
-      await logoutFromDashboard(page).catch(() => {});
+      await logout(page).catch(() => {});
       await page.close();
     }
   });

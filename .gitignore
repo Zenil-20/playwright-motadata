@@ -5,6 +5,12 @@
 /playwright/.cache/
 /playwright/.auth/
 
+# Scratch / throwaway grounding artifacts
+_scratch/
+
+# RUM per-environment configs (tokens / app ids — not source-controlled)
+tests/Settings/14-RealUserMonitoring/rum-configs/
+
 # Dependency directories
 node_modules/
 jspm_packages/
@@ -75,3 +81,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 !.yarn/versions
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+

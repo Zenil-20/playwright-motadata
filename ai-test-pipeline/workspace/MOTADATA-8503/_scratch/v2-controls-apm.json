@@ -1,0 +1,175 @@
+{
+  "ctrls": [
+    {
+      "tag": "input",
+      "id": "policy-name",
+      "name": "policy-name",
+      "placeholder": null,
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "div",
+      "id": null,
+      "name": null,
+      "placeholder": null,
+      "aria": null,
+      "role": "combobox"
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": null,
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": null,
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": null,
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select Counter",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": " ",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": "critical",
+      "placeholder": "Value",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": "major",
+      "placeholder": "Value",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": "warning",
+      "placeholder": "Value",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "aria": null,
+      "role": null
+    }
+  ],
+  "labels": [
+    "Policy Name",
+    "Policy Name",
+    "Tag",
+    "Tag",
+    "APM Policy Type",
+    "APM Policy Type",
+    "Trace Metrics",
+    "Trace Analytics",
+    "Threshold Alert\nTriggers when the selected metric crosses a fixed value you define.\nBaseline Alert\nAlerts when current behavior deviates from its usual historical pattern.\nAnomaly\nDetects unexpected behavior automatically without requiring strict thresholds.\nForecast\nPredicts future breaches based on trends and alerts before limits are hit.",
+    "Threshold Alert\nTriggers when the selected metric crosses a fixed value you define.",
+    "Threshold Alert",
+    "Triggers when the selected metric crosses a fixed value you define.",
+    "Baseline Alert\nAlerts when current behavior deviates from its usual historical pattern.",
+    "Baseline Alert",
+    "Alerts when current behavior deviates from its usual historical pattern.",
+    "Anomaly\nDetects unexpected behavior automatically without requiring strict thresholds.",
+    "Anomaly",
+    "Detects unexpected behavior automatically without requiring strict thresholds.",
+    "Forecast\nPredicts future breaches based on trends and alerts before limits are hit.",
+    "Forecast",
+    "Predicts future breaches based on trends and alerts before limits are hit.",
+    "Counter",
+    "Counter",
+    "Source Filter",
+    "Source Filter",
+    "Source",
+    "Source",
+    "Notify if Threshold value breach within",
+    "Notify if Threshold value breach within",
+    "Abnormality Occurrence",
+    "Abnormality Occurrence",
+    "Auto Clear",
+    "Auto Clear"
+  ]
+}

@@ -16,14 +16,15 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
 const TARGET = {
-  MONITOR_IP: '172.16.10.13',
-  MONITOR_NAME: 'esxi13.motadata.local',
-  VM_IP: '172.16.12.90',
-  SEARCH_KEYWORD: '172.16.12.90',
+  MONITOR_IP: '172.16.10.18',
+  MONITOR_NAME: 'esxi18.motadata.local',
+  VM_IP: '172.16.15.245',
+  SEARCH_KEYWORD: '172.16.15.245',
   SCHEDULER_HOUR: '00:00',
 };
 
@@ -43,11 +44,7 @@ test.describe.serial('Motadata AIOps Virtualization Rediscovery Flow', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 60000, waitUntil: 'domcontentloaded' });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForLoadState('domcontentloaded');
+    await login(page);
   });
 
   test('Delete the VMware ESXi VM from Device Monitor Settings', async () => {
@@ -63,12 +60,12 @@ test.describe.serial('Motadata AIOps Virtualization Rediscovery Flow', () => {
     // Wait for the device grid to render
     await expect(page.locator('.k-master-row').first()).toBeVisible({ timeout: 60000 });
 
-    // Filter the grid by the esxi13 monitor IP
+    // Filter the grid by the esxi18 monitor IP
     const tableSearch = page
       .locator('.search-box input.ant-input, [class*="search"] input.ant-input')
       .last();
 
-    // Anchored regex on the IP cell — '172.16.10.13' is a substring of other IPs.
+    // Anchored regex on the IP cell — '172.16.10.18' is a substring of other IPs.
     const ipRegex = new RegExp(`^\\s*${TARGET.MONITOR_IP.replace(/\./g, '\\.')}\\s*$`);
     const monitorRow = page.locator('.k-master-row', {
       has: page.locator('td', { hasText: ipRegex })
@@ -111,7 +108,7 @@ test.describe.serial('Motadata AIOps Virtualization Rediscovery Flow', () => {
     }
   });
 
-  test('Create rediscover scheduler for Virtualization on esxi13 monitor', async () => {
+  test('Create rediscover scheduler for Virtualization on esxi18 monitor', async () => {
     test.setTimeout(90000);
 
     // Navigate: Rediscover Settings
@@ -127,14 +124,14 @@ test.describe.serial('Motadata AIOps Virtualization Rediscovery Flow', () => {
     // Open Create Scheduler drawer
     await page.getByRole('button', { name: 'Create Scheduler' }).click();
 
-    // Pick the esxi13 monitor — match by name (unique) to avoid IP-substring traps
+    // Pick the esxi18 monitor — match by name (unique) to avoid IP-substring traps
     const monitorTrigger = page.locator('//div[@id="monitors"]//input[@placeholder="Select"]');
     await monitorTrigger.click();
     const monitorSearch = page.locator("//input[@id='assign-monitor-search']");
-    await monitorSearch.fill('esxi13');
+    await monitorSearch.fill('esxi18');
     const monitorRow = page.getByRole('row', { name: new RegExp(TARGET.MONITOR_NAME) }).first();
     await expect(monitorRow).toBeVisible({ timeout: 10000 });
-    const row = page.locator("//tr[.//span[contains(normalize-space(),'esxi13.motadata.local')]]");
+    const row = page.locator("//tr[.//span[contains(normalize-space(),'esxi18.motadata.local')]]");
 
 await expect(row).toHaveCount(1);
 
@@ -220,7 +217,7 @@ await row.locator("//input[@type='checkbox']").check();
     // Wait for the device grid to render
     await expect(page.locator('.k-master-row').first()).toBeVisible({ timeout: 60000 });
 
-    // Filter the grid by the esxi13 monitor IP (anchored to avoid substring match)
+    // Filter the grid by the esxi18 monitor IP (anchored to avoid substring match)
     const tableSearch = page
       .locator('.search-box input.ant-input, [class*="search"] input.ant-input')
       .last();
@@ -261,9 +258,6 @@ await row.locator("//input[@type='checkbox']").check();
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

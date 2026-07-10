@@ -1,0 +1,4 @@
+# Transient grounding artifacts — safe to delete anytime, never committed.
+*/_scratch/
+# Office lock files
+**/~$*

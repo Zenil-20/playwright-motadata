@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -36,11 +37,7 @@ test.describe.serial('Motadata AIOps Proxy Server Settings flow', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Proxy Server Settings and add a new proxy server', async () => {
@@ -90,9 +87,6 @@ await page.locator("//button[@id='configure-btn']").click();
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

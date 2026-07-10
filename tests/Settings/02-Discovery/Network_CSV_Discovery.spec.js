@@ -16,8 +16,20 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 const APP_URL = process.env.Motadata_Aiops;
 const APP_USERNAME = process.env.Motadata_Username;
@@ -690,20 +702,7 @@ async function waitForProvisionSuccess(page) {
 
   await expect(successMessage).toBeVisible({ timeout: LONG_UI_TIMEOUT });
 
-  if (await provisionDialog.isVisible().catch(() => false)) {
-    const closeButton = provisionDialog
-      .locator("svg[data-icon='times'], button")
-      .first();
-
-    if (await closeButton.isVisible().catch(() => false)) {
-      await closeButton.click();
-    }
-  } else {
-    const closeIcon = page.locator("svg[data-icon='times']").last();
-    if (await closeIcon.isVisible().catch(() => false)) {
-      await closeIcon.click().catch(() => {});
-    }
-  }
+  await closeProvisionStatus(page);
 }
 
 async function selectDropdownOption(page, inputLocator, optionText) {
@@ -882,10 +881,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Network CSV Discovery', 
   });
 
   test('Login to Motadata AIOps', async () => {
-    await loginToMotadata(page);
-    await expect(page.locator("//a[@href='/settings/']")).toBeVisible({
-      timeout: DEFAULT_UI_TIMEOUT,
-    });
+    await login(page);
   });
 
   test('Navigate to Discovery Profile and open creation drawer', async () => {
@@ -1014,15 +1010,6 @@ test.describe.serial('Motadata AIOps Discovery Flow For Network CSV Discovery', 
   });
 
   test('Logout from AIOps', async () => {
-    const avatar = page.locator("//img[@alt='Avatar']").first();
-    await expect(avatar).toBeVisible({ timeout: DEFAULT_UI_TIMEOUT });
-    await avatar.click();
-
-    const logoutButton = page.getByText('Logout').first();
-    await expect(logoutButton).toBeVisible({ timeout: DEFAULT_UI_TIMEOUT });
-    await logoutButton.click();
-
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

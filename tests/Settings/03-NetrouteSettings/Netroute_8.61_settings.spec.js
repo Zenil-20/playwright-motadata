@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -36,11 +37,7 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Netroute Settings and Create a Netroute', async () => {
@@ -53,11 +50,25 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
     await page.locator("//input[@id='destination']").fill('www.chatgpt.com');
     await page.locator("//input[@id='port-id']").fill('443');
     await page.locator('[data-cy="dropdown-trigger-input"]').first().click();
-    await page.locator("//input[@id='assign-monitor-search']").fill('172.16.8.61');
 
-  const checkbox = await page.locator('.ant-checkbox-input').first();
-  await expect(checkbox).toBeVisible({ timeout: 5000 });
-  await checkbox.evaluate(node => node.parentElement.click());
+    const preferredIp = '172.16.12.90';
+    const fallbackIp = (process.env.Motadata_Aiops || '').match(/\d+\.\d+\.\d+\.\d+/)?.[0];
+
+    const searchInput = page.locator("//input[@id='assign-monitor-search']");
+    await searchInput.fill(preferredIp);
+
+    let monitorRow = page.locator('tr.k-master-row', { hasText: preferredIp });
+    if ((await monitorRow.count()) === 0 && fallbackIp) {
+      await searchInput.fill(fallbackIp);
+      monitorRow = page.locator('tr.k-master-row', { hasText: fallbackIp });
+    }
+
+    await expect(monitorRow).toHaveCount(1, { timeout: 10000 });
+    await expect(monitorRow).toBeVisible({ timeout: 5000 });
+
+    const checkbox = monitorRow.locator('.ant-checkbox-input').first();
+    await expect(checkbox).toBeVisible({ timeout: 5000 });
+    await checkbox.evaluate(node => node.parentElement.click());
 //   await expect(checkbox).toBeChecked({ timeout: 5000 });
 
   const submitBtn = page.locator("//button[@id='submit-btn']");
@@ -69,16 +80,7 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
   });
 
   test('Logout from AIOps', async () => {
-    const drawerCloseButton = page.locator('.ant-drawer-close').last();
-    if (await drawerCloseButton.isVisible().catch(() => false)) {
-      await drawerCloseButton.click();
-      await expect(drawerCloseButton).toBeHidden({ timeout: 10000 });
-    }
-
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 
 });

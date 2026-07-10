@@ -1,0 +1,196 @@
+{
+  "inputs": [
+    {
+      "tag": "input",
+      "id": "policy-name",
+      "name": "policy-name",
+      "placeholder": null,
+      "readonly": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": null,
+      "readonly": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select Metric",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Everywhere",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": " ",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": "critical",
+      "placeholder": "Value",
+      "readonly": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": "major",
+      "placeholder": "Value",
+      "readonly": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": "warning",
+      "placeholder": "Value",
+      "readonly": null
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "readonly": true
+    },
+    {
+      "tag": "input",
+      "id": null,
+      "name": null,
+      "placeholder": "Select",
+      "readonly": true
+    }
+  ],
+  "navLinks": [
+    {
+      "text": "NetRoute",
+      "href": null
+    },
+    {
+      "text": "NetRoute",
+      "href": "/netroute/"
+    },
+    {
+      "text": "Metric Explorer",
+      "href": null
+    },
+    {
+      "text": "Metric Explorer",
+      "href": "/metric-explorer/"
+    },
+    {
+      "text": "Log Explorer",
+      "href": null
+    },
+    {
+      "text": "Log Explorer",
+      "href": "/log/"
+    },
+    {
+      "text": "APM Explorer",
+      "href": null
+    },
+    {
+      "text": "APM Explorer",
+      "href": "/apm/"
+    },
+    {
+      "text": "Flow Explorer",
+      "href": null
+    },
+    {
+      "text": "Flow Explorer",
+      "href": "/flow/"
+    },
+    {
+      "text": "Trap Explorer",
+      "href": null
+    },
+    {
+      "text": "Trap Explorer",
+      "href": "/trap-explorer/"
+    },
+    {
+      "text": "Availability",
+      "href": null
+    },
+    {
+      "text": "Metric",
+      "href": null
+    },
+    {
+      "text": "Log",
+      "href": null
+    },
+    {
+      "text": "Flow",
+      "href": null
+    },
+    {
+      "text": "APM",
+      "href": null
+    },
+    {
+      "text": "Trap",
+      "href": null
+    },
+    {
+      "text": "NetRoute",
+      "href": null
+    },
+    {
+      "text": "Network Config",
+      "href": null
+    },
+    {
+      "text": "Real User Monitoring",
+      "href": null
+    },
+    {
+      "text": "Metric Policy",
+      "href": "https://docs.motadata.com/motadata-aiops-docs/alerts-and-policies/basic-policies/metric-policy"
+    }
+  ],
+  "btns": [
+    "Create Policy",
+    "Reset"
+  ]
+}

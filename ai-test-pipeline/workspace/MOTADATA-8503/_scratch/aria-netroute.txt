@@ -1,0 +1,5 @@
+NAV:
+ObserveOps|Dashboards|Monitors|Alerts|SLO BETA|Reports|Topology|NCCM|NetRoute|Metric Explorer|Log Explorer|APM Explorer|RUM Explorer|Flow Explorer|Trap Explorer|Audits|Settings||NetRoute Policy
+
+CARDS:
+Threshold Alert|Baseline Alert|Anomaly|Forecast

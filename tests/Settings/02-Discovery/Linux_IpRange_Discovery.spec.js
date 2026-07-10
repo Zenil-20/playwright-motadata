@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery', () => {
   let page;
@@ -37,11 +49,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -60,7 +68,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     // Exclude IP range
     await page.locator("//div[@id='exclude-ipType']//span[contains(text(),'IP Range')]").click();
     await page.locator("//input[@placeholder='e.g. IP Range']").fill(process.env.Linux_IpRange_Discovery_Excluded_ip_range);
-    await page.locator("//form[@class='flex-grow flex ant-form ant-form-vertical']//button[@type='submit']")
+    await page.locator("//form[@class='flex-grow flex ant-form ant-form-vertical']//button[@type='submit']").click();
     await page.locator('#create-credential-btn-id').click();
     await page.locator("//input[@id='credential-profile-name-id']").fill('Linux Device IP Range Credential');
     await page.locator("//input[@id='username-id']").fill(process.env.Linux_IpRange_Discovery_Credential_username);
@@ -76,14 +84,11 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await expect(page.locator("//div[contains(text(),'Discovered Objects')]")).toBeVisible({ timeout: 120000 });
     await page.locator('input[type="checkbox"]').nth(0).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await expect.soft(page.getByText('provisioned successfully').first()).toBeVisible();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

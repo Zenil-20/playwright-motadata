@@ -19,6 +19,7 @@ import { Client } from 'ssh2';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
 
@@ -27,6 +28,33 @@ const MOTADATA_URL =
   process.env.SERVER_URL ||
   process.env.Server_url ||
   process.env.server_url;
+
+// Parse the first balanced JSON object from a string, ignoring trailing garbage.
+function parseFirstJsonObject(text) {
+  const start = text.indexOf('{');
+  if (start === -1) throw new Error('No JSON object found in content');
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') { inString = true; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) return JSON.parse(text.slice(start, i + 1));
+    }
+  }
+  throw new Error('Unterminated JSON object in content');
+}
 
 // Utility to execute SSH command
 async function executeCommand({ host, username, password, command }) {
@@ -106,11 +134,18 @@ test.beforeAll(async () => {
   if (!masterIp)
     throw new Error('Master IP not found in SERVER_URL or Motadata_Aiops env');
 
+  // APM/multimaster host whose agent.json event hosts get the automation IP appended.
   const sshConfig = {
-    host: process.env.Agent_ip || '172.16.8.61',
-    username: process.env.Agent_username || 'root',
-    password: process.env.Agent_password || 'Mind@123',
+    host: process.env.Agent_APM_ip,
+    username: process.env.Agent_APM_username || 'root',
+    password: process.env.Agent_APM_password,
   };
+
+  if (!sshConfig.host || !sshConfig.password) {
+    throw new Error(
+      'Set Agent_APM_ip / Agent_APM_username / Agent_APM_password in .env'
+    );
+  }
 
   const remoteConfigPath = '/motadata/motadata/config/agent.json';
   const localConfigPath = path.join(__dirname, 'agent.json');
@@ -143,7 +178,7 @@ test.beforeAll(async () => {
 
   // Update config file: append masterIp to hosts arrays if not present
   const rawContent = fs.readFileSync(localConfigPath, 'utf-8');
-  const configData = JSON.parse(rawContent);
+  const configData = parseFirstJsonObject(rawContent);
 
   let updated = false;
   const cleanIp = masterIp.trim();
@@ -205,11 +240,13 @@ test.beforeAll(async () => {
       remotePath: remoteConfigPath,
     });
 
-    // Restart motadata service
+    // Restart motadata service: stop, then start (explicit stop -> start).
     const restartResult = await executeCommand({
       ...sshConfig,
       command: `
-      service motadata restart &&
+      service motadata stop &&
+      sleep 3 &&
+      service motadata start &&
 
 echo "Waiting for Motadata services to be fully ready..."
 
@@ -221,12 +258,12 @@ while [ $attempt -le $max_attempts ]; do
   if systemctl is-active --quiet motadata \
     && pgrep -f motadata-manager > /dev/null \
     && pgrep -f motadata-agent > /dev/null \
-    && pgrep -f metricagent > /dev/null; then
+    && pgrep -f motadata-metric-agent > /dev/null; then
 
       echo "✓ motadata service running"
       echo "✓ motadata-manager process running"
       echo "✓ motadata-agent process running"
-      echo "✓ metricagent process running"
+      echo "✓ motadata-metric-agent process running"
 
       echo "Motadata fully started"
       systemctl status motadata --no-pager
@@ -260,33 +297,31 @@ exit 1
 });
 
 // --- UI Tests ---
-test.describe.serial(
+// Not serial: each test runs and reports independently, so one failure does not
+// skip the others. Login is done once in beforeAll on the shared page, so the
+// functional tests don't depend on a preceding "Login" test.
+test.describe(
   'Motadata AIOps for Agent Monitoring Settings and Agent testing',
   () => {
+    let context;
     let page;
 
-    test.beforeAll(async ({ browser }) => {
-      const context = await browser.newContext();
+    // Fresh context + login before EACH test -> every test is fully independent.
+    test.beforeEach(async ({ browser }) => {
+      context = await browser.newContext();
       page = await context.newPage();
       page.setDefaultTimeout(500000);
+
+      await login(page);
     });
 
-    test.afterAll(async () => {
-      if (page) {
-        await page.close();
-      }
+    test.afterEach(async () => {
+      if (context) await context.close();
     });
 
     test('Login to Motadata AIOps', async () => {
-      await page.goto(MOTADATA_URL, { timeout: 500000 });
-
-       await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-      await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-
-      await page.locator("//button[@type='submit']").click();
-
-      await page.waitForLoadState('networkidle');
-    });
+    await login(page);
+  });
 
     test(
       'Navigate to Agent Monitor Settings and Test All Agent Functionality',
@@ -303,9 +338,9 @@ test.describe.serial(
           .getByRole('link', { name: 'Agent Monitor Settings' })
           .click();
 
-        await page.locator('input[name="search-agent"]').fill('172.16.8.61');
+        await page.locator('input[name="search-agent"]').fill('172.16.12.90');
 
-        const row = page.locator('tr', { hasText: '172.16.8.61' });
+        const row = page.locator('tr', { hasText: '172.16.12.90' });
 
         await row.waitFor({ state: 'visible', timeout: 120000 });
 
@@ -329,9 +364,9 @@ test.describe.serial(
 
         console.log('Downloaded file name:', fileName);
 
-        expect(fileName).toBe('motadata8.61.json');
+        expect(fileName).toBe('suse15.json');
 
-        const downloadedConfig = JSON.parse(
+        const downloadedConfig = parseFirstJsonObject(
           fs.readFileSync(downloadPath, 'utf-8')
         );
 

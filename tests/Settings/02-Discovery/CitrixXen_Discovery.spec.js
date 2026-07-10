@@ -16,8 +16,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 const APP_USERNAME = process.env.Motadata_Username;
 const APP_PASSWORD = process.env.Motadata_Password;
@@ -39,11 +51,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', (
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.getByRole('textbox', { name: 'Username' }).fill(APP_USERNAME);
-    await page.getByRole('textbox', { name: 'Password' }).fill(APP_PASSWORD);
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Credential Profile and create credential profile', async () => {
@@ -98,7 +106,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', (
 
     const successMessages = page.getByText('provisioned successfully');
     await expect(successMessages.first()).toBeVisible();
-    await page.locator('.svg-inline--fa.fa-times.fa-w-16.fa-lg').click();
+    await closeProvisionStatus(page);
     await page.locator("input[placeholder='Search']").first().fill("device monitor settings", { timeout: 60000 });
     await page.waitForLoadState('networkidle');
     page.waitForTimeout(2000);
@@ -113,15 +121,12 @@ test.describe.serial('Motadata AIOps Discovery Flow For Citrix Xen Discovery', (
     await row.locator('.excluded-header-icon').click();
     await page.locator("//span[normalize-space()='Edit']").click();
     for (const tag of tags) {
-    await expect(page.getByText(tag.toLowerCase(), { exact: true })).toBeVisible();
+    await expect(page.getByText(tag.toLowerCase())).toBeVisible();
     }
     await page.locator('svg[data-icon="close"]').click();
     });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

@@ -1,0 +1,47 @@
+{
+  "key": "MOTADATA-8898",
+  "title": "Enhance Metric Description Availability for Multiple Categories (APM, RUM, Log, NetRoute, Flow)",
+  "type": "Improvement",
+  "status": "Done",
+  "priority": "Medium",
+  "components": ["AIOPS"],
+  "description_summary": "Today metric descriptions show only for the 'Metric' category when creating a widget. Extend descriptions to APM, RUM, Log, NetRoute, Flow. On the widget-creation screen, selecting a metric in the Metric dropdown must surface a description pop-up explaining what the metric measures / how to read it. Descriptions are mapped from each category's data source and must be consistent in format. If a description is missing, the UI must inform the user it is unavailable for that metric.",
+  "acceptance_criteria": [
+    { "id": "A1", "source": "jira:explicit", "then": "When creating a widget, descriptions are available for categories APM, RUM, Log, NetRoute, Flow (previously Metric only)", "source_text": "descriptions must be available for the following categories: APM, RUM, Log, NetRoute, Flow" },
+    { "id": "A2", "source": "jira:explicit", "then": "Each description conveys relevant info: what the metric measures, how values are interpreted, potential root cause of anomalies", "source_text": "Descriptions should display relevant information ... what the metric measures, how values are interpreted, and the potential root cause of anomalies" },
+    { "id": "A3", "source": "jira:explicit", "then": "The widget creation interface displays a description pop-up for each metric in the above categories", "source_text": "The widget creation interface should display a description pop-up for each metric" },
+    { "id": "A4", "source": "jira:explicit", "then": "Description is visible upon selecting a metric within the 'Metric' dropdown", "source_text": "Descriptions should be visible upon selecting a metric within the 'Metric' dropdown" },
+    { "id": "A5", "source": "jira:explicit", "then": "Descriptions are correctly mapped from the respective data sources and displayed consistently per category", "source_text": "Descriptions must be correctly mapped from the respective data sources and displayed consistently for each category" },
+    { "id": "A6", "source": "jira:explicit", "then": "Descriptions across categories keep a consistent format and structure", "source_text": "Descriptions across different categories should maintain a consistent format and structure for clarity" },
+    { "id": "A7", "source": "jira:explicit", "then": "If description data is missing for a metric, the UI informs the user the description is unavailable for that specific metric", "source_text": "If the description data for any category is missing, informing the user that the description is unavailable for that specific metric" }
+  ],
+  "use_cases": [
+    { "id": "TC1", "category": "APM",      "flow": "Widget create -> Metric dropdown -> pick APM metric -> hover/select -> description visible & accurate", "source": "jira:explicit" },
+    { "id": "TC2", "category": "RUM",      "flow": "Widget create -> Metric dropdown -> pick RUM metric -> hover/select -> description visible & accurate", "source": "jira:explicit" },
+    { "id": "TC3", "category": "Log",      "flow": "Widget create -> Metric dropdown -> pick Log metric -> hover/select -> description visible & accurate", "source": "jira:explicit" },
+    { "id": "TC4", "category": "NetRoute", "flow": "Widget create -> Metric dropdown -> pick NetRoute metric -> hover/select -> description visible & accurate", "source": "jira:explicit" },
+    { "id": "TC5", "category": "Flow",     "flow": "Widget create -> Metric dropdown -> pick Flow metric -> hover/select -> description visible & accurate", "source": "jira:explicit" },
+    { "id": "TC6", "category": "any",      "flow": "Metric whose description data is missing -> UI shows 'description unavailable' message (A7)", "source": "jira:inferred" }
+  ],
+  "screens_mentioned": ["Widget creation (Dashboard > Create/Add Widget)", "Metric dropdown / Metric picker"],
+  "linked": [
+    { "key": "MOTADATA-9000", "relation": "relates", "title": "Misspelled words 'Mermory' and 'Entires' in Hyper-V metric names" }
+  ],
+  "figma_links": ["https://www.figma.com/proto/DPReGBjeIv7nogzeNs9Uel/Settings?node-id=24784-199311&starting-point-node-id=632%3A36804"],
+  "labels": ["Anant", "Kunal", "bhaving", "bhavya", "raj", "shivani", "DEV_DELAY", "PMG_DELAY"],
+  "env_hints": {
+    "data_seed_note": "Comment: metric/event description data seeded under /db-files/metric-description (NetRoute, APM, RUM, Flow) and /db-files/event-description (RUM, Flow, APM, Log). Verification server referenced: 172.16.13.206.",
+    "automation_target": "https://172.16.15.86 (Motadata_Aiops in .env) — confirm seeded metric-description data is present here before asserting content."
+  },
+  "completeness": {
+    "score": "partial",
+    "gaps": [
+      "No exact metric NAME enumerated per category to select (e.g. which APM/RUM/Log/NetRoute/Flow metric) — must harvest live from the Metric dropdown",
+      "No exact description STRING given to assert against — A2/A5 content correctness can only be checked as 'non-empty, category-consistent' unless live text is captured first",
+      "Interaction unclear: AC says both 'hover over the metric' (TC steps) and 'visible upon selecting' (A4) — live UI must disambiguate hover vs select trigger",
+      "A7 (missing-description message) needs a metric known to lack data; exact unavailable-message text not specified",
+      "Seed data location (172.16.13.206 / /db-files) may differ from automation server 172.16.15.86 — state stage must verify data presence",
+      "Widget-creation screen not yet in selector-cookbook (Dashboards unharvested) -> live locator harvest required"
+    ]
+  }
+}

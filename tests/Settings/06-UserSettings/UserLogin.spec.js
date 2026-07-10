@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -43,24 +44,7 @@ function buildUserData() {
   };
 }
 
-async function login(page, username, password) {
-  await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-  await page.locator("//input[@placeholder='Username']").fill(username);
-  await page.locator("//input[@placeholder='Password']").fill(password);
-  await page.locator("//button[@type='submit']").click();
-  await page.waitForLoadState('networkidle');
-}
-
-async function logout(page) {
-  const avatar = page.locator("//img[@alt='Avatar']");
-  await expect(avatar).toBeVisible({ timeout: 30000 });
-  await avatar.click();
-
-  const logoutButton = page.getByText('Logout');
-  await expect(logoutButton).toBeVisible({ timeout: 10000 });
-  await logoutButton.click();
-  await page.waitForLoadState('networkidle');
-}
+// login() and logout() now come from the shared ../../fixtures/auth.js helper.
 
 async function openUserSettings(page) {
   await page.locator("//a[@href='/settings/']").click();
@@ -145,6 +129,23 @@ async function selectRole(page, drawer) {
   await expect(visibleRoleOption).toBeVisible({ timeout: 10000 });
   await visibleRoleOption.click({ force: true });
 }
+//MOTADATA-8393 Introduce Per-User Session Timeout Support
+async function selectSessionExpiry(page, drawer) {
+  const options = ['10 Minutes', '20 Minutes', '30 Minutes', '45 Minutes', '60 Minutes'];
+  const choice = options[Math.floor(Math.random() * options.length)];
+
+  const sessionExpiryDropdown = drawer.locator(
+    "xpath=.//*[normalize-space(text())='Session Expiry']/ancestor::div[.//input[@placeholder='Select']][1]//input[@placeholder='Select']"
+  ).first();
+  await expect(sessionExpiryDropdown).toBeVisible({ timeout: 10000 });
+  await sessionExpiryDropdown.click({ force: true });
+  await waitForDrawerAnimation(page);
+
+  const option = page.getByText(choice, { exact: true }).last();
+  await expect(option).toBeVisible({ timeout: 10000 });
+  await option.click({ force: true });
+  await waitForDrawerAnimation(page);
+}
 
 async function ensureUserStatusEnabled(drawer) {
   const statusSwitch = drawer.getByRole('switch').last();
@@ -178,6 +179,7 @@ async function fillLocalAuthenticationUserForm(page, drawer, user) {
 
   await selectGroup(page, drawer);
   await selectRole(page, drawer);
+  await selectSessionExpiry(page, drawer);
   await enableFirstLoginPasswordChange(drawer);
   await ensureUserStatusEnabled(drawer);
 }
@@ -201,7 +203,7 @@ async function assertUserCreated(page, username, email) {
 }
 
 async function assertUserLoginSucceeded(page, username) {
-  const avatar = page.locator("//img[@alt='Avatar']");
+  const avatar = page.locator("#user-avatar");
   await expect(avatar).toBeVisible({ timeout: 30000 });
 
   const usernameText = page.getByText(username, { exact: true });
@@ -224,7 +226,7 @@ async function changePasswordOnFirstLogin(page, newPassword) {
   await submitButton.click();
 
   await expect(successMessage).toBeVisible({ timeout: 30000 });
-  await expect(page.locator("//input[@placeholder='Username']")).toBeVisible({ timeout: 30000 });
+  await expect(page.locator("input[data-testid='login-input-username']")).toBeVisible({ timeout: 30000 });
 }
 
 test.describe.serial('Motadata AIOps local authentication user creation and login', () => {
@@ -255,7 +257,9 @@ test.describe.serial('Motadata AIOps local authentication user creation and logi
 
     await logout(page);
 
-    await login(page, user.username, user.password);
+    // First login for a freshly-created local user is redirected to a forced
+    // "change password" page, so there is no avatar to wait for.
+    await login(page, user.username, user.password, { waitForAvatar: false });
     await changePasswordOnFirstLogin(page, user.newPassword);
 
     await login(page, user.username, user.newPassword);
