@@ -171,7 +171,7 @@ await expect(serviceRow).toBeVisible({
   }
 
   test('Create Service for Dotnet', async () => {
-    await createService({ language: 'dotnet', serviceName: 'ProductCatalog_dotnet' });
+    await createService({ language: 'dotnet', serviceName: 'ProductCatalog_dotnet.' });
   });
 
   test('Create Service for Dotnet (Host/VM)', async () => {

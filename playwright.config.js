@@ -71,6 +71,13 @@ const dashboardProjects = [
   },
 ];
 
+const apmExplorerProjects = [
+  {
+    name: 'apm_explorer_services',
+    testMatch: ['tests/APM_Explorer/Services/*.spec.js'],
+  },
+];
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -112,7 +119,7 @@ export default defineConfig({
   },
 
   /* Configure ordered Settings projects on Chromium */
-  projects: [...settingsProjects, ...dashboardProjects].map((project) => ({
+  projects: [...settingsProjects, ...dashboardProjects, ...apmExplorerProjects].map((project) => ({
     ...project,
     use: { ...devices['Desktop Chrome'] },
   })),
