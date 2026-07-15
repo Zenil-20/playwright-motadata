@@ -1,0 +1,458 @@
+[
+  {
+    "id": 10000000000034,
+    "name": "Domain Availability"
+  },
+  {
+    "id": 10000000000052,
+    "name": "Ping Availability"
+  },
+  {
+    "id": 10000000000054,
+    "name": "URL Availability"
+  },
+  {
+    "id": 10000000000055,
+    "name": "All Interface Availability"
+  },
+  {
+    "id": 10000000000061,
+    "name": "Virtual Instance Availability"
+  },
+  {
+    "id": 10000000000067,
+    "name": "Process Availability"
+  },
+  {
+    "id": 10000000000073,
+    "name": "Network Devices Availability"
+  },
+  {
+    "id": 10000000000077,
+    "name": "Wireless Availability"
+  },
+  {
+    "id": 10000000000081,
+    "name": "All Monitor Availability"
+  },
+  {
+    "id": 10000000000085,
+    "name": "Server Availability"
+  },
+  {
+    "id": 10000000000104,
+    "name": "Group Availability"
+  },
+  {
+    "id": 10000000010353,
+    "name": "All Virtual Server Availability"
+  },
+  {
+    "id": 10000000010356,
+    "name": "All Network Monitor Availability"
+  },
+  {
+    "id": 10000000010359,
+    "name": "All Virtual Machine Availability"
+  },
+  {
+    "id": 10000000010362,
+    "name": "All Access Point Availability"
+  },
+  {
+    "id": 1000000001031024,
+    "name": "WAN Link Availability - Today"
+  },
+  {
+    "id": 1000000001031027,
+    "name": "Top 25 Least available link - Today"
+  },
+  {
+    "id": 1000000001031012,
+    "name": "Overutilized Servers"
+  },
+  {
+    "id": 1000000001031013,
+    "name": "Underutilized Servers"
+  },
+  {
+    "id": 1000000001031014,
+    "name": "Idle Servers"
+  },
+  {
+    "id": 1000000001031015,
+    "name": "Overutilized VMWare ESXis"
+  },
+  {
+    "id": 1000000001031016,
+    "name": "Underutilized VMWare ESXis"
+  },
+  {
+    "id": 1000000001031017,
+    "name": "Idle VMware ESXis"
+  },
+  {
+    "id": 1000000001031018,
+    "name": "Overutilized Hyper-V Servers"
+  },
+  {
+    "id": 1000000001031019,
+    "name": "Underutilized Hyper-V Servers"
+  },
+  {
+    "id": 1000000001031020,
+    "name": "Idle Hyper-V Servers"
+  },
+  {
+    "id": 1000000001031021,
+    "name": "Overutilized Citrix Hypervisors"
+  },
+  {
+    "id": 1000000001031022,
+    "name": "Underutilized Citrix Hypervisors"
+  },
+  {
+    "id": 1000000001031023,
+    "name": "Idle Citrix Hypervisors"
+  },
+  {
+    "id": 10000000010397,
+    "name": "Server Inventory"
+  },
+  {
+    "id": 10000000010398,
+    "name": "Windows Device Inventory"
+  },
+  {
+    "id": 10000000010399,
+    "name": "Linux Device Inventory"
+  },
+  {
+    "id": 100000000103100,
+    "name": "Network Inventory"
+  },
+  {
+    "id": 100000000103101,
+    "name": "Network Switch Inventory"
+  },
+  {
+    "id": 100000000103102,
+    "name": "Network Router Inventory"
+  },
+  {
+    "id": 100000000103103,
+    "name": "Network Firewall Inventory"
+  },
+  {
+    "id": 100000000103104,
+    "name": "Hyper-v Inventory"
+  },
+  {
+    "id": 100000000103105,
+    "name": "ESXi Inventory"
+  },
+  {
+    "id": 100000000103106,
+    "name": "Citrix Xen Inventory"
+  },
+  {
+    "id": 100000000103107,
+    "name": "Hyper-v VM Inventory"
+  },
+  {
+    "id": 100000000103108,
+    "name": "ESXi VM Inventory"
+  },
+  {
+    "id": 100000000103109,
+    "name": "Citrix Xen VM Inventory"
+  },
+  {
+    "id": 1000000001031010,
+    "name": "Interface Inventory"
+  },
+  {
+    "id": 1000000001031011,
+    "name": "VLAN Details"
+  },
+  {
+    "id": 10000000000057,
+    "name": "Top 25 Network Monitors by Memory Utilization"
+  },
+  {
+    "id": 10000000000059,
+    "name": "Top 25 Network Monitors by Response Time"
+  },
+  {
+    "id": 10000000000062,
+    "name": "Top 25 Network Monitors by CPU Utilization"
+  },
+  {
+    "id": 10000000000064,
+    "name": "Top 25 Network Interface by Rx Traffic"
+  },
+  {
+    "id": 10000000000066,
+    "name": "Top 25 Network Interface by Tx Traffic"
+  },
+  {
+    "id": 10000000000068,
+    "name": "Top 25 Network Monitors by Packet Loss"
+  },
+  {
+    "id": 10000000000070,
+    "name": "Top 25 Network Interface Summary"
+  },
+  {
+    "id": 10000000000072,
+    "name": "Top 25 Network Interface by Rx Errors"
+  },
+  {
+    "id": 10000000000074,
+    "name": "Top 25 Network Interface by Tx Errors"
+  },
+  {
+    "id": 10000000000076,
+    "name": "Top 25 Network Interface by Rx Utilization %"
+  },
+  {
+    "id": 10000000000078,
+    "name": "Top 25 Network Interface by Tx Utilization %"
+  },
+  {
+    "id": 10000000000080,
+    "name": "Top 25 Process by Memory Utilization"
+  },
+  {
+    "id": 10000000000082,
+    "name": "Top 25 Process by Virtual Memory Bytes"
+  },
+  {
+    "id": 10000000000084,
+    "name": "Cisco Monitors Buffer misses"
+  },
+  {
+    "id": 10000000000086,
+    "name": "Top 25 Process by CPU Utilization"
+  },
+  {
+    "id": 10000000000087,
+    "name": "Top 25 Interface Summary"
+  },
+  {
+    "id": 10000000000088,
+    "name": "Top 25 Server Monitors by Disk Utilization"
+  },
+  {
+    "id": 10000000000089,
+    "name": "Top 25 Server Monitors by Packet Loss"
+  },
+  {
+    "id": 10000000000090,
+    "name": "Top 25 Server Monitors by CPU Utilization"
+  },
+  {
+    "id": 10000000000091,
+    "name": "Top 25 Server Monitors by Memory Utilization"
+  },
+  {
+    "id": 10000000000092,
+    "name": "Top 25 Server by Rx Traffic"
+  },
+  {
+    "id": 10000000000094,
+    "name": "Top 25 Server Monitors by Response Time"
+  },
+  {
+    "id": 10000000000095,
+    "name": "Top 25 Server Interfaces Summary"
+  },
+  {
+    "id": 10000000000098,
+    "name": "Top 25 Server by Tx Traffic"
+  },
+  {
+    "id": 10000000000101,
+    "name": "Top 25 Interfaces by Wireless Interface Summary"
+  },
+  {
+    "id": 10000000000105,
+    "name": "Top 25 Monitors by Packet Loss"
+  },
+  {
+    "id": 10000000000107,
+    "name": "Top 25 Monitors by Response Time"
+  },
+  {
+    "id": 10000000000109,
+    "name": "Top 25 Wireless Monitors by Packet Loss"
+  },
+  {
+    "id": 10000000000112,
+    "name": "Top 25 Server Monitors by Disk IOPS"
+  },
+  {
+    "id": 10000000000113,
+    "name": "Top 25 Wireless Monitors by Response Time"
+  },
+  {
+    "id": 10000000000115,
+    "name": "Top 25 Interfaces by Tx Utilization in %"
+  },
+  {
+    "id": 10000000000117,
+    "name": "Top 25 Interfaces by Rx Utilization in %"
+  },
+  {
+    "id": 10000000000119,
+    "name": "Top 25 Monitor by Disk IOPS"
+  },
+  {
+    "id": 10000000000121,
+    "name": "Top 25 Monitors by Disk Utilization"
+  },
+  {
+    "id": 10000000000124,
+    "name": "Top 25 Monitors by Disk Volume Utilization"
+  },
+  {
+    "id": 10000000000126,
+    "name": "Top 25 Server Monitors by Disk Volume Utilization"
+  },
+  {
+    "id": 10000000010109,
+    "name": "Top 25 Interfaces by Rx Utilization in Bytes"
+  },
+  {
+    "id": 10000000010112,
+    "name": "Top 25 Interfaces by Tx Utilization in Bytes"
+  },
+  {
+    "id": 10000000010131,
+    "name": "Top 25 Monitors by CPU Utilization"
+  },
+  {
+    "id": 10000000010137,
+    "name": "Top 25 Monitors by Memory Utilization"
+  },
+  {
+    "id": 10000000010293,
+    "name": "Top 25 Wireless Monitors by CPU Utilization"
+  },
+  {
+    "id": 10000000010299,
+    "name": "Top 25 Wireless Monitors by Memory Utilization"
+  },
+  {
+    "id": 10000000010341,
+    "name": "Top 25 Virtualization Monitors by CPU Utilization"
+  },
+  {
+    "id": 10000000010347,
+    "name": "Top 25 Virtualization Monitors by Memory Utilization"
+  },
+  {
+    "id": 10000000010364,
+    "name": "Average Response Time"
+  },
+  {
+    "id": 10000000010367,
+    "name": "Top 25 Errors & Discards"
+  },
+  {
+    "id": 10000000010374,
+    "name": "Top 25 High VM CPU Utilization"
+  },
+  {
+    "id": 10000000010369,
+    "name": "Top 25 Virtual Servers by Network Utilization"
+  },
+  {
+    "id": 10000000010376,
+    "name": "Top 25 High VM Memory Utilization"
+  },
+  {
+    "id": 10000000000027,
+    "name": "Interface Summary"
+  },
+  {
+    "id": 10000000010365,
+    "name": "Response Time"
+  },
+  {
+    "id": 10000000010370,
+    "name": "Top 25 Wireless APs by Clients Count"
+  },
+  {
+    "id": 10000000000001,
+    "name": "Network Interface by Tx Errors"
+  },
+  {
+    "id": 10000000000002,
+    "name": "Network Interface by Rx Errors"
+  },
+  {
+    "id": 10000000000009,
+    "name": "Top 25 Interface by Discards"
+  },
+  {
+    "id": 10000000000010,
+    "name": "All Server Monitors Summary"
+  },
+  {
+    "id": 10000000000012,
+    "name": "Top 25 Interface by Errors"
+  },
+  {
+    "id": 10000000000022,
+    "name": "All Network Monitors Summary"
+  },
+  {
+    "id": 10000000010373,
+    "name": "Remote Access VPN Tunnel History"
+  },
+  {
+    "id": 10000000010372,
+    "name": "ASA Site-to-Site VPN Tunnel History"
+  },
+  {
+    "id": 10000000010371,
+    "name": "Top 25 Wireless Clients by Traffic Utilization in Bytes"
+  },
+  {
+    "id": 1000000001031025,
+    "name": "WAN Link RTT - Today"
+  },
+  {
+    "id": 1000000001031026,
+    "name": "WAN Link Jitter - Today"
+  },
+  {
+    "id": 1000000001031028,
+    "name": "Top 25 Link with maximum RTT - Today"
+  },
+  {
+    "id": 1000000001031029,
+    "name": "Top 25 Link with maximum Jitter - Today"
+  },
+  {
+    "id": 10000000010350,
+    "name": "All Devices System CPU Percentage"
+  },
+  {
+    "id": 10000000010349,
+    "name": "All Network Monitors Performance and Availability"
+  },
+  {
+    "id": 10000000010348,
+    "name": "All Network Interface Availability and Traffic Utilization"
+  },
+  {
+    "id": 10000000010381,
+    "name": "Availability Status for Application"
+  },
+  {
+    "id": 1000000001031036,
+    "name": "Unhealthy Monitors"
+  }
+]

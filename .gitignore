@@ -4,12 +4,21 @@
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+# Saved storage-state (login cookies/tokens) — never source-controlled
+tests/.auth/
 
 # Scratch / throwaway grounding artifacts
 _scratch/
 
 # RUM per-environment configs (tokens / app ids — not source-controlled)
 tests/Settings/14-RealUserMonitoring/rum-configs/
+ai-test-pipeline/workspace
+
+# Report suite: raw report JSON exports you drop in for `reports:extract`
+# (instance-specific) + any locally-generated catalog variants.
+tests/Reports/_data/reports-src/
+tests/Reports/_data/*.local.
+tests/.auth/user.json
 
 # Dependency directories
 node_modules/
