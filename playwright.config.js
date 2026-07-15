@@ -143,6 +143,13 @@ const dashboardProjects = [
   },
 ];
 
+const apmExplorerProjects = [
+  {
+    name: 'apm_explorer_services',
+    testMatch: ['tests/APM_Explorer/Services/*.spec.js'],
+  },
+];
+
 const metricExplorerProjects = [
   {
     name: 'metric_explorer_01_instance_kpi_anomaly',
@@ -244,7 +251,7 @@ export default defineConfig({
       testMatch: /tests[\\/]Reports[\\/]_core[\\/]auth\.setup\.js/,
       use: { ...devices['Desktop Chrome'] },
     },
-    ...[...settingsProjects, ...monitorsProjects, ...dashboardProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
+    ...[...settingsProjects, ...monitorsProjects, ...dashboardProjects, ...apmExplorerProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
       ...project,
       use: { ...devices['Desktop Chrome'] },
     })),

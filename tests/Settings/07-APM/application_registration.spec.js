@@ -171,6 +171,10 @@ await expect(serviceRow).toBeVisible({
     await createService({ language: 'dotnet', serviceName: 'ProductCatalog_dotnet' });
   });
 
+  test('Create Service for Dotnet (Host/VM)', async () => {
+    await createService({ language: 'dotnet', serviceName: 'APMPlayGround_RedisWebAPI' });
+  });
+
   test('Create Service for NodeJS', async () => {
     await createService({ language: 'nodejs', serviceName: 'NodeJs_mongodb' });
   });
