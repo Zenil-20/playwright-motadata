@@ -84,7 +84,7 @@ const scenarios = [
     appliesTo: 'Access Point',
     deviceMonitorSearch: '10.20.40.4',
     primaryTag: { key: 'Access Point KPI', value: 'Access Point utilization' },
-    dynamicTag: { key: 'dynamic', value: '{wireless.access.point}' },
+    dynamicTag: { key: 'dynamic', value: 'dynamic value' },
     condition: {
       type: 'Exclude',
       counterSearch: 'ip',
@@ -258,8 +258,9 @@ test.describe.serial('Motadata AIOps Rule Based Tags flow', () => {
     await expect(headerCheckbox).toBeVisible();
     await headerCheckbox.check();
 
-    await page.locator('button#btn-show-hide-columns').click();
-    await page.getByText('Run', { exact: true }).click();
+    // await page.locator('button#btn-show-hide-columns').click();
+    // await page.getByText('Run', { exact: true }).click();
+    await page.getByRole('button', { name: 'Run' }).click();
     await page.locator("//button[@id='confirm-yes']").click();
   }
 
@@ -399,3 +400,4 @@ test.describe.serial('Motadata AIOps Rule Based Tags flow', () => {
     await logout(page);
   });
 });
+ 

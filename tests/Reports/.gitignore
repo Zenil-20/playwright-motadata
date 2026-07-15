@@ -1,0 +1,6 @@
+# Raw report JSON exports you drop in for `reports:extract` — instance-specific,
+# not part of the suite.
+_data/reports-src/
+
+# Any locally-generated catalog variants.
+_data/*.local.json

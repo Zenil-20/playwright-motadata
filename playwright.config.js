@@ -16,7 +16,7 @@ const settingsProjects = [
   },
   {
     name: 'settings_04_policy',
-    testMatch: ['tests/Settings/04-PolicySettings/*.spec.js'],
+    testMatch: ['tests/Settings/04-PolicySettings/**/*.spec.js'],
   },
   {
     name: 'settings_05_runbook',
@@ -57,6 +57,13 @@ const settingsProjects = [
 {
   name: 'settings_14_real_user_monitoring',
   testMatch: ['tests/Settings/14-RealUserMonitoring/*.spec.js'],
+},
+{
+  name: 'settings_15_snmp_trap',
+  testMatch: ['tests/Settings/15-SNMPTrap/*.spec.js'],
+  // Live-server suite: auto-retry transient network blips (ERR_NETWORK_CHANGED / connection
+  // timeouts to 151) so an infra hiccup during a long run doesn't fail an otherwise-green test.
+  retries: 2,
 }
 ];
 
@@ -122,6 +129,14 @@ const nccmProjects = [
 export default defineConfig({
   testDir: './tests',
   /*
+   * Fire the SNMP-trap propagation batch at the VERY START of the run, and clean it up at the end.
+   * The AIOps datastore flush is a fixed ~5-min floor before traps show in Trap Explorer; firing
+   * here means that wait overlaps the whole suite, so TrapPropagation just VERIFIES later (no block).
+   * Disable with TRAP_FIRE=0. (Harmless no-op if the trap env isn't configured.)
+   */
+  globalSetup: './tests/Settings/15-SNMPTrap/_helpers/global-trap-setup.js',
+  globalTeardown: './tests/Settings/15-SNMPTrap/_helpers/global-trap-teardown.js',
+  /*
    * Temporarily excluded from every `npx playwright test` run. The files and their
    * code are kept intact — they are just never collected/executed. Remove an entry
    * here to re-enable that spec.
@@ -151,8 +166,15 @@ export default defineConfig({
   workers: process.env.CI ? 5 : (process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : '55%'),
   /* Test timeout - increase for slow networks, decrease for production */
   timeout: 120000,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* Reporters:
+   *  - 'html'  : the standard Playwright report for the WHOLE run (every suite),
+   *              with the full per-test trace — open with `npx playwright show-report`.
+   *  - report-regression: the QA report for the REPORT MODULE only. It self-filters
+   *              to tests under tests/Reports, so running the full framework (or just
+   *              the reports project) always produces test-results/report-regression/
+   *              index.html; running only other suites leaves it untouched.
+   */
+  reporter: [['html'], ['./tests/Reports/_core/html-reporter.js']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -166,10 +188,30 @@ export default defineConfig({
   },
 
   /* Configure ordered Settings projects on Chromium */
-  projects: [...settingsProjects, ...dashboardProjects, ...apmExplorerProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
-    ...project,
-    use: { ...devices['Desktop Chrome'] },
-  })),
+  projects: [
+    /* One-time login for the report-regression suite. Writes storageState so the
+     * 114 parallel per-report tests all start authenticated (tests/Reports/_core/
+     * auth.setup.js). Only the `reports` project depends on it, so other suites
+     * are unaffected. */
+    {
+      name: 'setup',
+      testMatch: /tests[\\/]Reports[\\/]_core[\\/]auth\.setup\.js/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    ...[...settingsProjects, ...dashboardProjects, ...apmExplorerProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
+      ...project,
+      use: { ...devices['Desktop Chrome'] },
+    })),
+    /* Report regression: validate every report + create-and-validate. Reuses the
+     * setup login via storageState. report-validation opts into parallel mode so
+     * it fans out across workers. */
+    {
+      name: 'reports',
+      testMatch: ['tests/Reports/*.spec.js'],
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Chrome'], storageState: 'tests/.auth/user.json' },
+    },
+  ],
 
   /* Run your local dev server before starting the tests */
   // webServer: {

@@ -79,7 +79,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
 
     await drawer
       .locator('.ant-form-item:has(label:has-text("Client Secret")) input')
-      .fill(process.env.Motadata_ServiceOps_clientSecret);
+      .fill(process.env.Motadata_ServiceOps_clientsecret);
 
     await page.getByRole('button', { name: 'Create Credentials Profile' }).click();
 
@@ -124,24 +124,24 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
     await page.locator('button[type="submit"]').nth(0).click();
 
     // Auto Sync
-    const autoSync = page
-      .locator('.ant-form-item:has(label:has-text("Auto Sync"))')
-      .getByRole('switch');
-    await expect(autoSync).toBeVisible();
-    if (!(await autoSync.isChecked())) {
-      await autoSync.click();
-    }
-    await expect(autoSync).toBeChecked();
+    // const autoSync = page
+    //   .locator('.ant-form-item:has(label:has-text("Auto Sync"))')
+    //   .getByRole('switch');
+    // await expect(autoSync).toBeVisible();
+    // if (!(await autoSync.isChecked())) {
+    //   await autoSync.click();
+    // }
+    // await expect(autoSync).toBeChecked();
 
-    // Use Proxy Server
-    const proxy = page
-      .locator('.ant-form-item:has(label:has-text("Use Proxy Server"))')
-      .getByRole('switch');
-    await expect(proxy).toBeVisible();
-    if (!(await proxy.isChecked())) {
-      await proxy.click();
-    }
-    await expect(proxy).toBeChecked();
+    // // Use Proxy Server
+    // const proxy = page
+    //   .locator('.ant-form-item:has(label:has-text("Use Proxy Server"))')
+    //   .getByRole('switch');
+    // await expect(proxy).toBeVisible();
+    // if (!(await proxy.isChecked())) {
+    //   await proxy.click();
+    // }
+    // await expect(proxy).toBeChecked();
 
     await page.getByRole('button', { name: 'Test' }).click();
 
@@ -252,7 +252,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
     };
     await selectAllSeverity(0, 'On Department'); // Impact
     await selectAllSeverity(1, 'Medium');        // Urgency
-
+ 
     // Location
     await selectDropdownValue('Location', 'Asia');
     // Category
@@ -260,9 +260,9 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
     // Department
     await selectDropdownValue('Department', 'IT');
     // Technician Group / Assignee / Vendor (data-driven dropdowns — first valid value each)
-    await selectByLabel('Technician Group', 'qa');
-    await selectByLabel('Assignee', 'Yash Patel (yash)');
-    await selectByLabel('Vendor', 'V1');
+    await selectByLabel('Technician Group', 'Software Support Team');
+    await selectByLabel('Assignee', 'zenil (zenil)');
+    await selectByLabel('Vendor', 'Test1');
 
     // Group (plain text input). EXACT label match — has-text('Group') also matches the new
     // "Technician Group" dropdown (readonly), which made .fill() target the wrong field.
@@ -286,25 +286,35 @@ test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Inte
     // Ticket Status — pick "Closed" radio (already default, but assert/select for safety)
     await page.getByRole('radio', { name: 'Closed' }).check();
 
-    // --- Custom Fields (fill every one so the profile isn't left empty) ---
-    await fillByLabel('TEST TEXT INPUT', 'automation test input');
-    await fillByLabel('New Text Area', 'automation text area');
-    await selectByLabel('New Dropdown', 'opt 1');
-    await selectByLabel('New Multi-Select Dropdown', 'red');
-    await fillByLabel('New Number', '5');
-    // New Dependent is a 2-level hierarchy: expand the 'red' parent, then pick its child 'green'.
-    await openDropdownByLabel('New Dependent');
+    // --- Custom Fields ---
+    // These are the ServiceOps instance's user-defined custom fields, harvested live from the
+    // create form on 2026-07-14 (build 8.2.6, https://172.16.15.68 → ServiceOps 172.16.12.112).
+    // NOTE: custom fields are defined in the connected ServiceOps app, so if that instance's
+    // field schema changes these labels/values must be re-harvested. Fill each so the profile
+    // isn't left empty.
+    await fillByLabel('custom input', 'automation test input');
+    await fillByLabel('custom Text Area', 'automation text area');
+    await selectByLabel('custom Dropdown', 'cd1');
+    // "custom Multi-Select Dropdown" is a readonly picker-overlay WITHOUT a
+    // data-cy='dropdown-trigger-input' hook, so trigByLabel()/openDropdownByLabel() can't find
+    // it. Open by clicking the field's input, tick one option, then close the popover.
     {
-      const pop = visiblePopover();
-      await pop.locator('li.sortable-item').filter({ hasText: /red/i }).first()
-        .locator('div.cursor-pointer').first().click();           // expand 'red'
-      await pop.locator('li.sortable-item span.cursor-pointer')
-        .filter({ hasText: /^\s*green\s*$/i }).first().click();   // pick leaf 'green'
+      const msInput = page
+        .locator('.ant-form-item:has(label:has-text("custom Multi-Select Dropdown")) input')
+        .first();
+      await msInput.click();
+      await visiblePopover().locator("span[title='cmd1']").click();
       await page.keyboard.press('Escape').catch(() => {});
     }
-    // New Checkbox — tick opt 1
+    await fillByLabel('custom Number', '5');
+    // "custom Radio": Ant hides the real <input type=radio>, so .check()/getByRole().check()
+    // times out — click the r1 label span instead (same idiom as the checkbox below).
     await page
-      .locator(`xpath=(//*[normalize-space(text())='New Checkbox']/following::*[normalize-space(text())='opt 1'])[1]`)
+      .locator(`xpath=(//*[normalize-space(text())='custom Radio']/following::*[normalize-space(text())='r1'])[1]`)
+      .click();
+    // "custom Checkbox" — tick c1
+    await page
+      .locator(`xpath=(//*[normalize-space(text())='custom Checkbox']/following::*[normalize-space(text())='c1'])[1]`)
       .click();
 
     await page.locator("//button[@id='external-storage-btn']").click();

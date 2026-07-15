@@ -44,7 +44,20 @@ export async function login(
   password = process.env.Motadata_Password,
   { waitForAvatar = true } = {},
 ) {
-  await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+  // The initial navigation to some hosts (e.g. 172.16.8.218) intermittently STALLS for minutes on
+  // a cold/slow app start, which times out the whole login test. Retry the goto a few times with a
+  // bounded timeout so a transient slow-start recovers with a fresh navigation instead of failing.
+  let navErr;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await page.goto(process.env.Motadata_Aiops, { timeout: 35000, waitUntil: 'domcontentloaded' });
+      navErr = null;
+      break;
+    } catch (e) {
+      navErr = e;
+    }
+  }
+  if (navErr) throw navErr;
   // Scope to the <input>: the form-item wrapper div also carries the same
   // data-testid, so an unscoped selector matches 2 elements (strict-mode violation).
   await page.locator("input[data-testid='login-input-username']").fill(username);
