@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { selectApmCounter } from './_apm.helpers.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -43,6 +44,10 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
   });
 
   test('Go to APM Policy and create a new policy', async () => {
+    // APM trace data takes a ~4-5 min propagation floor after 07-APM registration;
+    // the counter gate below can wait up to 7 min, so lift the 120s per-test cap.
+    test.setTimeout(600000);
+
     await page.locator("//a[@href='/settings/']").click();
     await page.locator("//input[@placeholder='Search']").fill('apm policy');
     await page.locator('a[href="/settings/policy-settings/apm"]').click();
@@ -58,10 +63,9 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
       await page.keyboard.press('Enter');
     }
 
-    // Select Counter
-    await page.locator("//input[@placeholder='Select Counter']").click();
-    await page.locator("//input[@placeholder='Search']").fill('service.traces.per.min');
-    await page.getByText('service.traces.per.min', { exact: true }).click();
+    // Select Counter — gated: waits (up to 7 min) for the trace counter to
+    // propagate after 07-APM registration before selecting it.
+    await selectApmCounter(page, 'service.traces.per.min');
 
     // Source Filter -> Monitor, then select all monitors
     await page.locator("//input[@placeholder='Select']").first().click();

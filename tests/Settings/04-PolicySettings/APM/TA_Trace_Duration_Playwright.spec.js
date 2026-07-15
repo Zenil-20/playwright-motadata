@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { selectApmCounter } from './_apm.helpers.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -43,6 +44,10 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
   });
 
   test('Go to APM Policy and create a new Trace Analytics policy', async () => {
+    // APM trace data takes a ~4-5 min propagation floor after 07-APM registration;
+    // the counter gate below can wait up to 7 min, so lift the 120s per-test cap.
+    test.setTimeout(600000);
+
     await page.locator("//a[@href='/settings/']").click();
     await page.locator("//input[@placeholder='Search']").fill('apm policy');
     await page.locator('a[href="/settings/policy-settings/apm"]').click();
@@ -63,10 +68,9 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
     // APM Policy Type -> Trace Analytics
     await page.getByText('Trace Analytics', { exact: true }).click();
 
-    // Counter -> select the counter FIRST (this drives Result By options)
-    await page.locator("//input[@placeholder='Select Counter']").click();
-    await page.locator("//input[@placeholder='Search']").fill('service.trace.duration.us');
-    await page.getByText('service.trace.duration.us', { exact: true }).click();
+    // Counter -> select the counter FIRST (this drives Result By options).
+    // Gated: waits (up to 7 min) for the trace counter to propagate after 07-APM.
+    await selectApmCounter(page, 'service.trace.duration.us');
 
     // Aggregation -> Avg
     await page.locator("//input[@placeholder='Select Aggr.']").click();
