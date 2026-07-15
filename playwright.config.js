@@ -67,26 +67,79 @@ const settingsProjects = [
 }
 ];
 
+// Per-device monitor dashboards (moved from tests/Dashboard → tests/Monitors).
+const monitorsProjects = [
+  {
+    name: 'monitors_01_server_and_apps',
+    testMatch: ['tests/Monitors/01-ServerAndApps/*.spec.js'],
+  },
+  {
+    name: 'monitors_02_network',
+    testMatch: ['tests/Monitors/02-Network/*.spec.js'],
+  },
+  {
+    name: 'monitors_03_virtualization',
+    testMatch: ['tests/Monitors/03-Virtualization/*.spec.js'],
+  },
+  {
+    name: 'monitors_04_database',
+    testMatch: ['tests/Monitors/04-Database/*.spec.js'],
+  },
+  {
+    name: 'monitors_05_service_check',
+    testMatch: ['tests/Monitors/05-ServiceCheck/*.spec.js'],
+  },
+];
+
+// Default/system feature dashboards (createDashboardCategorySuite framework).
 const dashboardProjects = [
   {
-    name: 'dashboard_01_server_and_apps',
-    testMatch: ['tests/Dashboard/01-ServerAndApps/*.spec.js'],
+    name: 'dashboard_01_overview',
+    testMatch: ['tests/Dashboard/01-Overview/*.spec.js'],
   },
   {
-    name: 'dashboard_02_network',
-    testMatch: ['tests/Dashboard/02-Network/*.spec.js'],
+    name: 'dashboard_02_server',
+    testMatch: ['tests/Dashboard/02-Server/*.spec.js'],
   },
   {
-    name: 'dashboard_03_virtualization',
-    testMatch: ['tests/Dashboard/03-Virtualization/*.spec.js'],
+    name: 'dashboard_03_network',
+    testMatch: ['tests/Dashboard/03-Network/*.spec.js'],
   },
   {
-    name: 'dashboard_04_database',
-    testMatch: ['tests/Dashboard/04-Database/*.spec.js'],
+    name: 'dashboard_04_sdn',
+    testMatch: ['tests/Dashboard/04-SDN/*.spec.js'],
   },
   {
-    name: 'dashboard_05_service_check',
-    testMatch: ['tests/Dashboard/05-ServiceCheck/*.spec.js'],
+    name: 'dashboard_05_cloud',
+    testMatch: ['tests/Dashboard/05-Cloud/*.spec.js'],
+  },
+  {
+    name: 'dashboard_06_virtualization',
+    testMatch: ['tests/Dashboard/06-Virtualization/*.spec.js'],
+  },
+  {
+    name: 'dashboard_07_hci',
+    testMatch: ['tests/Dashboard/07-HCI/*.spec.js'],
+  },
+  {
+    name: 'dashboard_08_applications',
+    testMatch: ['tests/Dashboard/08-Applications/*.spec.js'],
+  },
+  {
+    name: 'dashboard_09_database',
+    testMatch: ['tests/Dashboard/09-Database/*.spec.js'],
+  },
+  {
+    name: 'dashboard_10_log',
+    testMatch: ['tests/Dashboard/10-Log/*.spec.js'],
+  },
+  {
+    name: 'dashboard_11_flow',
+    testMatch: ['tests/Dashboard/11-Flow/*.spec.js'],
+  },
+  {
+    name: 'dashboard_12_apm',
+    testMatch: ['tests/Dashboard/12-APM/*.spec.js'],
   },
 ];
 
@@ -191,7 +244,7 @@ export default defineConfig({
       testMatch: /tests[\\/]Reports[\\/]_core[\\/]auth\.setup\.js/,
       use: { ...devices['Desktop Chrome'] },
     },
-    ...[...settingsProjects, ...dashboardProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
+    ...[...settingsProjects, ...monitorsProjects, ...dashboardProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
       ...project,
       use: { ...devices['Desktop Chrome'] },
     })),

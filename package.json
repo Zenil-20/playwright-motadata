@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test:monitors": "playwright test tests/Monitors",
+    "test:monitors:list": "playwright test tests/Monitors --list",
     "test:dashboard": "playwright test tests/Dashboard",
     "test:dashboard:list": "playwright test tests/Dashboard --list",
     "reports:validate": "cross-env TRAP_FIRE=0 playwright test --project=reports tests/Reports/report-validation.spec.js --reporter=html,line,./tests/Reports/_core/html-reporter.js",
