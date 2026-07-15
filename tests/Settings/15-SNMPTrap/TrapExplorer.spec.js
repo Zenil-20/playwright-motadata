@@ -91,7 +91,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap Explorer UI', () => {
     const value = await page.locator("input[placeholder='Value']").first().inputValue();
     expect(value, 'policy Value should be prefilled with the trap OID').toContain(oid.replace(/^\./, ''));
     // Complete + save the policy.
-    const name = `pw-trap-pol-${RT}`;
+    const name = `playwright-trap-pol-${RT}`;
     await page.locator("input[id='policy-name']").fill(name);
     await page.locator(".ant-form-item:has-text('Severity') :text-is('Critical')").first().click().catch(() => {});
     await clickThroughOverlay(page.locator("button:has-text('Create Policy')").first());

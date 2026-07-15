@@ -72,7 +72,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap end-to-end propagation', () =
     // FALLBACK: spec run in isolation (no globalSetup) or TRAP_FIRE=0 -> fire now (and the poll below
     // absorbs the full 5-min flush). Handles are cleaned up in afterAll.
     if (!firedOids.length) {
-      const { created } = await fireBatch(TRAP_BATCH, `pf${Date.now().toString(36)}`, (fx) => !fx.requiresV3 || canV3);
+      const { created } = await fireBatch(TRAP_BATCH, `playwright-${Date.now().toString(36)}`, (fx) => !fx.requiresV3 || canV3);
       state.inlineHandles = created;
       firedOids = created.map((c) => c.oid);
     }

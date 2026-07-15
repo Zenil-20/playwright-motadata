@@ -15,7 +15,7 @@ import path from 'path';
 
 /** Run `fn(dir)` with a fresh OS temp dir, then delete it no matter what (files never persist). */
 export async function withTempDir(fn) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pw-trap-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'playwright-trap-'));
   try { return await fn(dir); }
   finally { fs.rmSync(dir, { recursive: true, force: true }); }
 }
@@ -31,7 +31,7 @@ export function writeBulkProfileCsv(dir, runToken, n = 3) {
   const rows = [];
   const lines = ['Trap Name,Trap OID,Filter,Trap Translator'];
   for (let i = 1; i <= n; i++) {
-    const name = `pw-bulk-${runToken}-${i}`;
+    const name = `playwright-bulk-${runToken}-${i}`;
     const oid = `.1.3.6.1.4.1.99999.${base + i}`;
     const filter = i % 2 ? 'no' : 'yes';
     const translator = filter === 'no' ? `$2 bulk test ${i}` : '';

@@ -87,7 +87,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap configuration', () => {
 
   test('Listener — create a v3 listener (auth user + security level)', async () => {
     test.skip(!V3_USER, 'TRAP_V3_USER not set in .env — skipping the v3 listener path');
-    const name = `pw-listener-v3-${RT}`;
+    const name = `playwright-listener-v3-${RT}`;
     await gotoSettings(page, ROUTES.listener);
     await openCreate(page);
     await page.locator("input[name='trap-listener-profile-name']").fill(name);
@@ -116,14 +116,14 @@ test.describe.serial('Motadata AIOps — SNMP Trap configuration', () => {
   /* ---------------------------------------------------------------- SNMP Trap Profile */
 
   test('Profile — create a manual profile with OID + translator and confirm it is listed', async () => {
-    const name = `pw-profile-${RT}`;
+    const name = `playwright-profile-${RT}`;
     await gotoSettings(page, ROUTES.profile);
     await openCreate(page);
     // "Configure Manually" is the default mode; assert it, then fill the (verified) fields.
     await page.locator(".ant-radio-button-wrapper:has-text('Configure Manually')").click().catch(() => {});
     await page.locator("input[name='trap-name']").fill(name);
     await page.locator("input[name='trap-oid']").fill(CFG_TRAP_OID); // unique-per-run private OID (must be unique)
-    await page.locator("textarea[name='trap-translator']").fill('PW test trap: $1'); // $1 = first varbind
+    await page.locator("textarea[name='trap-translator']").fill('PLAYWRIGHT test trap: $1'); // $1 = first varbind
     await submitAndExpectSaved(page, 'Create SNMP Trap Profile');
 
     await gotoSettings(page, ROUTES.profile);
@@ -142,7 +142,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap configuration', () => {
   test('Profile — a Trap OID is required (empty OID is rejected)', async () => {
     await gotoSettings(page, ROUTES.profile);
     await openCreate(page);
-    await page.locator("input[name='trap-name']").fill(`pw-neg-${RT}`);
+    await page.locator("input[name='trap-name']").fill(`playwright-neg-${RT}`);
     // OID left empty → submit must be blocked.
     await submitCreate(page, 'Create SNMP Trap Profile');
     expect(await notSaved(page), 'create should be rejected for the missing required field').toBe(true);
@@ -152,7 +152,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap configuration', () => {
 
   test('Forwarder — create a forwarder to a destination and confirm it is listed', async () => {
     test.skip(!FORWARDER_DEST, 'TRAP_FORWARDER_DEST not set — skipping forwarder create');
-    const name = `pw-forwarder-${RT}`;
+    const name = `playwright-forwarder-${RT}`;
     const [destHost, destPort = '162'] = FORWARDER_DEST.split(':');
     await gotoSettings(page, ROUTES.forwarder);
     await openCreate(page);
@@ -173,7 +173,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap configuration', () => {
   test('Forwarder — a destination is required (empty destination is rejected)', async () => {
     await gotoSettings(page, ROUTES.forwarder);
     await openCreate(page);
-    await page.locator("input[name='name']").fill(`pw-neg-fwd-${RT}`);
+    await page.locator("input[name='name']").fill(`playwright-neg-fwd-${RT}`);
     await submitCreate(page, 'Create SNMP Trap Forwarder');
     expect(await notSaved(page), 'create should be rejected for the missing required field').toBe(true);
   });
@@ -186,7 +186,7 @@ test.describe.serial('Motadata AIOps — SNMP Trap configuration', () => {
   // a dedicated harvest of that widget's option structure — tracked as a follow-up so the run stays
   // honest rather than flaky. Severity (Critical/Major/Warning) and the name field ARE grounded.
   test.fixme('Trap Policy — create a policy with a severity and confirm it is saved', async () => {
-    const name = `pw-trap-policy-${RT}`;
+    const name = `playwright-trap-policy-${RT}`;
     await gotoSettings(page, ROUTES.policy);
     // The route lands on the unified Create Policy form with the Trap type tab active.
     await page.locator("#policy-type-tab >> text=Trap").click().catch(() => {});

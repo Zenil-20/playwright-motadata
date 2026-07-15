@@ -20,7 +20,7 @@ import { fireBatch } from './trap-sender.js';
 import { TRAP_BATCH, V3_USER, assertTrapEnv } from './trap-fixtures.js';
 
 // Fixed temp path shared with the spec + teardown (NOT in the project tree).
-export const TRAP_STATE_FILE = path.join(os.tmpdir(), 'pw-trap-fired.json');
+export const TRAP_STATE_FILE = path.join(os.tmpdir(), 'playwright-trap-fired.json');
 
 export default async function globalTrapSetup() {
   if (process.env.TRAP_FIRE === '0') { console.log('[trap globalSetup] TRAP_FIRE=0 — skipping early fire'); return; }
