@@ -17,6 +17,7 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 import { selectApmCounter } from './_apm.helpers.js';
+import { login, logout } from '../../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -31,16 +32,13 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
 
   test.afterAll(async () => {
     if (page) {
+      await logout(page);
       await page.close();
     }
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Go to APM Policy and create a new Trace Analytics policy', async () => {
@@ -49,6 +47,7 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
     test.setTimeout(600000);
 
     await page.locator("//a[@href='/settings/']").click();
+    await page.locator("//input[@id='phone-number']").click();
     await page.locator("//input[@placeholder='Search']").fill('apm policy');
     await page.locator('a[href="/settings/policy-settings/apm"]').click();
     await page.getByRole('button', { name: 'Create Policy' }).click();

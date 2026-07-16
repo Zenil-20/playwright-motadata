@@ -211,6 +211,27 @@ async function extractPreviewRows(page) {
   });
 }
 
+/**
+ * True if the report preview contains a rendered chart/graph (a sized canvas or
+ * svg widget). Chart data lives in canvas pixels the DOM can't read, so this only
+ * tells us a chart is PRESENT — the caller pairs it with the PDF's row count to
+ * decide whether that chart actually carries data (an empty chart still paints
+ * axes). Kept separate from extractPreviewRows, which counts only table rows.
+ */
+async function previewHasChart(page) {
+  return page
+    .evaluate(() => {
+      const sel =
+        '.vue-grid-item canvas, .vue-grid-item svg, .widget-container canvas, ' +
+        '.widget-container svg, .chart-container canvas, .chart-container svg';
+      return Array.from(document.querySelectorAll(sel)).some((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 20 && r.height > 20;
+      });
+    })
+    .catch(() => false);
+}
+
 async function waitForReportLoaderIdle(page, settleMs = 1500, timeoutMs = 60_000) {
   const loaderSel =
     '.content-inner-panel .v-spinner, .content-inner-panel .ant-spin-spinning, ' +
@@ -290,6 +311,7 @@ module.exports = {
   waitForReportReady,
   extractPreviewText,
   extractPreviewRows,
+  previewHasChart,
   setTimeline,
   exportPdf,
 };

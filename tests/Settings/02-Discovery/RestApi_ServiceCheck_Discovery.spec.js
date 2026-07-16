@@ -22,13 +22,12 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
 import { login } from '../../fixtures/auth.js';
-import { TARGETS, COLLECTOR, CREDS, CLIENT_CERT } from './_core/servicecheck.data.js';
+import { TARGETS, CREDS, CLIENT_CERT } from './_core/servicecheck.data.js';
 import {
   hideDevtoolsOverlay,
   openCreateServiceCheck,
   selectServiceType,
   setProfileName,
-  selectCollector,
   pickRadio,
   setResponseContentType,
   createCredentialProfile,
@@ -109,7 +108,6 @@ test.describe('REST API Service-Check discovery — full credential/method matri
       await setProfileName(page, `rest-${row.key}-${stamp}`);
       await selectServiceType(page, 'REST', 'REST-API');
       await page.locator('input#api-endpoint-id').first().fill(row.endpoint);
-      //await selectCollector(page, COLLECTOR);
 
       // credential profile (only for authed rows) — creation AUTO-SELECTS it in the form.
       if (row.cred) {
@@ -140,7 +138,6 @@ test.describe('REST API Service-Check discovery — full credential/method matri
     await setProfileName(page, `rest-oauth-${stamp}`);
     await selectServiceType(page, 'REST', 'REST-API');
     await page.locator('input#api-endpoint-id').first().fill(`${R}/oauth/protected`);
-    await selectCollector(page, COLLECTOR);
     const credName = `rest-oauth-cred-${stamp}`;
     await createCredentialProfile(page, {
       name: credName, authType: 'oauth', grantType: 'Password',

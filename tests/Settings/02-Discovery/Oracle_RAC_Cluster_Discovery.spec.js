@@ -115,13 +115,17 @@ test.describe.serial('Motadata AIOps Discovery Flow For Oracle RAC Cluster', () 
     await page.locator("//button[@id='add-selected-btn-id']").click();
 
     // Provision status — assert BOTH monitors provisioned successfully.
+    // The two discovered objects are the CDB (named "<dynamic-id>:FREE", from the
+    // container DB service — NOT the .env service name) and the PDB (named after the
+    // .env service name, e.g. "freepdb1"). So assert both list items report success,
+    // and that one of them is specifically the PDB monitor.
     const provisionList = page.locator('ul.progress-list');
     await expect(provisionList.locator('li')).toHaveCount(2, { timeout: 120000 });
-    // Monitor <dynamic-id>:<service> provisioned successfully...
+    // Both monitors must report success.
     await expect(provisionList.locator('li', {
-      hasText: new RegExp(`:${DB_SERVICE_NAME} provisioned successfully`, 'i'),
-    })).toHaveCount(1);
-    // Monitor <service> provisioned successfully...
+      hasText: /provisioned successfully/i,
+    })).toHaveCount(2);
+    // The PDB monitor is named after the .env service name.
     await expect(provisionList.locator('li', {
       hasText: new RegExp(`^Monitor ${DB_SERVICE_NAME} provisioned successfully`, 'i'),
     })).toHaveCount(1);

@@ -9,6 +9,23 @@ const settingsProjects = [
   {
     name: 'settings_02_discovery',
     testMatch: ['tests/Settings/02-Discovery/*.spec.js'],
+    // The broad Ping IP-range sweep (172.16.15.1-255) can disturb the other
+    // discoveries, so it is carved out into settings_02_discovery_ping_last and
+    // gated to run AFTER this whole project finishes. Keep the globally-ignored
+    // specs excluded here too, since a project-level testIgnore overrides global.
+    testIgnore: [
+      '**/Ping_IpRange_Discovery.spec.js',
+      '**/Esxi13_Discovery.spec.js',
+      '**/Windows_Cidr_RangeBased_Discovery.spec.js',
+    ],
+  },
+  {
+    // Runs LAST: depends on the full discovery project, so Playwright completes
+    // every other 02-Discovery spec (across workers, in parallel) before starting
+    // this broad ping-range sweep.
+    name: 'settings_02_discovery_ping_last',
+    testMatch: ['tests/Settings/02-Discovery/Ping_IpRange_Discovery.spec.js'],
+    dependencies: ['settings_02_discovery'],
   },
   {
     name: 'settings_03_netroute',

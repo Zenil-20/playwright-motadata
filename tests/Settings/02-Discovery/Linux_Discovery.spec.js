@@ -70,14 +70,19 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await page.locator("//button[@id='test-btn']").click();
     await page.locator("//input[@name='hostname-ip']").fill(process.env.Linux_server_172_16_15_132);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful');
+    // Case-insensitive substring — mirrors the working Oracle spec. An exact 'Successful'
+    // breaks if the app renders "Test Successful"/"Successful!" etc.
+    await expect(page.locator('#message')).toHaveText(/Successful/i);
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.Linux_server_172_16_15_132)).toBeVisible();
+    // The IP appears in several result-grid cells (Host + IP columns), so scope to the
+    // first match — a bare getByText(IP) matches multiple and trips strict mode.
+    await expect(page.getByText(process.env.Linux_server_172_16_15_132).first()).toBeVisible();
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
+    // Two monitors can each report "provisioned successfully" — first() avoids a multi-match.
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
     await closeProvisionStatus(page);
   });
 

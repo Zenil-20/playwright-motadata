@@ -79,24 +79,9 @@ export async function setTargetTypeUrl(page) {
   await page.waitForTimeout(300);
 }
 
-/** Select the collector that runs the probe. Pass '' to leave the form default. */
-// export async function selectCollector(page, name) {
-//   if (!name) return;
-//   await page
-//     .getByText('Collectors', { exact: true })
-//     .locator('xpath=following::input[@data-cy="dropdown-trigger-input" or @placeholder="Select"][1]')
-//     .click();
-//   await page.waitForTimeout(500);
-//   const search = page.locator("input[data-cy='dropdown-search-input']");
-//   if (await search.count()) await search.last().fill(name);
-//   await page.waitForTimeout(300);
-//   await page.getByText(name, { exact: true }).first().click();
-//   await page.waitForTimeout(300);
-//   // Collectors is a MULTI-select: the popup stays open and would intercept the next
-//   // radio/button clicks, so close it before continuing.
-//   await page.keyboard.press('Escape').catch(() => {});
-//   await page.waitForTimeout(300);
-// }
+// Collector selection intentionally omitted — both the URL and REST Service-Check specs
+// leave the collector at the form default (the probe runs on whatever collector the profile
+// defaults to). No selectCollector helper is exported; callers must NOT pick a collector.
 
 /** Click a radio-button (protocol/method/JSON-URL/body-type) by its exact label text.
  *  getByText exact avoids the HTTP-vs-HTTPS substring trap and reliably hits the button. */

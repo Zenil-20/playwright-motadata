@@ -67,7 +67,13 @@ test.describe.serial('Motadata AIOps Discovery Flow For MongoDB Discovery', () =
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect.soft(page.getByText('provisioned successfully')).toBeVisible();
     await page.locator("//i[@class='anticon text-neutral-light']//*[name()='svg']").click();
-    await page.locator("//input[@name='discovery-search']").fill(process.env.MongoDB_ip);
+    // Search by discovery-profile name, not IP — the target IP is shared by several
+    // profiles (Kubernetes, etc.), so an IP search leaves multiple rows and the
+    // gridcell assertion below hits a strict-mode violation. The profile name is unique,
+    // so it filters the grid down to the single MongoDB row.
+    await page.locator("//input[@name='discovery-search']").fill('MongoDB Database');
+    // Only the IP cell carries role="gridcell"; after the name filter it's now the
+    // single remaining row, so this resolves to exactly one element.
     await expect(page.getByRole('gridcell', { name: process.env.MongoDB_ip })).toBeVisible();
     await expect(page.getByRole('img', { name: 'MongoDB' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'MongoDB Database' })).toBeVisible();

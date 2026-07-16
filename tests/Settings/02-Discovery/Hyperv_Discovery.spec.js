@@ -98,16 +98,16 @@ test.describe.serial('Motadata AIOps Discovery Flow For Hyper-V Discovery', () =
     await page.locator("//input[@id='credential-profile-name-id']").fill(`hyperv-cred-${istStamp()}`);
     await page.locator("//input[@id='username-id']").first().fill(HYPERV_USERNAME);
     await page.locator("//input[@id='password-id']").first().fill(HYPERV_PASSWORD);
-    // The DEV overlay sits over this bottom-right button — dispatch the click to bypass it.
-    await page.getByRole('button', { name: 'Create Credentials Profile' }).dispatchEvent('click');
+    // Real click (auto-waits for the button to be enabled/stable) — matches the working
+    // vCenter/Esxi specs. dispatchEvent fired before the button was ready, so the credential
+    // was never created and Save & Run ran an empty profile (0 results → 8-min timeout).
+    await page.getByRole('button', { name: 'Create Credentials Profile' }).click();
 
     // Override the port from the Hyper-V default (443) to WinRM 5985.
-    await page.locator('input[name="port"]').fill(HYPERV_PORT);
+    await page.locator('input[id="port"]').fill(HYPERV_PORT);
 
-    // The in-app dev overlay (span.cp-global-name "Refresh page widgets") floats over the
-    // bottom-right and covers this button. A forced click still lands positionally on the
-    // overlay, so dispatch the DOM click event directly on the button to bypass hit-testing.
-    await page.locator('#save-run-btn-id').dispatchEvent('click');
+    // Real click — same reason as above.
+    await page.getByRole('button', { name: 'Save and Run' }).click();
 
     // Wait for the discovery RESULT rows, then confirm the target IP was discovered.
     await expect(page.locator('tr.k-master-row').first()).toBeVisible({ timeout: 480000 });

@@ -18,7 +18,6 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const { containsNoData } = require('./no-data.js');
 const { comparePair } = require('./compare.js');
 const { pdfTextAndTables } = require('./pdf.js');
 const {
@@ -27,6 +26,7 @@ const {
   safeName,
   waitForReportReady,
   extractPreviewRows,
+  previewHasChart,
   setTimeline,
   exportPdf,
 } = require('./report.helpers.js');
@@ -36,6 +36,11 @@ const SAVE_ARTIFACTS = ['1', 'true', 'yes'].includes((process.env.REPORT_SAVE_AR
 const SCREENSHOTS = (process.env.REPORT_SCREENSHOTS || 'all').toLowerCase();
 
 const EMPTY_SHAPE = { rows: 0, cols: 0 };
+const EMPTY_PARSE = { text: '', header: [], cols: 0, dataRows: [] };
+// Grace re-read of the preview when the PDF has data but the preview shows none:
+// heavy Kendo grids can satisfy "ready" on their scaffold a beat before the rows
+// paint. A bounded DOM re-read, never an export — so it cannot hang.
+const PREVIEW_RECHECK_MS = Number(process.env.REPORT_PREVIEW_RECHECK || 2500);
 const secs = (ms) => `${(ms / 1000).toFixed(1)}s`;
 
 /**
@@ -99,11 +104,15 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
 
     // Row/col counts are collected for EVERY report, pass or fail — they are the
     // evidence in the HTML report, not just an input to the opt-in assertion.
-    const previewRows = await extractPreviewRows(page).catch(() => []);
+    let previewRows = await extractPreviewRows(page).catch(() => []);
+    // Chart presence is captured now, while the report is still on screen (before
+    // the export). Paired with the PDF row count below to tell a chart-with-data
+    // apart from an empty grid — both have zero DOM table rows.
+    const hasChart = await previewHasChart(page);
 
     // ---- 2. export + parse the PDF (its own, much longer, server-side clock) ----
-    const download = await exportPdf(page);
-    if (!download) {
+    const pdf = await exportAndParse(page);
+    if (!pdf) {
       verdict.status = 'no_pdf';
       verdict.preview = shapeOf(previewRows);
       verdict.reason = 'Export As PDF produced no download (button missing, or the export queue never delivered)';
@@ -111,18 +120,20 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
       return verdict;
     }
 
-    // Read the PDF into memory, then delete the on-disk download immediately so
-    // nothing lingers in the browser's temp dir.
-    const pdfPath = await download.path();
-    const pdfBuf = pdfPath ? await fs.promises.readFile(pdfPath) : Buffer.alloc(0);
-    await download.delete().catch(() => {});
+    const parsed = pdf.parsed;
+    const pdfBuf = pdf.buf;
+    const pdfEmpty = parsed.dataRows.length === 0;
 
-    const parsed = await pdfTextAndTables(new Uint8Array(pdfBuf)).catch(() => ({
-      text: '',
-      header: [],
-      cols: 0,
-      dataRows: [],
-    }));
+    // Preview lagging the export: the PDF tabulated data but the preview shows no
+    // rows and it isn't a chart. Heavy Kendo grids can satisfy "ready" on their
+    // scaffold a beat before the data paints, so re-read the preview ONCE after a
+    // short settle before trusting a "UI-side" verdict. A cheap DOM re-read — never
+    // an export, so unlike a re-export it cannot hang on the download queue.
+    if (!pdfEmpty && previewRows.length === 0 && !hasChart) {
+      await page.waitForTimeout(PREVIEW_RECHECK_MS);
+      const again = await extractPreviewRows(page).catch(() => []);
+      if (again.length > 0) previewRows = again;
+    }
 
     const compare = comparePair(previewRows, parsed, true);
     verdict.preview = { rows: compare.previewRows, cols: compare.previewCols };
@@ -130,9 +141,19 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
     verdict.shapeMatch = compare.reason === 'no_data' ? null : compare.status === 'pass';
     verdict.srNoColumn = compare.pdfSrNo;
 
-    // ---- 3. verdict ----
-    const previewEmpty = containsNoData(ready.text);
-    const pdfEmpty = containsNoData(parsed.text);
+    // ---- 3. verdict — decide emptiness from real DATA ROWS, not text -----------
+    // A report's header/scaffold text is ALWAYS present (title, category, column
+    // definitions), so a text heuristic calls a data-less report "full" and mints
+    // false "export bug"s. The exported PDF always tabulates real data — even a
+    // chart's underlying series — so its data-row count is the ground truth. The
+    // preview counts table rows PLUS a rendered chart, but only when the PDF
+    // confirms data exists (an empty chart still paints axes; the PDF corroborates
+    // whether that chart actually carries data).
+    const previewEmpty = compare.previewRows === 0 && !(hasChart && !pdfEmpty);
+
+    // A defect is a DISAGREEMENT between the two sides — one has data, the other
+    // doesn't. Both empty means the report genuinely has no data for this range (a
+    // data condition, reported as `both`, not a UI/export defect).
     if (previewEmpty && pdfEmpty) verdict.where = 'both';
     else if (previewEmpty) verdict.where = 'preview';
     else if (pdfEmpty) verdict.where = 'pdf';
@@ -163,6 +184,22 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
   }
 }
 
+/**
+ * Click "Export As PDF", read the download into memory, delete the on-disk file
+ * so nothing lingers in the browser temp dir, and parse text + table shape in one
+ * pass. Returns { buf, parsed } or null when no download was produced. Shared by
+ * the first export and the single export-race retry.
+ */
+async function exportAndParse(page) {
+  const download = await exportPdf(page);
+  if (!download) return null;
+  const pdfPath = await download.path();
+  const buf = pdfPath ? await fs.promises.readFile(pdfPath) : Buffer.alloc(0);
+  await download.delete().catch(() => {});
+  const parsed = await pdfTextAndTables(new Uint8Array(buf)).catch(() => ({ ...EMPTY_PARSE }));
+  return { buf, parsed };
+}
+
 function shapeOf(rows) {
   if (!rows.length) return { ...EMPTY_SHAPE };
   return { rows: rows.length, cols: Math.max(...rows.map((r) => r.length)) };
@@ -170,8 +207,8 @@ function shapeOf(rows) {
 
 function noDataReason(where) {
   if (where === 'both') return 'No data — the UI preview and the exported PDF are both empty';
-  if (where === 'preview') return 'No data in the UI preview, but the exported PDF has rows (UI-side bug)';
-  return 'No data in the exported PDF, but the UI preview has rows (export-side bug)';
+  if (where === 'preview') return 'No data in the UI preview, but the exported PDF has data (UI-side bug)';
+  return 'No data in the exported PDF, but the UI preview shows data (export-side bug)';
 }
 
 function shapeReason(c) {

@@ -22,14 +22,13 @@
 import { test } from '@playwright/test';
 import dotenv from 'dotenv';
 import { login, logout } from '../../fixtures/auth.js';
-import { TARGETS, COLLECTOR, CREDS, CLIENT_CERT } from './_core/servicecheck.data.js';
+import { TARGETS, CREDS, CLIENT_CERT } from './_core/servicecheck.data.js';
 import {
   hideDevtoolsOverlay,
   openCreateServiceCheck,
   selectServiceType,
   setProfileName,
   setTargetTypeUrl,
-  selectCollector,
   pickRadio,
   addParameter,
   addHeader,
@@ -97,7 +96,6 @@ test.describe.serial('URL Service-Check discovery — full form coverage', () =>
       await selectServiceType(page, 'URL', 'URL');
       await setTargetTypeUrl(page); // default is "Monitor"; switch to URL so #url-id is the target
       await page.locator('input#url-id').first().fill(row.endpoint);
-      await selectCollector(page, COLLECTOR);
 
       // creating a credential profile AUTO-SELECTS it in the form.
       if (row.cred) {
@@ -125,7 +123,6 @@ test.describe.serial('URL Service-Check discovery — full form coverage', () =>
     await selectServiceType(page, 'URL', 'URL');
     await setTargetTypeUrl(page);
     await page.locator('input#url-id').first().fill(`${U}/oauth/protected`);
-    await selectCollector(page, COLLECTOR);
     const credName = `url-oauth-cred-${Date.now()}`;
     await createCredentialProfile(page, {
       name: credName, authType: 'oauth', grantType: 'Password',
