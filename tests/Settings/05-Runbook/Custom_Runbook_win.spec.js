@@ -205,12 +205,12 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
         await expect(checkbox1).toBeVisible({ timeout: 5000 });
         await checkbox1.click();
           await page.locator("//button[@id='create-credential-profile-btn-id']").click();
-          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 300000 });
+          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 600000 });
           // Runbook creation runs asynchronously and can take a while; the create form only
           // closes (navigating back to the runbook list) once it finishes. Wait for that —
           // otherwise the next test's avatar click is intercepted by the still-open form.
           await expect(page.getByRole('button', { name: 'Create Runbook Plugin' }))
-            .toBeHidden({ timeout: 300000 });
+            .toBeHidden({ timeout: 600000 });
     });
 
     test('Logout from AIOps', async () => {

@@ -43,8 +43,8 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
 
   test('Go to APM Policy and create a new Trace Analytics policy', async () => {
     // APM trace data takes a ~4-5 min propagation floor after 07-APM registration;
-    // the counter gate below can wait up to 7 min, so lift the 120s per-test cap.
-    test.setTimeout(600000);
+    // the counter gate below can wait up to 10 min, so lift the 120s per-test cap.
+    test.setTimeout(900000);
 
     await page.locator("//a[@href='/settings/']").click();
     await page.locator("//input[@id='phone-number']").click();

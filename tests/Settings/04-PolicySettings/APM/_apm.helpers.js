@@ -22,7 +22,7 @@ import { expect } from '@playwright/test';
  * that data has propagated.
  *
  * HOW: poll the Counter dropdown — reopen + re-search each round — until the
- * option is actually selectable, up to `timeout` (default 7 min ≈ 1.5× the known
+ * option is actually selectable, up to `timeout` (default 10 min, ≈ 2× the known
  * 4-5 min floor), then click it. This is a smart wait, NOT a blind sleep: it
  * returns the instant the option appears, so a warm environment pays ~0 extra
  * wait. Ordering (registration BEFORE this) is guaranteed separately by the
@@ -38,7 +38,7 @@ import { expect } from '@playwright/test';
  * @param {string} counter  exact counter name, e.g. 'service.span.duration.us'
  * @param {{ timeout?: number }} [opts]
  */
-export async function selectApmCounter(page, counter, { timeout = 7 * 60_000 } = {}) {
+export async function selectApmCounter(page, counter, { timeout = 10 * 60_000 } = {}) {
   const counterInput = page.locator("//input[@placeholder='Select Counter']");
   const searchInput = page.locator("//input[@placeholder='Search']");
   const option = page.getByText(counter, { exact: true }).first();

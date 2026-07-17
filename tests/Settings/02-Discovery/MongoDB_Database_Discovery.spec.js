@@ -72,11 +72,12 @@ test.describe.serial('Motadata AIOps Discovery Flow For MongoDB Discovery', () =
     // gridcell assertion below hits a strict-mode violation. The profile name is unique,
     // so it filters the grid down to the single MongoDB row.
     await page.locator("//input[@name='discovery-search']").fill('MongoDB Database');
-    // Only the IP cell carries role="gridcell"; after the name filter it's now the
-    // single remaining row, so this resolves to exactly one element.
-    await expect(page.getByRole('gridcell', { name: process.env.MongoDB_ip })).toBeVisible();
+    // Re-running this test re-creates a profile named "MongoDB Database" with the same
+    // IP each time, so several identical rows accumulate. The name filter can't tell
+    // them apart, so these row-rendered checks scope to .first() to stay single-match.
+    await expect(page.getByRole('gridcell', { name: process.env.MongoDB_ip }).first()).toBeVisible();
     await expect(page.getByRole('img', { name: 'MongoDB' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'MongoDB Database' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'MongoDB Database' }).first()).toBeVisible();
   });
 
   test('Logout from AIOps', async () => {

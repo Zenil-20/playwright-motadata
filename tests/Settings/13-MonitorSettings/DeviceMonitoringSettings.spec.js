@@ -151,10 +151,10 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
     await page.locator("//input[@type='checkbox']").first().click();
 
     // Open the bulk Tag panel — the toolbar button surfaces once rows are selected.
-    await page.getByRole('button', { name: 'Tags', exact: true }).click();
+    await page.locator('#bulk-tag-toggle').click();
 
     // Add the tag via the ant-select tag input
-    const tagPlaceholder = page.locator("//div[contains(@class,'ant-select-selection__placeholder') and normalize-space()='Add Tags']");
+    const tagPlaceholder = page.getByText('Add Tags');
     await expect(tagPlaceholder).toBeVisible();
     await tagPlaceholder.click();
 
@@ -339,9 +339,14 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
     await page.locator("//input[@placeholder='Search']").fill('device monitor');
     await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
 
-    // Scope the grid to the docker-capable monitor
+    // Searching by IP returns several monitors that share 172.16.15.234 (MongoDB, Oracle,
+    // Oracle RAC, Kubernetes, Linux). Only the Linux server monitor exposes the Docker tabs,
+    // so scope the row by its "Linux" type icon — filtering by the shared IP would match 5
+    // rows and .first() lands on MongoDB (no Docker tabs).
     await page.locator("//input[@placeholder='Search']").nth(1).fill(DOCKER_MONITOR);
-    const monitorRow = page.locator('tr.k-master-row', { hasText: DOCKER_MONITOR }).first();
+    const monitorRow = page.locator('tr.k-master-row')
+      .filter({ has: page.getByRole('img', { name: 'Linux', exact: true }) })
+      .first();
     await expect(monitorRow).toBeVisible({ timeout: 30000 });
 
     // Open kebab -> Metric Settings

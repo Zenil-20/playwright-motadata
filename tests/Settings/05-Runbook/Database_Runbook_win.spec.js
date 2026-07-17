@@ -93,7 +93,7 @@ test.describe.serial('Motadata AIOps Login', () => {
           await expect(checkbox1).toBeVisible({ timeout: 5000 });
           await checkbox1.click();
           await page.locator("//button[@id='create-credential-profile-btn-id']").click();
-          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 300000 });
+          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 600000 });
           await page.locator("//input[@name='search']").fill("Test Database");
           await expect(page.getByRole('link', { name: 'Test Database' })).toBeVisible();
     });

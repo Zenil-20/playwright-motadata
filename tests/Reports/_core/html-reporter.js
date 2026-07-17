@@ -28,6 +28,10 @@ const STATUS_META = {
   faulty: { label: 'FAIL', cls: 'fail', group: 'fail' },
   no_pdf: { label: 'NO PDF', cls: 'fail', group: 'fail' },
   error: { label: 'ERROR', cls: 'error', group: 'fail' },
+  // creation-matrix statuses (rows sourced from the `creation-results` attachment)
+  created: { label: 'CREATED', cls: 'pass', group: 'pass' },
+  skipped: { label: 'N/A', cls: 'warn', group: 'skip' },
+  failed_create: { label: 'CREATE FAIL', cls: 'fail', group: 'fail' },
 };
 
 /**
@@ -37,6 +41,9 @@ const STATUS_META = {
  */
 function bugType(r) {
   if (r.status === 'ok') return { key: 'pass', label: 'Pass', cls: 'pass', hint: 'Data rendered on screen and in the exported PDF' };
+  if (r.status === 'created') return { key: 'created', label: 'Created', cls: 'pass', hint: 'Report created via the creation wizard (not separately validated)' };
+  if (r.status === 'skipped') return { key: 'skipped', label: 'Not available', cls: 'warn', hint: 'Report type/tile not available on this instance — scenario skipped' };
+  if (r.status === 'failed_create') return { key: 'create_fail', label: 'Create failed', cls: 'fail', hint: 'The creation wizard did not produce a report id' };
   if (r.status === 'no_pdf') return { key: 'no_export', label: 'No export', cls: 'fail', hint: 'Export As PDF produced no file — button missing or the server never delivered it' };
   if (r.status === 'timeout') return { key: 'timeout', label: 'Load timeout', cls: 'timeout', hint: 'The report data never rendered within the time budget' };
   if (r.status === 'error') return { key: 'error', label: 'Error', cls: 'error', hint: 'The check threw before it could finish' };
@@ -74,6 +81,39 @@ class ReportRegressionHtmlReporter {
     // exactly the report catalogue. (A report test that died before emitting a
     // verdict is still under tests/Reports, so it keeps its row.)
     const file = (test.location && test.location.file) || '';
+
+    // Creation-matrix results: one row per scenario (every category, incl. the
+    // ones skipped as "not available on this instance"). Additive — this fires
+    // only for the matrix spec's `creation-results` attachment; validation rows
+    // below are unaffected.
+    const creation = readJsonAttachment(result, 'creation-results');
+    if (Array.isArray(creation) && creation.length) {
+      creation.forEach((rec, idx) => {
+        let status;
+        if (rec.status === 'skipped') status = 'skipped';
+        else if (rec.status === 'failed') status = 'failed_create';
+        else status = rec.validation || 'created'; // 'created', or the validation verdict when chained
+        this.rows.set(`${test.id}#c${idx}`, {
+          title: rec.name || `${rec.category}-${rec.scenario}`,
+          id: rec.id || '',
+          name: rec.name || `${rec.category}/${rec.scenario}`,
+          url: rec.url || '',
+          status,
+          where: rec.where || '',
+          reason: rec.reason || rec.validationReason || '',
+          preview: rec.preview || { rows: 0, cols: 0 },
+          pdf: rec.pdf || { rows: 0, cols: 0 },
+          shapeMatch: null,
+          srNoColumn: false,
+          loadMs: 0,
+          durationMs: 0,
+          startedAt: result.startTime ? new Date(result.startTime).getTime() : null,
+          shotPath: rec.shotPath || null,
+          pdfPath: null,
+        });
+      });
+    }
+
     // Only the report-VALIDATION tests belong here (each is one report + verdict).
     // A validation test that died before emitting a verdict is still in that file,
     // so it keeps its row; the creation spec and every other suite are excluded.

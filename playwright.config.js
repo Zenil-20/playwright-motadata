@@ -15,7 +15,6 @@ const settingsProjects = [
     // specs excluded here too, since a project-level testIgnore overrides global.
     testIgnore: [
       '**/Ping_IpRange_Discovery.spec.js',
-      '**/Esxi13_Discovery.spec.js',
       '**/Windows_Cidr_RangeBased_Discovery.spec.js',
     ],
   },
@@ -34,6 +33,21 @@ const settingsProjects = [
   {
     name: 'settings_04_policy',
     testMatch: ['tests/Settings/04-PolicySettings/**/*.spec.js'],
+    // The APM policy specs need the 07-APM service registered AND its trace data
+    // propagated first, so they are carved out into settings_04_policy_apm (which
+    // depends on settings_07_apm). Exclude them here so they don't also run in this
+    // project without that ordering guarantee.
+    testIgnore: ['**/APM/*.spec.js'],
+  },
+  {
+    // APM policy specs. MUST run after 07-APM registration so the trace-derived
+    // counters (service.span.duration.us, service.trace.error.rate, …) exist. The
+    // in-test selectApmCounter() then smart-waits (up to 10 min) for the ~4-5 min
+    // propagation floor before selecting the counter. This dependency guarantees the
+    // ordering on a plain `npx playwright test` — registration finishes, then these run.
+    name: 'settings_04_policy_apm',
+    testMatch: ['tests/Settings/04-PolicySettings/APM/*.spec.js'],
+    dependencies: ['settings_07_apm'],
   },
   {
     name: 'settings_05_runbook',
@@ -212,7 +226,6 @@ export default defineConfig({
    * here to re-enable that spec.
    */
   testIgnore: [
-    '**/Esxi13_Discovery.spec.js',
     '**/Windows_Cidr_RangeBased_Discovery.spec.js',
   ],
   /* Keep tests inside each file ordered unless a spec opts into parallelism. */

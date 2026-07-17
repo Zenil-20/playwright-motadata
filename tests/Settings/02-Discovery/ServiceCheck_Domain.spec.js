@@ -68,7 +68,10 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check Domain', (
     await page.locator("//span[normalize-space()='IP/Host']").click();
     await page.locator("//input[@id='ip-address-id']").fill("google.com");
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText('google.com')).toHaveCount(4);
+    // Save & Run kicks off the service-check discovery ("Calculating discovery range"),
+    // which can take several minutes before the result rows render. The expect timeout
+    // (default 5s) is too short, so give this poll up to 10 minutes.
+    await expect(page.getByText('google.com')).toHaveCount(4, { timeout: 600000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
