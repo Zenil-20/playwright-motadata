@@ -4,11 +4,11 @@ import { defineConfig, devices } from '@playwright/test';
 const settingsProjects = [
   {
     name: 'settings_01_agent_monitoring',
-    testMatch: ['tests/Settings/01-AgentMonitoringSettings/*.spec.js'],
+    testMatch: ['tests/regression/Settings/01-AgentMonitoringSettings/*.spec.js'],
   },
   {
     name: 'settings_02_discovery',
-    testMatch: ['tests/Settings/02-Discovery/*.spec.js'],
+    testMatch: ['tests/regression/Settings/02-Discovery/*.spec.js'],
     // The broad Ping IP-range sweep (172.16.15.1-255) can disturb the other
     // discoveries, so it is carved out into settings_02_discovery_ping_last and
     // gated to run AFTER this whole project finishes. Keep the globally-ignored
@@ -23,16 +23,16 @@ const settingsProjects = [
     // every other 02-Discovery spec (across workers, in parallel) before starting
     // this broad ping-range sweep.
     name: 'settings_02_discovery_ping_last',
-    testMatch: ['tests/Settings/02-Discovery/Ping_IpRange_Discovery.spec.js'],
+    testMatch: ['tests/regression/Settings/02-Discovery/Ping_IpRange_Discovery.spec.js'],
     dependencies: ['settings_02_discovery'],
   },
   {
     name: 'settings_03_netroute',
-    testMatch: ['tests/Settings/03-NetrouteSettings/*.spec.js'],
+    testMatch: ['tests/regression/Settings/03-NetrouteSettings/*.spec.js'],
   },
   {
     name: 'settings_04_policy',
-    testMatch: ['tests/Settings/04-PolicySettings/**/*.spec.js'],
+    testMatch: ['tests/regression/Settings/04-PolicySettings/**/*.spec.js'],
     // The APM policy specs need the 07-APM service registered AND its trace data
     // propagated first, so they are carved out into settings_04_policy_apm (which
     // depends on settings_07_apm). Exclude them here so they don't also run in this
@@ -46,79 +46,79 @@ const settingsProjects = [
     // propagation floor before selecting the counter. This dependency guarantees the
     // ordering on a plain `npx playwright test` — registration finishes, then these run.
     name: 'settings_04_policy_apm',
-    testMatch: ['tests/Settings/04-PolicySettings/APM/*.spec.js'],
+    testMatch: ['tests/regression/Settings/04-PolicySettings/APM/*.spec.js'],
     dependencies: ['settings_07_apm'],
   },
   {
     name: 'settings_05_runbook',
-    testMatch: ['tests/Settings/05-Runbook/*.spec.js'],
+    testMatch: ['tests/regression/Settings/05-Runbook/*.spec.js'],
   },
   {
     name: 'settings_06_user_settings',
-    testMatch: ['tests/Settings/06-UserSettings/*.spec.js'],
+    testMatch: ['tests/regression/Settings/06-UserSettings/*.spec.js'],
   },
   {
     name: 'settings_07_apm',
-    testMatch: ['tests/Settings/07-APM/*.spec.js'],
+    testMatch: ['tests/regression/Settings/07-APM/*.spec.js'],
   },
   {
   name: 'settings_08_slo',
-  testMatch: ['tests/Settings/08-SLO/*.spec.js'],
+  testMatch: ['tests/regression/Settings/08-SLO/*.spec.js'],
 },
 {
   name: 'settings_09_proxy_server',
-  testMatch: ['tests/Settings/09-SystemSettings/*.spec.js'],
+  testMatch: ['tests/regression/Settings/09-SystemSettings/*.spec.js'],
 },
 {
   name: 'settings_10_integrations',
-  testMatch: ['tests/Settings/10-Integrations/*.spec.js'],
+  testMatch: ['tests/regression/Settings/10-Integrations/*.spec.js'],
 },
 {
   name: 'settings_11_rediscovery',
-  testMatch: ['tests/Settings/11-rediscovery/*.spec.js'],
+  testMatch: ['tests/regression/Settings/11-rediscovery/*.spec.js'],
 },
 {
   name: 'settings_12_metric_plugin',
-  testMatch: ['tests/Settings/12-MetricPlugin/*.spec.js'],
+  testMatch: ['tests/regression/Settings/12-MetricPlugin/*.spec.js'],
 },
 {
   name: 'settings_13_Device_Monitoring',
-  testMatch: ['tests/Settings/13-MonitorSettings/*.spec.js'],
+  testMatch: ['tests/regression/Settings/13-MonitorSettings/*.spec.js'],
 },
 {
   name: 'settings_14_real_user_monitoring',
-  testMatch: ['tests/Settings/14-RealUserMonitoring/*.spec.js'],
+  testMatch: ['tests/regression/Settings/14-RealUserMonitoring/*.spec.js'],
 },
 {
   name: 'settings_15_snmp_trap',
-  testMatch: ['tests/Settings/15-SNMPTrap/*.spec.js'],
+  testMatch: ['tests/regression/Settings/15-SNMPTrap/*.spec.js'],
   // Live-server suite: auto-retry transient network blips (ERR_NETWORK_CHANGED / connection
   // timeouts to 151) so an infra hiccup during a long run doesn't fail an otherwise-green test.
   retries: 2,
 }
 ];
 
-// Per-device monitor dashboards (moved from tests/Dashboard → tests/Monitors).
+// Per-device monitor dashboards (moved from tests/regression/Dashboard → tests/regression/Monitors).
 const monitorsProjects = [
   {
     name: 'monitors_01_server_and_apps',
-    testMatch: ['tests/Monitors/01-ServerAndApps/*.spec.js'],
+    testMatch: ['tests/regression/Monitors/01-ServerAndApps/*.spec.js'],
   },
   {
     name: 'monitors_02_network',
-    testMatch: ['tests/Monitors/02-Network/*.spec.js'],
+    testMatch: ['tests/regression/Monitors/02-Network/*.spec.js'],
   },
   {
     name: 'monitors_03_virtualization',
-    testMatch: ['tests/Monitors/03-Virtualization/*.spec.js'],
+    testMatch: ['tests/regression/Monitors/03-Virtualization/*.spec.js'],
   },
   {
     name: 'monitors_04_database',
-    testMatch: ['tests/Monitors/04-Database/*.spec.js'],
+    testMatch: ['tests/regression/Monitors/04-Database/*.spec.js'],
   },
   {
     name: 'monitors_05_service_check',
-    testMatch: ['tests/Monitors/05-ServiceCheck/*.spec.js'],
+    testMatch: ['tests/regression/Monitors/05-ServiceCheck/*.spec.js'],
   },
 ];
 
@@ -126,76 +126,76 @@ const monitorsProjects = [
 const dashboardProjects = [
   {
     name: 'dashboard_01_overview',
-    testMatch: ['tests/Dashboard/01-Overview/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/01-Overview/*.spec.js'],
   },
   {
     name: 'dashboard_02_server',
-    testMatch: ['tests/Dashboard/02-Server/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/02-Server/*.spec.js'],
   },
   {
     name: 'dashboard_03_network',
-    testMatch: ['tests/Dashboard/03-Network/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/03-Network/*.spec.js'],
   },
   {
     name: 'dashboard_04_sdn',
-    testMatch: ['tests/Dashboard/04-SDN/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/04-SDN/*.spec.js'],
   },
   {
     name: 'dashboard_05_cloud',
-    testMatch: ['tests/Dashboard/05-Cloud/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/05-Cloud/*.spec.js'],
   },
   {
     name: 'dashboard_06_virtualization',
-    testMatch: ['tests/Dashboard/06-Virtualization/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/06-Virtualization/*.spec.js'],
   },
   {
     name: 'dashboard_07_hci',
-    testMatch: ['tests/Dashboard/07-HCI/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/07-HCI/*.spec.js'],
   },
   {
     name: 'dashboard_08_applications',
-    testMatch: ['tests/Dashboard/08-Applications/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/08-Applications/*.spec.js'],
   },
   {
     name: 'dashboard_09_database',
-    testMatch: ['tests/Dashboard/09-Database/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/09-Database/*.spec.js'],
   },
   {
     name: 'dashboard_10_log',
-    testMatch: ['tests/Dashboard/10-Log/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/10-Log/*.spec.js'],
   },
   {
     name: 'dashboard_11_flow',
-    testMatch: ['tests/Dashboard/11-Flow/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/11-Flow/*.spec.js'],
   },
   {
     name: 'dashboard_12_apm',
-    testMatch: ['tests/Dashboard/12-APM/*.spec.js'],
+    testMatch: ['tests/regression/Dashboard/12-APM/*.spec.js'],
   },
 ];
 
 const apmExplorerProjects = [
   {
     name: 'apm_explorer_services',
-    testMatch: ['tests/APM_Explorer/Services/*.spec.js'],
+    testMatch: ['tests/regression/APM_Explorer/Services/*.spec.js'],
   },
 ];
 
 const metricExplorerProjects = [
   {
     name: 'metric_explorer_01_instance_kpi_anomaly',
-    testMatch: ['tests/metricExplorer/Instance_KPI_Anomaly_Metric_Explore_Screen.spec.js'],
+    testMatch: ['tests/regression/metricExplorer/Instance_KPI_Anomaly_Metric_Explore_Screen.spec.js'],
   },
  {
     name: 'metric_explorer_02_instance_kpi_compare',
-    testMatch: ['tests/metricExplorer/Instance_KPI_Compare_Metric_Explore_Screen.spec.js'],
+    testMatch: ['tests/regression/metricExplorer/Instance_KPI_Compare_Metric_Explore_Screen.spec.js'],
  }
 ];
 
 const nccmProjects = [
   {
     name: 'nccm_01_device_discovery',
-    testMatch: ['tests/nccm/*.spec.js'],
+    testMatch: ['tests/regression/nccm/*.spec.js'],
   }
 ];
 
@@ -218,8 +218,8 @@ export default defineConfig({
    * here means that wait overlaps the whole suite, so TrapPropagation just VERIFIES later (no block).
    * Disable with TRAP_FIRE=0. (Harmless no-op if the trap env isn't configured.)
    */
-  globalSetup: './tests/Settings/15-SNMPTrap/_helpers/global-trap-setup.js',
-  globalTeardown: './tests/Settings/15-SNMPTrap/_helpers/global-trap-teardown.js',
+  globalSetup: './tests/regression/Settings/15-SNMPTrap/_helpers/global-trap-setup.js',
+  globalTeardown: './tests/regression/Settings/15-SNMPTrap/_helpers/global-trap-teardown.js',
   /*
    * Temporarily excluded from every `npx playwright test` run. The files and their
    * code are kept intact — they are just never collected/executed. Remove an entry
@@ -253,11 +253,11 @@ export default defineConfig({
    *  - 'html'  : the standard Playwright report for the WHOLE run (every suite),
    *              with the full per-test trace — open with `npx playwright show-report`.
    *  - report-regression: the QA report for the REPORT MODULE only. It self-filters
-   *              to tests under tests/Reports, so running the full framework (or just
+   *              to tests under tests/regression/Reports, so running the full framework (or just
    *              the reports project) always produces test-results/report-regression/
    *              index.html; running only other suites leaves it untouched.
    */
-  reporter: [['html'], ['./tests/Reports/_core/html-reporter.js']],
+  reporter: [['html'], ['./tests/regression/Reports/_core/html-reporter.js']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -273,12 +273,12 @@ export default defineConfig({
   /* Configure ordered Settings projects on Chromium */
   projects: [
     /* One-time login for the report-regression suite. Writes storageState so the
-     * 114 parallel per-report tests all start authenticated (tests/Reports/_core/
+     * 114 parallel per-report tests all start authenticated (tests/regression/Reports/_core/
      * auth.setup.js). Only the `reports` project depends on it, so other suites
      * are unaffected. */
     {
       name: 'setup',
-      testMatch: /tests[\\/]Reports[\\/]_core[\\/]auth\.setup\.js/,
+      testMatch: /tests[\\/]regression[\\/]Reports[\\/]_core[\\/]auth\.setup\.js/,
       use: { ...devices['Desktop Chrome'] },
     },
     ...[...settingsProjects, ...monitorsProjects, ...dashboardProjects, ...apmExplorerProjects, ...metricExplorerProjects, ...nccmProjects].map((project) => ({
@@ -290,7 +290,7 @@ export default defineConfig({
      * it fans out across workers. */
     {
       name: 'reports',
-      testMatch: ['tests/Reports/*.spec.js'],
+      testMatch: ['tests/regression/Reports/*.spec.js'],
       dependencies: ['setup'],
       use: { ...devices['Desktop Chrome'], storageState: 'tests/.auth/user.json' },
     },

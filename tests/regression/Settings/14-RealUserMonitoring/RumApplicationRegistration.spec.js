@@ -27,7 +27,7 @@ dotenv.config({ path: '.env', quiet: true });
 // Where the captured RUM "Steps to Register Application" configs are stored.
 // One JSON per framework + a combined file — reused by later automation.
 // ---------------------------------------------------------------------------
-const CONFIG_DIR = path.resolve('tests/Settings/14-RealUserMonitoring/rum-configs');
+const CONFIG_DIR = path.resolve('tests/regression/Settings/14-RealUserMonitoring/rum-configs');
 
 // Defaults common to every app (Nginx is the default deployment).
 const DEPLOYMENT = 'Nginx';

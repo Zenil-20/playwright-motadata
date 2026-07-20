@@ -6,7 +6,7 @@
  * Used two ways:
  *   1. Imported by RumApplicationRegistration.spec.js as the final pipeline step
  *      (so the whole flow is one `npx playwright test`).
- *   2. Standalone:  node tests/Settings/14-RealUserMonitoring/loadGeneratorSync.js
+ *   2. Standalone:  node tests/regression/Settings/14-RealUserMonitoring/loadGeneratorSync.js
  *
  * Rules:
  *   - Only the per-app VALUES change. `run`, `server`, `generator` are untouched.
@@ -39,7 +39,7 @@ const TYPE_TO_KEY = {
 };
 
 const REPO_ROOT = path.resolve(__dirname, '../../..');
-const CAPTURED = path.join(REPO_ROOT, 'tests/Settings/14-RealUserMonitoring/rum-configs/rum-applications.json');
+const CAPTURED = path.join(REPO_ROOT, 'tests/regression/Settings/14-RealUserMonitoring/rum-configs/rum-applications.json');
 
 function collectorFromEnv() {
   require('dotenv').config({ path: path.join(REPO_ROOT, '.env'), quiet: true });
