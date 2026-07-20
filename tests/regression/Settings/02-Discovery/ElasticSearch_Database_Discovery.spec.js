@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For ElasticSearch Discovery', () => {
   let page;
@@ -27,7 +39,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ElasticSearch Discovery'
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +49,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ElasticSearch Discovery'
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -68,7 +76,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ElasticSearch Discovery'
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully')).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
     await page.locator("//input[@name='discovery-search']").fill(process.env.ElasticSearch_ip);
     const row = page.getByRole('row').filter({has: page.getByRole('link', { name: 'ElasticSearch Database' })
 });
@@ -79,9 +87,6 @@ test.describe.serial('Motadata AIOps Discovery Flow For ElasticSearch Discovery'
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

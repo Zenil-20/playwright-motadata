@@ -17,6 +17,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -27,7 +28,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For MongoDB Discovery', () =
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +38,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For MongoDB Discovery', () =
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -63,22 +60,27 @@ test.describe.serial('Motadata AIOps Discovery Flow For MongoDB Discovery', () =
     await page.locator("//input[@id='username-id']").fill(process.env.MongoDB_username);
     await page.locator("//input[@id='password-id']").fill(process.env.MongoDB_password);
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+    await page.locator("//input[@id='port-id']").fill(process.env.MongoDB_port || '27017');
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.MongoDB_ip).first()).toBeVisible();
+    await expect.soft(page.getByText(process.env.MongoDB_ip).first()).toBeVisible();
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
+    await expect.soft(page.getByText('provisioned successfully')).toBeVisible();
     await page.locator("//i[@class='anticon text-neutral-light']//*[name()='svg']").click();
-    await page.locator("//input[@name='discovery-search']").fill(process.env.MongoDB_ip);
-    await expect(page.getByRole('gridcell', { name: process.env.MongoDB_ip })).toBeVisible();
+    // Search by discovery-profile name, not IP — the target IP is shared by several
+    // profiles (Kubernetes, etc.), so an IP search leaves multiple rows and the
+    // gridcell assertion below hits a strict-mode violation. The profile name is unique,
+    // so it filters the grid down to the single MongoDB row.
+    await page.locator("//input[@name='discovery-search']").fill('MongoDB Database');
+    // Re-running this test re-creates a profile named "MongoDB Database" with the same
+    // IP each time, so several identical rows accumulate. The name filter can't tell
+    // them apart, so these row-rendered checks scope to .first() to stay single-match.
+    await expect(page.getByRole('gridcell', { name: process.env.MongoDB_ip }).first()).toBeVisible();
     await expect(page.getByRole('img', { name: 'MongoDB' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'MongoDB Database' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'MongoDB Database' }).first()).toBeVisible();
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

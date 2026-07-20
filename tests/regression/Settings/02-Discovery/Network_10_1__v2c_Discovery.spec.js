@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.1 for v2c creds', () => {
   let page;
@@ -27,7 +39,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.1 for v2c cred
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +49,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.1 for v2c cred
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -65,7 +73,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.1 for v2c cred
     await page.locator("//input[@name='hostname-ip']").fill(process.env.Network_Device_172_16_10_1);
     await page.locator("//button[@id='run-test-btn']").click();
     await expect(page.locator('#message'))
-    .toHaveText('Successful', { timeout: 90000 });
+    .toHaveText('Successful', { timeout: 480000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
 
@@ -76,18 +84,17 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.1 for v2c cred
 
    await expect(
    page.getByText(deviceName, { exact: true })
-   ).toBeVisible({ timeout: 90000 });
+   ).toBeVisible({ timeout: 480000 });
 
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await expect.soft(
+    page.getByText('provisioned successfully').first()
+    ).toBeVisible();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery', () => {
   let page;
@@ -27,7 +39,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +49,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -62,21 +70,23 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await page.locator("//button[@id='test-btn']").click();
     await page.locator("//input[@name='hostname-ip']").fill(process.env.Linux_server_172_16_15_132);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful');
+    // Case-insensitive substring — mirrors the working Oracle spec. An exact 'Successful'
+    // breaks if the app renders "Test Successful"/"Successful!" etc.
+    await expect(page.locator('#message')).toHaveText(/Successful/i);
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.Linux_server_172_16_15_132)).toBeVisible();
+    // The IP appears in several result-grid cells (Host + IP columns), so scope to the
+    // first match — a bare getByText(IP) matches multiple and trips strict mode.
+    await expect(page.getByText(process.env.Linux_server_172_16_15_132).first()).toBeVisible();
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    // Two monitors can each report "provisioned successfully" — first() avoids a multi-match.
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -33,7 +34,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -43,15 +44,11 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await expect(page.locator("//img[@alt='Avatar']")).toBeVisible();
+    await login(page);
   });
 
   test('Bulk change interface speed for Aruba monitor', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(180000);
 
     // Navigate to Device Monitor Settings
     await page.locator("//a[@href='/settings/']").click();
@@ -115,7 +112,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Verify updated speed in Metric Settings -> Network Interface', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(120000);
 
     // Search "aruba" in the device monitor grid
     const gridSearch = page.locator("//input[@placeholder='Search']").last();
@@ -148,16 +145,16 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   test('Bulk assign tag to a monitor and verify on Device Monitor Settings', async () => {
     //For clearing the search filter and showing all the monitors in the grid for selecting the first row checkbox
     await page.reload();
-    test.setTimeout(90000);
+    test.setTimeout(120000);
 
     // Tick the first row checkbox in the grid
     await page.locator("//input[@type='checkbox']").first().click();
 
-    // Open the bulk Tag panel (the tag-icon button; #filter-btn is reused on the page)
+    // Open the bulk Tag panel — the toolbar button surfaces once rows are selected.
     await page.locator('#bulk-tag-toggle').click();
 
     // Add the tag via the ant-select tag input
-    const tagPlaceholder = page.locator("//div[contains(@class,'ant-select-selection__placeholder') and normalize-space()='Add Tags']");
+    const tagPlaceholder = page.getByText('Add Tags');
     await expect(tagPlaceholder).toBeVisible();
     await tagPlaceholder.click();
 
@@ -185,7 +182,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Disable the firewall monitor from grid action and verify status changes to Disable', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(120000);
     await page.reload();
 
     // Scope to the one firewall monitor so only that device is disabled
@@ -201,7 +198,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Poll Now on disabled firewall monitor shows error, then re-enable it', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(120000);
 
     // Target only the firewall monitor disabled in the previous test
     const monitorName = FIREWALL_MONITOR;
@@ -234,7 +231,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Put vCenter monitor in Maintenance, verify Poll Now is blocked, then turn it off', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(180000);
     await page.reload();
 
     const MONITOR = '172.16.10.180';
@@ -281,7 +278,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Update the metric collection time for Aruba Wireless monitor and change the polling time between 60-90 seconds, then verify the changes are reflected in the Metric Settings drawer', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(120000);
 
     // The previous test left us on the inventory page — go to Settings → Device Monitor
     // Settings and scope the grid to the Aruba Wireless monitor first.
@@ -334,7 +331,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Verify Metric Settings for 172.16.15.234 exposes Docker and Docker Container tabs', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(120000);
 
     // Navigate to Device Monitor Settings
     await page.locator("//a[@href='/settings/']").click();
@@ -342,9 +339,14 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
     await page.locator("//input[@placeholder='Search']").fill('device monitor');
     await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
 
-    // Scope the grid to the docker-capable monitor
+    // Searching by IP returns several monitors that share 172.16.15.234 (MongoDB, Oracle,
+    // Oracle RAC, Kubernetes, Linux). Only the Linux server monitor exposes the Docker tabs,
+    // so scope the row by its "Linux" type icon — filtering by the shared IP would match 5
+    // rows and .first() lands on MongoDB (no Docker tabs).
     await page.locator("//input[@placeholder='Search']").nth(1).fill(DOCKER_MONITOR);
-    const monitorRow = page.locator('tr.k-master-row', { hasText: DOCKER_MONITOR }).first();
+    const monitorRow = page.locator('tr.k-master-row')
+      .filter({ has: page.getByRole('img', { name: 'Linux', exact: true }) })
+      .first();
     await expect(monitorRow).toBeVisible({ timeout: 30000 });
 
     // Open kebab -> Metric Settings
@@ -373,9 +375,6 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

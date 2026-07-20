@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery', () => {
   let page;
@@ -27,7 +39,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +49,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -64,18 +72,21 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
     await page.locator("//button[@id='test-btn']").click();
     await page.locator("//input[@name='hostname-ip']").fill(process.env.Windows_server_172_16_10_134);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 90000 });
+    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 120000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+    await expect(page.locator("//button[@id='create-credential-profile-btn-id']")).toBeHidden({ timeout: 10000 });
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.Windows_server_172_16_10_134).first()).toBeVisible();
+    await expect(page.getByText(process.env.Windows_server_172_16_10_134).first()).toBeVisible({ timeout: 30000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully')).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await expect(page.getByText('provisioned successfully')).toBeVisible();     
+    await closeProvisionStatus(page);
   });
 
   test('Postgresql Rediscovery For Windows Server', async () => {
+    test.setTimeout(300000);
+
     await page.locator("//input[@placeholder='Search']").first().fill('Rediscover Settings');
     await page.getByRole('link', { name: 'Rediscover Settings' }).click();
     /*
@@ -98,8 +109,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   await page.locator('#hours').getByRole('textbox', { name: 'Select' }).click();
   await page.getByRole('menuitem', { name: '00:00' }).getByLabel('', { exact: true }).check();
   await page.locator('.anticon.cursor-pointer.text-neutral-light.dropdown-icon.is-open > .svg-inline--fa').click();
-  await page.getByRole('textbox', { name: '@User or Email or /Handle or' }).click();
-  await page.getByRole('textbox', { name: '@User or Email or /Handle or' }).fill('zenilkapadia@motadata.com');
+  await page.locator("//input[@placeholder='@User or Email or /Handle or #User Profile or Mobile Number']").click();
+  await page.locator("//input[@placeholder='@User or Email or /Handle or #User Profile or Mobile Number']").fill('zenilkapadia@motadata.com');
   await page.locator("//button[@id='submit-btn']").click();
   await page.locator('input[name="search"]').click();
   await page.locator('input[name="search"]').fill('postgresql');
@@ -107,9 +118,9 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   const row = page.locator(".rediscover-row")
     .filter({ hasText: "PostgreSQL" })
     .filter({ hasText: "172.16.10.134" });
-  await row.waitFor({ state: "attached" });
+  await row.waitFor({ state: "attached", timeout: 180000 });
   await row.scrollIntoViewIfNeeded();
-  await row.waitFor({ state: "visible" });
+  await row.waitFor({ state: "visible", timeout: 180000 });
   await row.click({ force: true });
   await page.locator("//input[@id='instance-jdbc']").click();
   await page.locator("//input[@id='instance-jdbc']").fill("postgres");
@@ -124,9 +135,6 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

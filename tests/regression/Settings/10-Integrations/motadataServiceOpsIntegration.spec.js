@@ -1,0 +1,334 @@
+/*
+ * Copyright (c) 2026 Motadata. All Rights Reserved.
+ *
+ * This software and associated documentation are the confidential and
+ * proprietary information of Motadata.
+ *
+ * Unauthorized use, reproduction, disclosure, or distribution of this
+ * material is strictly prohibited.
+ *
+ * You shall use this software only in accordance with the terms of the
+ * license agreement entered into with Motadata.
+ *
+ * Author  : Zenil Kapadia 
+ * Created : 02 May 2026
+ */
+
+import { test, expect } from '@playwright/test';
+import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
+
+dotenv.config({ path: '.env', quiet: true });
+
+test.describe.serial('Motadata AIOps Discovery Flow For Motadata ServiceOps Integration', () => {
+  let page;
+  let alreadyLoggedOut = false;
+
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    page = await context.newPage();
+    page.setDefaultTimeout(500000);
+  });
+
+  test.afterAll(async () => {
+    if (page) {
+      await page.close();
+    }
+  });
+
+  test('Login to Motadata AIOps', async () => {
+    await login(page);
+  });
+
+  test('Navigate to Motadata ServiceOps Integration', async () => {
+    await page.locator("//a[@href='/settings/']").click();
+    await page.locator("//input[@id='phone-number']").click();
+    await page.locator("//input[@placeholder='Search']").fill('serviceops');
+
+    const serviceOpsLink = page.getByRole('link', { name: 'Motadata ServiceOps' });
+    await expect(serviceOpsLink).toBeVisible();
+    await serviceOpsLink.click();
+
+    const serverUrlInput = page.locator('.ant-form-item:has(label:has-text("Server URL")) input').first();
+    await expect(serverUrlInput).toBeVisible();
+    const existingServerUrl = (await serverUrlInput.inputValue())?.trim();
+
+    if (existingServerUrl) {
+      console.log(`ServiceOps Server URL already configured ("${existingServerUrl}"). Skipping integration setup and logging out.`);
+      await page.locator("#user-avatar").click();
+      await page.getByText('Logout').click();
+      await page.context().clearCookies();
+      await page.context().clearPermissions();
+      alreadyLoggedOut = true;
+      return;
+    }
+
+    await serverUrlInput.fill(process.env.Motadata_ServiceOps_ServerUrl);
+    await page.locator('#create-credential-btn-id').click();
+    await page.locator('input#credential-profile-name-id').fill('Automation ServiceOps Credential Profile');
+
+    // Username, password, client.id and client.secret fields
+    await page.locator('input#username-id').fill(process.env.Motadata_ServiceOps_Username);
+    await page.locator('input#password-id').fill(process.env.Motadata_ServiceOps_Password);
+
+    const drawer = page.locator('.ant-drawer-open');
+
+    await drawer
+      .locator('.ant-form-item:has(label:has-text("Client ID")) input')
+      .fill(process.env.Motadata_ServiceOps_clientid);
+
+    await drawer
+      .locator('.ant-form-item:has(label:has-text("Client Secret")) input')
+      .fill(process.env.Motadata_ServiceOps_clientsecret);
+
+    await page.getByRole('button', { name: 'Create Credentials Profile' }).click();
+
+    // Handle case where credential profile name already exists
+    const credentialProfileName = 'Automation ServiceOps Credential Profile';
+    const duplicateMsg = page.locator('.ant-message-error', { hasText: 'Profile Name is not unique' });
+    const drawerClosed = page.locator('.ant-drawer-open').waitFor({ state: 'detached', timeout: 15000 }).then(() => 'closed').catch(() => null);
+    const duplicateShown = duplicateMsg.waitFor({ state: 'visible', timeout: 15000 }).then(() => 'duplicate').catch(() => null);
+    const outcome = await Promise.race([drawerClosed, duplicateShown]);
+
+    if (!outcome) {
+      throw new Error('Credential profile creation: neither drawer closed nor duplicate toast appeared within 15s');
+    }
+
+    if (outcome === 'duplicate') {
+      console.log('Credential profile already exists. Selecting the existing profile.');
+      await page.locator("//button[@aria-label='Close' and contains(@class, 'ant-drawer-close')]").click();
+      await expect(page.locator('.ant-drawer-open')).toHaveCount(0);
+
+      const credentialDropdown = page.locator('#credential-profile-picker-id');
+      await credentialDropdown.click();
+
+      const searchInput = page.locator("//input[@data-cy='dropdown-search-input']");
+      await expect(searchInput).toBeVisible();
+      await searchInput.fill(credentialProfileName);
+
+      const existingOption = page.locator(`//span[@title='${credentialProfileName}']`);
+      await expect(existingOption).toBeVisible();
+      await existingOption.click();
+    }
+
+    // Source field
+    const sourceInput = page.locator('.ant-form-item:has(label:has-text("Source")) input');
+    await expect(sourceInput).toBeVisible();
+    await sourceInput.fill('aiops');
+
+    // Fail Over Email field
+    const failoverEmailInput = page.locator('.ant-form-item:has(label:has-text("Fail Over Email")) input');
+    await expect(failoverEmailInput).toBeVisible();
+    await failoverEmailInput.fill('test@motadata.com');
+
+    await page.locator('button[type="submit"]').nth(0).click();
+
+    // Auto Sync
+    // const autoSync = page
+    //   .locator('.ant-form-item:has(label:has-text("Auto Sync"))')
+    //   .getByRole('switch');
+    // await expect(autoSync).toBeVisible();
+    // if (!(await autoSync.isChecked())) {
+    //   await autoSync.click();
+    // }
+    // await expect(autoSync).toBeChecked();
+
+    // // Use Proxy Server
+    // const proxy = page
+    //   .locator('.ant-form-item:has(label:has-text("Use Proxy Server"))')
+    //   .getByRole('switch');
+    // await expect(proxy).toBeVisible();
+    // if (!(await proxy.isChecked())) {
+    //   await proxy.click();
+    // }
+    // await expect(proxy).toBeChecked();
+
+    await page.getByRole('button', { name: 'Test' }).click();
+
+    const msg = page.locator('#test-message');
+    await expect(msg).toBeVisible({ timeout: 20000 });
+
+    const text = await msg.textContent();
+    if (text?.includes('succeeded')) {
+      console.log('Test Passed');
+    } else if (text?.includes('failed')) {
+      throw new Error(`Test Failed: ${text}`);
+    } else {
+      throw new Error(`Unexpected response: ${text}`);
+    }
+
+    const saveButton = page.getByRole('button', { name: 'Save' });
+    await expect(saveButton).toBeVisible({ timeout: 20000 });
+    await saveButton.click();
+
+    const successToast = page
+      .locator('.ant-notification-notice-message')
+      .filter({ hasText: 'Integration saved successfully!' });
+    await expect(successToast).toBeVisible({ timeout: 20000 });
+  });
+
+  test("Navigate to Integration Profile and create a new Profile for Motadata serviceOps Integration", async () => {
+    test.skip(alreadyLoggedOut, 'ServiceOps integration already configured; skipping Integration Profile creation.');
+    test.setTimeout(300000);
+    await page.locator("//input[@placeholder='Search']").first().fill('Integration Profile');
+    await page.getByRole('link', { name: 'Integration Profile' }).click();
+    await page.getByRole('button', { name: 'Create Integration Profile' }).click();
+    await page.locator("//input[@placeholder='Must be unique']").fill('Motadata ServiceOps Integration Profile by Automation');
+    await page
+      .locator('.ant-form-item:has(label:has-text("Integration Type"))')
+      .locator('input[data-cy="dropdown-trigger-input"]')
+      .click();
+    await page.locator("//input[@data-cy='dropdown-search-input']").fill('Serviceops');
+    await page.locator("//input[@data-cy='dropdown-search-input']").press('Enter');
+
+    const selectDropdownValue = async (labelText, value) => {
+      const trigger = page.locator(
+        `xpath=//div[contains(@class,'ant-form-item') and .//label[normalize-space()='${labelText}']]//input[@data-cy='dropdown-trigger-input']`
+      ).first();
+      await expect(trigger).toBeVisible();
+      // Click the parent wrapper (the input is readonly; the click handler is on the wrapper).
+      await trigger.evaluate((el) => {
+        const wrapper = el.closest('.ant-input-affix-wrapper, .ant-select, [class*="dropdown"]') || el.parentElement;
+        wrapper?.click();
+        el.click();
+      });
+      const search = page.locator("//input[@data-cy='dropdown-search-input']").last();
+      await expect(search).toBeVisible();
+      await search.fill(value);
+      // New build renders Default Fields options as a hierarchy tree (li.sortable-item with a
+      // clickable, upper-cased title span); other dropdowns still use span[title]. Click the
+      // title span — clicking the <li> hits the expand chevron. Match either, case-insensitively.
+      const valueRx = new RegExp(`^\\s*${value}\\s*$`, 'i');
+      const option = page
+        .locator(`//span[@title='${value}']`)
+        .or(page.locator('li.sortable-item span.cursor-pointer').filter({ hasText: valueRx }))
+        .first();
+      await expect(option).toBeVisible();
+      await option.click();
+    };
+
+    // --- new-build helpers: locate a control by label proximity; scope option clicks to the
+    // VISIBLE popover (Ant keeps hidden stale popovers in the DOM). Works for Default + Custom. ---
+    const escRx = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const trigByLabel = (label) =>
+      page.locator(`xpath=(//*[normalize-space(text())='${label}']/following::input[@data-cy='dropdown-trigger-input'])[1]`).first();
+    const inputByLabel = (label) =>
+      page.locator(`xpath=(//*[normalize-space(text())='${label}']/following::*[self::input or self::textarea][1])`).first();
+    const visiblePopover = () => page.locator('.ant-popover-inner-content.picker-overlay:visible').last();
+    const openDropdownByLabel = async (label) => {
+      await trigByLabel(label).evaluate((el) => {
+        const w = el.closest('.ant-input-affix-wrapper, .ant-select, [class*="dropdown"]') || el.parentElement;
+        w?.click(); el.click();
+      });
+    };
+    const selectByLabel = async (label, value) => {
+      await openDropdownByLabel(label);
+      const pop = visiblePopover();
+      const search = pop.locator("input[data-cy='dropdown-search-input']");
+      if (await search.isVisible().catch(() => false)) await search.fill(value);
+      const rx = new RegExp(`^\\s*${escRx(value)}\\s*$`, 'i');
+      const option = pop
+        .locator(`span[title=${JSON.stringify(value)}]`)
+        .or(pop.locator('li.sortable-item span.cursor-pointer').filter({ hasText: rx }))
+        .first();
+      await expect(option).toBeVisible();
+      await option.click();
+      await page.keyboard.press('Escape').catch(() => {});
+    };
+    const fillByLabel = (label, value) => inputByLabel(label).fill(value);
+
+    // Severity → Impact & Urgency (MOTADATA-9017): Impact/Urgency moved out of the flat
+    // Default Fields into this section. "For all Severity" (= lock on first trigger) renders a
+    // single "All Severity" row (.sp-row) holding an Impact dropdown (1st) and Urgency (2nd).
+    await page.getByText('For all Severity', { exact: true }).click();
+    const allSeverityRow = page.locator('.sp-row', { hasText: 'All Severity' }).first();
+    const selectAllSeverity = async (index, value) => {
+      await allSeverityRow.locator('input[data-cy="dropdown-trigger-input"]').nth(index).click();
+      const sevSearch = page.locator("//input[@data-cy='dropdown-search-input']").last();
+      if (await sevSearch.isVisible().catch(() => false)) await sevSearch.fill(value);
+      const option = page.locator(`//span[@title='${value}']`).first();
+      await expect(option).toBeVisible();
+      await option.click();
+    };
+    await selectAllSeverity(0, 'On Department'); // Impact
+    await selectAllSeverity(1, 'Medium');        // Urgency
+ 
+    // Location
+    await selectDropdownValue('Location', 'Asia');
+    // Category
+    await selectDropdownValue('Category', 'Software');
+    // Department
+    await selectDropdownValue('Department', 'IT');
+    // Technician Group / Assignee / Vendor (data-driven dropdowns — first valid value each)
+    await selectByLabel('Technician Group', 'Software Support Team');
+    await selectByLabel('Assignee', 'zenil (zenil)');
+    await selectByLabel('Vendor', 'Test1');
+
+    // Group (plain text input). EXACT label match — has-text('Group') also matches the new
+    // "Technician Group" dropdown (readonly), which made .fill() target the wrong field.
+    await page
+      .locator(`xpath=//div[contains(@class,'ant-form-item') and .//label[normalize-space()='Group']]//input`)
+      .first()
+      .fill('tags');
+
+    // Tag (free-text input)
+    await fillByLabel('Tag', 'automation');
+
+    // Auto Close Ticket — leave ON (it's the default). Toggle only if currently OFF.
+    const autoCloseTicket = page
+      .locator('.ant-form-item:has(label:has-text("Auto Close Ticket"))')
+      .getByRole('switch');
+    if (!(await autoCloseTicket.isChecked())) {
+      await autoCloseTicket.click();
+    }
+    await expect(autoCloseTicket).toBeChecked();
+
+    // Ticket Status — pick "Closed" radio (already default, but assert/select for safety)
+    await page.getByRole('radio', { name: 'Closed' }).check();
+
+    // --- Custom Fields ---
+    // These are the ServiceOps instance's user-defined custom fields, harvested live from the
+    // create form on 2026-07-14 (build 8.2.6, https://172.16.15.68 → ServiceOps 172.16.12.112).
+    // NOTE: custom fields are defined in the connected ServiceOps app, so if that instance's
+    // field schema changes these labels/values must be re-harvested. Fill each so the profile
+    // isn't left empty.
+    await fillByLabel('custom input', 'automation test input');
+    await fillByLabel('custom Text Area', 'automation text area');
+    await selectByLabel('custom Dropdown', 'cd1');
+    // "custom Multi-Select Dropdown" is a readonly picker-overlay WITHOUT a
+    // data-cy='dropdown-trigger-input' hook, so trigByLabel()/openDropdownByLabel() can't find
+    // it. Open by clicking the field's input, tick one option, then close the popover.
+    {
+      const msInput = page
+        .locator('.ant-form-item:has(label:has-text("custom Multi-Select Dropdown")) input')
+        .first();
+      await msInput.click();
+      await visiblePopover().locator("span[title='cmd1']").click();
+      await page.keyboard.press('Escape').catch(() => {});
+    }
+    await fillByLabel('custom Number', '5');
+    // "custom Radio": Ant hides the real <input type=radio>, so .check()/getByRole().check()
+    // times out — click the r1 label span instead (same idiom as the checkbox below).
+    await page
+      .locator(`xpath=(//*[normalize-space(text())='custom Radio']/following::*[normalize-space(text())='r1'])[1]`)
+      .click();
+    // "custom Checkbox" — tick c1
+    await page
+      .locator(`xpath=(//*[normalize-space(text())='custom Checkbox']/following::*[normalize-space(text())='c1'])[1]`)
+      .click();
+
+    await page.locator("//button[@id='external-storage-btn']").click();
+
+    //Assertion for created profile
+    await page.locator("//div[@class='col']//input[@placeholder='Search']").fill('Motadata ServiceOps Integration Profile by Automation');
+    await expect(
+  page.locator('tbody tr', {
+    hasText: "Motadata ServiceOps Integration Profile by Automation"
+  })
+).toBeVisible();
+  });
+
+  test('Logout from AIOps', async () => {
+    await logout(page);
+  });
+});

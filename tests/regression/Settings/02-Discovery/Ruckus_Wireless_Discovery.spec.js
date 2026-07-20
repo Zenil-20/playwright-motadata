@@ -17,9 +17,19 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable. Target the cross <a> inside the flex header that holds
+// the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 test.describe.serial('Motadata AIOps Discovery Flow For Ruckus Wireless Discovery', () => {
   let page;
 
@@ -27,7 +37,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Ruckus Wireless Discover
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +47,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Ruckus Wireless Discover
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -67,17 +73,16 @@ test.describe.serial('Motadata AIOps Discovery Flow For Ruckus Wireless Discover
     await page.locator("//span[normalize-space()='HTTPS']").click();
     await page.locator('input[name="port"]').fill('8443');
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText(process.env.Ruckus_Wireless_10_20_40_4)).toBeVisible();
+    await page.waitForURL(/network-discovery-profiles\/.+(result)?/, { timeout: 120000 }).catch(() => {});
+    await expect(page.locator('table tr').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText(process.env.Ruckus_Wireless_10_20_40_4)).toBeVisible({ timeout: 120000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

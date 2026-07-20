@@ -17,8 +17,20 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
 
 test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () => {
   let page;
@@ -27,7 +39,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +49,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill('admin');
-    await page.locator("//input[@placeholder='Password']").fill('admin');
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -53,6 +61,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
   });
 
   test('Create Discovery for Service check FTP', async () => {
+    test.setTimeout(600000);
+
     await page.getByText('Service Check', { exact: true }).click();
     await page.locator('input[name="profile-name"]').fill('172.16.8.57ftp');
     await page.locator('#service-type-id').click();
@@ -62,17 +72,20 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
     await page.locator("//input[@id='username-id']").fill("Administrator");
     await page.locator("//input[@id='password-id']").fill("Motadata@8");
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByText("172.16.8.57").first()).toBeVisible({ timeout: 90000 });
-    await page.locator('input[type="checkbox"]').nth(1).check();
+
+    const discoveryRow = page.locator('tr').filter({ hasText: '172.16.8.57' }).first();
+    await expect(discoveryRow).toBeVisible({ timeout: 480000 });
+
+    const rowCheckbox = discoveryRow.locator('input[type="checkbox"]').first();
+    await expect(rowCheckbox).toBeVisible({ timeout: 30000 });
+    await rowCheckbox.check();
+
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully').first()).toBeVisible();
-    await page.locator('svg[data-icon="times"]').click();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });

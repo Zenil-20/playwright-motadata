@@ -17,6 +17,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -31,7 +32,7 @@ test.describe.serial('Motadata AIOps Login', () => {
         // Create a single browser context and page shared across all tests
         const context = await browser.newContext();
         page = await context.newPage();
-        page.setDefaultTimeout(90000);
+        page.setDefaultTimeout(500000);
     });
 
     test.afterAll(async () => {
@@ -41,12 +42,8 @@ test.describe.serial('Motadata AIOps Login', () => {
     });
 
     test('Login to Motadata AIOps', async () => {
-        await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-        await page.locator("//input[@placeholder='Username']").fill('admin');
-        await page.locator("//input[@placeholder='Password']").fill('admin');
-        await page.locator("//button[@type='submit']").click();
-        await page.waitForLoadState('networkidle');
-    });
+    await login(page);
+  });
 
     test('Navigate to Runbook and Create a Database Runbook which fetches all data from pg', async () => {
         await page.locator("//a[@href='/settings/']").click();
@@ -75,26 +72,33 @@ test.describe.serial('Motadata AIOps Login', () => {
         // Click the checkbox inside that row
         const checkbox = row.locator('input[type="checkbox"]');
         await expect(checkbox).toBeVisible({ timeout: 5000 });
-        await checkbox.click();
+          await checkbox.click();
           await page.locator("//input[@name='runbook-description']").fill("runbook to get all databases in postgres");
           await page.locator("//div[@id='credential-profile-picker-id']").click();
-          await page.locator("//input[@placeholder='Search']").fill("172.16.10.134_postgresql");
-          await page.locator("//span[@title='172.16.10.134_postgresql']").click();
+          await page.locator("input[data-cy='dropdown-search-input']").fill("172.16.10.134_postgresql");
+          const credentialOption = page.locator("//span[@title='172.16.10.134_postgresql']");
+          if (!(await credentialOption.isVisible().catch(() => false))) {
+              await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+              await page.locator("//input[@id='credential-profile-name-id']").fill("172.16.10.134_postgresql");
+              await page.locator("//input[@id='username-id']").fill("postgres");
+              await page.locator("//input[@id='password-id']").fill("Mind@123");
+              await page.locator("//button[@id='create-credential-profile-btn-id']").click();
+              await page.locator("//div[@id='credential-profile-picker-id']").click();
+              await page.locator("input[data-cy='dropdown-search-input']").fill("172.16.10.134_postgresql");
+          }
+          await credentialOption.click();
           await page.getByRole('button', { name: 'Test' }).click();
           await page.locator("//div[@id='test-monitor-picker-id']").click();
           const checkbox1 = row.locator('input[type="checkbox"]');
           await expect(checkbox1).toBeVisible({ timeout: 5000 });
           await checkbox1.click();
           await page.locator("//button[@id='create-credential-profile-btn-id']").click();
-          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 90000 });
+          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 600000 });
           await page.locator("//input[@name='search']").fill("Test Database");
           await expect(page.getByRole('link', { name: 'Test Database' })).toBeVisible();
     });
 
     test('Logout from AIOps', async () => {
-        await page.locator("//img[@alt='Avatar']").click();
-        await page.getByText('Logout').click();
-        await page.context().clearCookies();
-        await page.context().clearPermissions();
-    });
+    await logout(page);
+  });
 });

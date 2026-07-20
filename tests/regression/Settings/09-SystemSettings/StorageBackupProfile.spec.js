@@ -16,6 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
 
@@ -26,7 +27,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -36,11 +37,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Storage and create SCP/SFTP', async () => {
@@ -100,7 +97,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
   });
 
   test('Attach storage profiles to Config DB Backup Profile, run, then swap and rerun', async () => {
-    test.setTimeout(90000);
+    test.setTimeout(600000);
 
     // NOTE: Backup Profile does not support TFTP storage profiles, so TFTP never appears
     // in this dropdown. Only SCP/SFTP and FTP are exercised here.

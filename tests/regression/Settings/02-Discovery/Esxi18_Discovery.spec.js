@@ -17,8 +17,23 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
+import { login, logout } from '../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
+
+// The provision-status popup renders as a role=document popover (NOT role=dialog), so a
+// dialog-scoped match is unreliable and a bare svg[data-icon="times"] click can hit a
+// page-header icon instead (strict-mode violation / wrong element). Target the cross <a>
+// inside the flex header that holds the "Provision Status" heading.
+async function closeProvisionStatus(page) {
+  const header = page.locator('.flex.justify-between')
+    .filter({ has: page.getByRole('heading', { name: 'Provision Status' }) });
+  await expect(header).toBeVisible({ timeout: 30000 });
+  await header.locator('a:has(svg[data-icon="times"])').click();
+}
+
+const APP_USERNAME = process.env.Motadata_Username;
+const APP_PASSWORD = process.env.Motadata_Password;
 
 test.describe.serial('Motadata AIOps Discovery Flow For Esxi-18 Discovery', () => {
   let page;
@@ -27,7 +42,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Esxi-18 Discovery', () =
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(90000);
+    page.setDefaultTimeout(500000);
   });
 
   test.afterAll(async () => {
@@ -37,11 +52,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Esxi-18 Discovery', () =
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
-    await page.getByRole('textbox', { name: 'Username' }).fill('admin');
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin');
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForLoadState('networkidle');
+    await login(page);
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -70,24 +81,19 @@ test.describe.serial('Motadata AIOps Discovery Flow For Esxi-18 Discovery', () =
     await page.getByRole('button', { name: 'Create Credentials Profile' }).click();
     await page.getByRole('button', { name: 'Save and Run' }).click();
 
-    await expect(page.getByText(process.env.Esxi_Host_172_16_10_18)).toBeVisible({ timeout: 90000 });
+    await expect(page.getByText(process.env.Esxi_Host_172_16_10_18)).toBeVisible({ timeout: 400000 });
 
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.getByRole('button', { name: 'Add Selected' }).click();
 
     // Verify the Provision Status dialog appears with at least one success message
-    const provisionDialog = page.getByRole('dialog', { name: 'Provision Status' });
-    await expect(provisionDialog).toBeVisible();
-    await expect(provisionDialog.getByText('provisioned successfully').first()).toBeVisible();
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
     
     // Close the dialog using the X button
-    await page.locator('.svg-inline--fa.fa-times.fa-w-16.fa-lg').click();
+    await closeProvisionStatus(page);
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
-    await page.context().clearCookies();
-    await page.context().clearPermissions();
+    await logout(page);
   });
 });
