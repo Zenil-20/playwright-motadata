@@ -1,0 +1,163 @@
+{
+ "target": "runbook-create",
+ "labels": [
+  "Runbook Name",
+  "Description",
+  "Runbook Category",
+  "Monitor",
+  "Group",
+  "Tag",
+  "IP/Host",
+  "Monitors",
+  "Credential Profile",
+  "Port",
+  "Timeout",
+  "SSH Script",
+  "Script Language",
+  "GO",
+  "Python",
+  "Parsing Script"
+ ],
+ "inputs": [
+  {
+   "name": "runbook-name",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "runbook-description",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "port",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "timeout",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "codemirror",
+   "id": "",
+   "type": "textarea",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "textarea",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "codemirror",
+   "id": "",
+   "type": "textarea",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "textarea",
+   "ph": ""
+  }
+ ],
+ "buttons": [
+  "Create Credential Profile",
+  "Add Variable",
+  "Reset",
+  "Test",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers142",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯"
+ ],
+ "buttonIds": [
+  "create-credential-btn-id"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 6,
+ "checkboxes": 0,
+ "codeMirror": 2,
+ "tabs": [],
+ "gridHeaders": []
+}

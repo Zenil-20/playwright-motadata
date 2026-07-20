@@ -27,7 +27,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -37,7 +37,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill('admin');
     await page.locator("//input[@placeholder='Password']").fill('admin');
     await page.locator("//button[@type='submit']").click();
@@ -64,7 +64,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Windows Server Discovery
     await page.locator("//button[@id='test-btn']").click();
     await page.locator("//input[@name='hostname-ip']").fill(process.env.Windows_server_172_16_10_134);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 120000 });
+    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 90000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
     await page.locator('#save-run-btn-id').click();

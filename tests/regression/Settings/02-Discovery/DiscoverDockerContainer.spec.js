@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server 172.16.15.2
     // Single browser context and page shared across all tests.
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -44,7 +44,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server 172.16.15.2
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -74,7 +74,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server 172.16.15.2
     await page.locator("//button[@id='test-btn']").click();
     await page.locator("//input[@name='hostname-ip']").fill(LINUX_SERVER_IP);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 120000 });
+    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 90000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
 
@@ -83,14 +83,14 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server 172.16.15.2
 
     // Wait for the discovered device to appear in the results table.
     await expect(page.getByText(LINUX_SERVER_IP, { exact: true }).first())
-      .toBeVisible({ timeout: 480000 });
+      .toBeVisible({ timeout: 90000 });
 
     // Tick the discovered row (nth(0) is the header select-all) and provision it.
     const discoveredRow = page.locator('tr.k-master-row', { hasText: LINUX_SERVER_IP }).first();
     await discoveredRow.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
 
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 90000 });
     await page.locator('svg[data-icon="times"]').click();
   });
 

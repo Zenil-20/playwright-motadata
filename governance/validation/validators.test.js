@@ -14,6 +14,7 @@ import { validateBusinessRules } from './business-rules.js';
 import { validateLocators } from './locators.js';
 import { validateAssertions } from './assertions.js';
 import { validateSpec } from './automation-review.js';
+import { validateCoverageApproval } from './coverage-approval.js';
 import { runGate } from './index.js';
 
 test('requirement: rejects missing/ambiguous/uncited AC, passes clean', () => {
@@ -69,6 +70,21 @@ test('automation-review: rejects banned patterns, passes clean spec', () => {
   assert.equal(validateSpec('await page.locator("x").nth(2).click();').pass, false);
   assert.equal(validateSpec("const x=1;").pass, false); // no expect
   assert.equal(validateSpec("import {test,expect} from '@playwright/test'; test('t',async()=>{await expect(page.getByText('ok')).toBeVisible();});").pass, true);
+});
+
+test('coverage-approval: blocks on pending/stale/other, passes on Allow', () => {
+  const proposal = { ticket: 'M-1', proposal_hash: 'h1', areas: [{ module: 'Settings', screen: 'discovery', traces_to: ['AC1'] }], totals: { estimated_cases: 24 } };
+  assert.equal(validateCoverageApproval(proposal, { decision: 'pending' }).pass, false);       // awaiting
+  assert.equal(validateCoverageApproval(proposal, { decision: 'allow', proposal_hash: 'OLD' }).pass, false); // stale
+  assert.equal(validateCoverageApproval(proposal, { decision: 'other', proposal_hash: 'h1', additions: ['add IPv6'] }).pass, false); // changes requested
+  assert.equal(validateCoverageApproval({ areas: [] }, { decision: 'allow' }).pass, false);      // no proposal
+  assert.equal(validateCoverageApproval(proposal, { decision: 'allow', proposal_hash: 'h1', by: 'ansh' }).pass, true); // approved
+});
+
+test('gatekeeper: 04_coverage_approval gate blocks until Allow', () => {
+  const proposal = { ticket: 'M-1', proposal_hash: 'h1', areas: [{ module: 'X', traces_to: ['AC1'] }], totals: { estimated_cases: 10 } };
+  assert.equal(runGate('04_coverage_approval', { proposal, approval: { decision: 'pending' } }).pass, false);
+  assert.equal(runGate('04_coverage_approval', { proposal, approval: { decision: 'allow', proposal_hash: 'h1' } }).pass, true);
 });
 
 test('gatekeeper: 05_testcases gate blocks a bad suite, passes a good one', () => {

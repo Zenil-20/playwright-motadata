@@ -28,7 +28,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For SQL Server Database', ()
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For SQL Server Database', ()
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -82,13 +82,13 @@ test.describe.serial('Motadata AIOps Discovery Flow For SQL Server Database', ()
     await page.locator('#save-run-btn-id').click();
 
     await expect(page.getByText(process.env.SqlServer_ip, { exact: true }).first())
-      .toBeVisible({ timeout: 480000 });
+      .toBeVisible({ timeout: 90000 });
 
     const discoveredRow = page.locator('tr.k-master-row', { hasText: process.env.SqlServer_ip }).first();
     await discoveredRow.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
 
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 90000 });
     await page.locator("//i[@class='anticon text-neutral-light']//*[name()='svg']").click();
 
     await page.locator("//input[@name='discovery-search']").fill(process.env.SqlServer_ip);

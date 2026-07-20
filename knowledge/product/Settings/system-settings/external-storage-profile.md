@@ -1,64 +1,91 @@
 ---
-screen: System Settings · external-storage-profile
+screen: System Settings · External Storage Profile
 module: Settings
 category: system-settings
 route: "/settings/system-settings/external-storage-profile"
 build: 8.2.6
-status: generated
-sources: [catalog]            # knowledge/locators/catalog/settings_system_settings_external_storage_profile.json (live Vue-router sweep 2026-07-02)
-verified: 2026-07-02
+status: draft
+sources: [catalog, kb]        # locators/catalog/settings_system_settings_external_storage_profile.json ; known_issues/customer-issue-kb.md
+verified: 2026-07-09
 ---
 
-# System Settings · external-storage-profile
+# System Settings · External Storage Profile
 
-## Purpose
-TODO(source: Motadata KG/docs) — what this screen is for.
+## 1. Purpose
+Manages **External Storage Profiles** — named definitions of an off-box storage destination (e.g. a
+network share / remote target) that the platform can write to, most notably as a **backup destination**.
+Each row tracks how many objects use it and where it points.
 
-## Navigation
-Route: `/settings/system-settings/external-storage-profile` (open the full URL; SPA routing must load the page).
+- **Business objective:** let admins register reusable external storage targets so backups (and any other
+  export) can be sent off the appliance for durability.
+- **Screen description:** a list/grid under `Settings → System Settings → External Storage Profile` with a
+  **Create Storage Profile** action and per-row actions.
+- **Primary use cases:** create/edit/delete a storage profile, review Used Count and Storage Destination,
+  search the list.
+- **Who uses it:** administrators.
+- **Dependencies:** a reachable external storage target with valid credentials/path; consumed by Backup
+  Profiles (and possibly other export features).
 
-## Actions
-TODO(source: KG/docs) — the actions available here. Derive from the buttons/controls below.
+## 2. Navigation
+```
+Settings → System Settings → External Storage Profile
+```
+- **Breadcrumb:** Settings › System Settings › External Storage Profile
+- **URL:** `/settings/system-settings/external-storage-profile`
 
-## Components
-**Inputs**
-- `?` — _Search_ (text)
-- `storage-search` — _Search_ (text)
+## 3. Actions
+- **Create Storage Profile** — `#create-storage-btn` (opens a create form/drawer)
+- **Search** the grid — `input[name="storage-search"]` (placeholder "Search")
+- Per-row **Actions** (edit / delete) — `[data-cy='grid-action']`
 
-**Grid columns**
-- Storage Profile Name
-- Used Count
-- Storage Destination
-- Actions
+## 4. Components
+| Component | Control (from catalog) |
+|---|---|
+| Search | `input[name="storage-search"]` (placeholder "Search") |
+| Create Storage Profile | `#create-storage-btn` |
+| Grid | columns below |
+| Row actions | `[data-cy='grid-action']` |
 
-**Buttons**
-- Create Storage Profile
+**Grid columns:** Storage Profile Name · Used Count · Storage Destination · Actions
 
-**Button ids**
-- `#create-storage-btn`
+> The **create/edit form fields** (name, storage type/protocol, host/path, credentials) were not captured
+> by the list-state sweep. Confirm the exact inputs and supported protocols live or via the KG before
+> writing a create test.
 
-**data-cy hooks**
-- `[data-cy='grid-action']`
+_Locators: promote verified ones into `knowledge/locators/selector-cookbook.md` (Settings > External Storage Profile)._
 
-_Locators: see `knowledge/locators/catalog/settings_system_settings_external_storage_profile.json` (raw sweep) — promote verified ones into the cookbook._
+## 5. Permissions
+- **Administrators** manage storage profiles (global setting).
+- TODO(source: KG/docs) — non-admin visibility.
 
-## Permissions
-TODO(source: docs) — roles that can view/act.
+## 6. Entry Conditions
+- Logged in as an administrator.
+- Grid loads existing profiles (empty on fresh install).
 
-## Entry Conditions
-Logged in. TODO(source: docs) — any feature flag / seeded data.
+## 7. Exit Conditions
+- **On Create (success):** success toast; new profile appears as a grid row.
+- **On Delete:** row removed. TODO(source: docs) — blocked when **Used Count > 0**?
+- **On Edit/Save:** row reflects updated destination.
 
-## Exit Conditions
-TODO(source: docs).
+## 8. Validations
+- **Storage Profile Name** — likely required/unique. TODO(source: docs).
+- **Storage Destination** (host/path/credentials) — required and reachable. TODO(source: docs) — which
+  protocols (SMB/NFS/FTP/S3…) are supported and how they are validated.
 
-## Validations
-TODO(source: docs) — field validations + inline errors.
+## 9. Business Rules
+- **Used Count** reflects references (e.g. by Backup Profiles) — deleting an in-use profile is likely
+  restricted. TODO(source: KG/docs) — confirm delete-guard.
+- Storage profiles are the off-box destination that **Backup Profiles** point at. TODO(source: KG/docs) —
+  confirm the exact consumer relationship.
 
-## Business Rules
-TODO(source: Motadata KG) — uniqueness, defaults, dependencies, limits.
+## 10. Known Bugs
+None recorded specifically for this screen in `knowledge/known_issues/customer-issue-kb.md`. (Related:
+backup/restore destination mistakes — section 2 — are documented against Backup Profiles, not the storage
+profile definition itself.)
 
-## Known Bugs
-See `knowledge/known_issues/customer-issue-kb.md` for related customer issues, if any.
-
-## Edge Cases
-TODO — boundary / negative / timing cases.
+## 11. Edge Cases
+- Duplicate profile name; invalid host/path/credentials.
+- Deleting a profile with **Used Count > 0** (in use by a backup).
+- Unreachable target / full destination at backup time.
+- Wrong protocol/port; permission-denied on the share.
+- Very long name/path; special characters in credentials.

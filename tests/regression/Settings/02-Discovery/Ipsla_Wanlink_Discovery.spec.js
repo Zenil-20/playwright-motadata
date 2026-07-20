@@ -25,7 +25,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -33,7 +33,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill('admin');
     await page.locator("//input[@placeholder='Password']").fill('admin');
     await page.locator("//button[@type='submit']").click();
@@ -63,7 +63,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
 
     const deviceName = process.env.ipsla_wanlink_Discovery_ip_range;
     expect(deviceName).toBeTruthy();
-    await expect(page.getByText(deviceName, { exact: false })).toBeVisible({ timeout: 480000 });
+    await expect(page.getByText(deviceName, { exact: false })).toBeVisible({ timeout: 90000 });
 
     await page.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
@@ -76,8 +76,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
 
     // Write Public
     let createBtn = page.locator("//button[@id='create-credential-profile-btn']");
-    await createBtn.waitFor({ state: 'visible', timeout: 120000 });
-    await expect(createBtn).toBeEnabled({ timeout: 120000 });
+    await createBtn.waitFor({ state: 'visible', timeout: 90000 });
+    await expect(createBtn).toBeEnabled({ timeout: 90000 });
     await createBtn.click();
     await page.locator("//input[@placeholder='Select']").click();
     await page.locator("//input[@data-cy='dropdown-search-input']").fill("SNMP V1/V2c");
@@ -96,8 +96,8 @@ test.describe.serial('Motadata AIOps Discovery Flow For ipsla_wanlink', () => {
 
     // Write Private
     createBtn = page.locator("//button[@id='create-credential-profile-btn']"); // reacquire locator after DOM update
-    await createBtn.waitFor({ state: 'visible', timeout: 120000 });
-    await expect(createBtn).toBeEnabled({ timeout: 120000 });
+    await createBtn.waitFor({ state: 'visible', timeout: 90000 });
+    await expect(createBtn).toBeEnabled({ timeout: 90000 });
     await createBtn.click();
     await page.locator("//input[@placeholder='Select']").click();
     await page.locator("//input[@data-cy='dropdown-search-input']").fill("SNMP V1/V2c");

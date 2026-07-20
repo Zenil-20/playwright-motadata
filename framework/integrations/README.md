@@ -16,10 +16,19 @@ vars (see `.env.example`); nothing is hardcoded.
 | File | Key API | Reads |
 |---|---|---|
 | `jira.js` | `fetchRequirement(key)`, `normalizeKey(key)` | `JIRA_BASE_URL`, `JIRA_USERNAME`, `JIRA_PASSWORD`, `JIRA_PROJECT` |
-| `tfs.js` | `fetchRequirement(id)`, `listTestCases(wiql)` | `TFS_BASE_URL`, `TFS_PROJECT`, `TFS_PAT` |
+| `tfs.js` | `fetchRequirement(id)`, `listTestCases(wiql)`, plan-read: `getPlan(planId)`, `listSuites(planId)`, `listSuiteTestCases(planId, suiteId)`, `importPlan(planId, { suiteFilter })` | `TFS_BASE_URL`, `TFS_PROJECT`, `TFS_PAT` |
 | `vcs.js` | `detectChanges(since)`, `impactedDevices(paths, keys)` | local git repo |
 
 All requirement fetches return the same shape: `{ source, key, title, text }`.
+
+**TFS plan read (Flow A "GET TFS TEST CASES").** Beyond WIQL, `tfs.js` reads a TFS/Azure
+DevOps Server test plan's suites and cases: `getPlan` / `listSuites` / `listSuiteTestCases`,
+and `importPlan(planId, { suiteFilter })` which walks the suites, dedups by test-case id, and
+returns canonical 13-field rows. The titles come from the testplan endpoint
+`GET {base}/_apis/testplan/Plans/{planId}/Suites/{suiteId}/TestCase?api-version=6.0-preview.2`
+(`workItem.id` / `workItem.name`). All TFS requests share a module-level undici dispatcher with
+`rejectUnauthorized:false` to tolerate the on-prem self-signed cert. Driven by the
+`tfs:import` CLI (`scripts/tfs-import.mjs`) → `tests/generated/`.
 
 ## Rules & Regulations
 

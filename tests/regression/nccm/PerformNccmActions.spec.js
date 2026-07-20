@@ -28,7 +28,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -117,7 +117,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
     // Click Test, assert "Successful" appears in the Test column.
     await drawer.getByRole('button', { name: /^\s*Test\s*$/ }).click();
     await expect(monitorRow.locator('td', { hasText: /^\s*Successful\s*$/i }))
-      .toBeVisible({ timeout: 240000 });
+      .toBeVisible({ timeout: 90000 });
 
     // Confirm assignment.
     await drawer.getByRole('button', { name: /^\s*Assign Monitor\s*$/ }).click();
@@ -131,7 +131,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
     // Wait for the spinning rerun loader to finish — the play-circle icon returns
     // when the runbook execution completes.
     await expect(runbookRow.locator("svg.fa-spin, [class*='loading-icon'], svg[data-icon='sync']"))
-      .toHaveCount(0, { timeout: 300000 });
+      .toHaveCount(0, { timeout: 90000 });
     await expect(runbookRow.locator("svg[data-icon='play-circle']")).toBeVisible({ timeout: 60000 });
   });
 
@@ -145,7 +145,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
 
     await expect(
       row.locator("button.button-transparent span.text-primary", { hasText: 'Runbook Successful' }).first()
-    ).toBeVisible({ timeout: 240000 });
+    ).toBeVisible({ timeout: 90000 });
   });
 
   test('Backup Now triggers Conflict Detected, version 2.0, and updates Overview summaries', async () => {
@@ -168,7 +168,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
     // 4. Wait for backup to finish → "Conflict Detected" button + Current Version bumps to 2.0.
     await expect(
       row.locator("button.button-transparent span.text-secondary-red", { hasText: 'Conflict Detected' }).first()
-    ).toBeVisible({ timeout: 300000 });
+    ).toBeVisible({ timeout: 90000 });
 
     await expect(row.locator("div.ant-tag[title='2.0']").first()).toBeVisible({ timeout: 30000 });
 
@@ -225,7 +225,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
 
     await expect(
       explorerRow.locator("button.button-transparent span.text-primary", { hasText: 'Sync Successful' }).first()
-    ).toBeVisible({ timeout: 300000 });
+    ).toBeVisible({ timeout: 90000 });
     await expect(explorerRow.locator('span.text-secondary-green', { hasText: 'In Sync' }).first())
       .toBeVisible({ timeout: 30000 });
 
@@ -239,7 +239,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
     const backupSuccessBtn = explorerRow.locator(
       "button.button-transparent span.text-primary", { hasText: 'Backup Successful' }
     ).first();
-    await expect(backupSuccessBtn).toBeVisible({ timeout: 300000 });
+    await expect(backupSuccessBtn).toBeVisible({ timeout: 90000 });
 
     // Open the Backup Successful drawer, then close it.
     await backupSuccessBtn.click();

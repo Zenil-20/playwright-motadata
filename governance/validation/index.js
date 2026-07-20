@@ -13,6 +13,7 @@ import { validateDedup } from './dedup.js';
 import { validateAssertions } from './assertions.js';
 import { validateLocators } from './locators.js';
 import { validateSpec } from './automation-review.js';
+import { validateCoverageApproval } from './coverage-approval.js';
 
 /**
  * ctx shape (only the fields a given gate needs must be present):
@@ -22,6 +23,10 @@ export const GATES = {
   '01_requirement': {
     label: 'Requirement completeness',
     run: (ctx) => [validateRequirement(ctx.requirement || {})],
+  },
+  '04_coverage_approval': {
+    label: 'Human coverage approval (Allow / Other)',
+    run: (ctx) => [validateCoverageApproval(ctx.proposal || {}, ctx.approval || {})],
   },
   '05_testcases': {
     label: 'Coverage · business-rules · dedup · assertions',

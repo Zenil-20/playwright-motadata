@@ -1,57 +1,78 @@
 ---
-screen: Group
+screen: Group (Group list)
 module: Settings
 category: group-settings
 route: "/settings/group-settings/"
 build: 8.2.6
-status: generated
-sources: [catalog]            # knowledge/locators/catalog/settings_group_settings.json (live Vue-router sweep 2026-07-02)
-verified: 2026-07-02
+status: draft
+sources: [catalog, kb]        # catalog/settings_group_settings.json; customer-issue-kb.md
+verified: 2026-07-09
 ---
 
-# Group
+# Group Settings — Group list
 
-## Purpose
-TODO(source: Motadata KG/docs) — what this screen is for.
+## 1. Purpose
+Manage the **groups** used to organize monitors and to scope dashboards, reports, alerting and
+data-security (RBAC). Landing screen of the **Group Settings** category.
 
-## Navigation
-Route: `/settings/group-settings/` (open the full URL; SPA routing must load the page).
+- **Business objective:** structure the monitored estate into logical groups so access, dashboards and
+  policies can be targeted by group instead of per-device.
+- **Screen description:** a group grid with search + filter + Create Group; sibling tab: **Data Security**.
+- **Primary use cases:** create/edit/delete a group, organize monitors, drive scope-based RBAC.
+- **Who uses it:** administrators.
+- **Dependencies:** monitors/inventory (members) · Data Security + User Profiles (which consume groups as scope).
 
-## Actions
-TODO(source: KG/docs) — the actions available here. Derive from the buttons/controls below.
+## 2. Navigation
+```
+Settings → Group Settings → Group (default landing)
+```
+- **Breadcrumb:** Settings › Group Settings › Group
+- **Sibling tab:** Data Security
+- **URL:** `/settings/group-settings/`
 
-## Components
-**Inputs**
-- `?` — _Search_ (text)
-- `search` — _Search_ (text)
+## 3. Actions
+- **Create Group** (`#create-group-btn`)
+- **Filter** (`#filter-btn`)
+- **Search** groups
+- Per-row edit / delete (`[data-cy='grid-action']`) — TODO(source: KG/docs) confirm row menu
 
-**Buttons**
-- Create Group
-- Filter
+## 4. Components
+| Component | Control |
+|---|---|
+| Group grid | group rows (columns not captured in the sweep) |
+| Search | `input[placeholder='Search']` + grid `name='search'` |
+| Create Group | `#create-group-btn` |
+| Filter | `#filter-btn` |
 
-**Button ids**
-- `#filter-btn`
-- `#create-group-btn`
+_Create/edit dialog fields not captured by the list sweep — harvest live. Locators → `knowledge/locators/catalog/settings_group_settings.json`._
 
-_Locators: see `knowledge/locators/catalog/settings_group_settings.json` (raw sweep) — promote verified ones into the cookbook._
+## 5. Permissions
+- **Admin-only** for group management. TODO(source: KG/docs) — exact role grant.
 
-## Permissions
-TODO(source: docs) — roles that can view/act.
+## 6. Entry Conditions
+- Logged in as an admin with a valid session; Group Settings reachable.
 
-## Entry Conditions
-Logged in. TODO(source: docs) — any feature flag / seeded data.
+## 7. Exit Conditions
+- **Create/edit success:** success toast; the group appears in the grid; available as a scope elsewhere.
+- **Delete:** group removed; TODO(source: KG/docs) — behavior for a group that still has members/children.
 
-## Exit Conditions
-TODO(source: docs).
+## 8. Validations
+- Group Name likely unique + required. Exact rules/limits: TODO(source: KG/docs) — create dialog not captured.
 
-## Validations
-TODO(source: docs) — field validations + inline errors.
+## 9. Business Rules
+- Groups can be **nested** (parent/child) and are consumed as **scope** by User Profiles and Data Security.
+- TODO(source: KG/docs) — whether a monitor may belong to multiple groups; delete cascade to children/members.
 
-## Business Rules
-TODO(source: Motadata KG) — uniqueness, defaults, dependencies, limits.
+## 10. Known Bugs
+From `knowledge/known_issues/customer-issue-kb.md`:
+- **Parent-group scope not cascading to child** — `PQD-38219`: assigning access at a parent group did not
+  propagate to child groups as expected (scope/RBAC defect). Directly relevant to nested-group + Data
+  Security testing from this screen.
 
-## Known Bugs
-See `knowledge/known_issues/customer-issue-kb.md` for related customer issues, if any.
-
-## Edge Cases
-TODO — boundary / negative / timing cases.
+## 11. Edge Cases
+- Duplicate group name.
+- Delete a group that still contains monitors or child groups.
+- Deeply nested group hierarchy (scope propagation).
+- Group used as a User-Profile/Data-Security scope then deleted (dangling scope).
+- Empty group; very large group; Unicode in name.
+- Filter/search with no results.

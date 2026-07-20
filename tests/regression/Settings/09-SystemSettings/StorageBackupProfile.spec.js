@@ -26,7 +26,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -100,7 +100,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
   });
 
   test('Attach storage profiles to Config DB Backup Profile, run, then swap and rerun', async () => {
-    test.setTimeout(600000);
+    test.setTimeout(90000);
 
     // NOTE: Backup Profile does not support TFTP storage profiles, so TFTP never appears
     // in this dropdown. Only SCP/SFTP and FTP are exercised here.

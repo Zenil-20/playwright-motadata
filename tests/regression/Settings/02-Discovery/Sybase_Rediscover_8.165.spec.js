@@ -26,7 +26,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
   test.beforeAll(async ({ browser }) => {
    const context = await browser.newContext();
    page = await context.newPage();
-   page.setDefaultTimeout(500000);
+   page.setDefaultTimeout(90000);
 
    await page.goto(process.env.Motadata_Aiops);
    await page.locator("//input[@placeholder='Username']").fill('admin');
@@ -57,7 +57,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server Discovery',
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
     await page.locator('#save-run-btn-id').click();
-    await expect(page.getByRole('gridcell', { name: process.env.Sybase_linux_ip })).toBeVisible({ timeout: 100000 });
+    await expect(page.getByRole('gridcell', { name: process.env.Sybase_linux_ip })).toBeVisible({ timeout: 90000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully')).toBeVisible();
@@ -70,7 +70,7 @@ await page.getByRole('link', { name: 'Rediscover Settings' }).click();
 await page.locator("//input[@name='search']").fill('weekly');
 await page.waitForTimeout(1000); // 1 second pause
 await page.locator('#start-rediscovery').click();
-  await page.locator('input[name="search"]').nth(1).fill('sybase', { timeout: 128000 });
+  await page.locator('input[name="search"]').nth(1).fill('sybase', { timeout: 90000 });
   const row = page.locator(".rediscover-row")
     .filter({ hasText: "Sybase" })
     .filter({ hasText: "172.16.8.165" });
@@ -97,8 +97,8 @@ await page.locator('#start-rediscovery').click();
   await page.locator("//input[@placeholder='Search']").first().fill('device monitor settings');
   await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
   await page.waitForTimeout(1000);
-  await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.165', { timeout: 128000 } );
-  await expect(page.getByText('Sybase')).toBeVisible({ timeout: 120000 });
+  await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.165', { timeout: 90000 } );
+  await expect(page.getByText('Sybase')).toBeVisible({ timeout: 90000 });
   await page.waitForTimeout(1000);
   await page.locator('svg[data-icon="ellipsis-v"]').click();
   await page.locator("#metric-collection-time").click();

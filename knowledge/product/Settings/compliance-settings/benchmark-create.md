@@ -4,65 +4,91 @@ module: Settings
 category: compliance-settings
 route: "/settings/compliance-settings/benchmark/create"
 build: 8.2.6
-status: generated
+status: draft
 sources: [catalog]            # knowledge/locators/catalog/settings_compliance_settings_benchmark_create.json (live Vue-router sweep 2026-07-02)
-verified: 2026-07-02
+verified: 2026-07-09
 ---
 
-# Compliance Settings · benchmark-create
+# Compliance Settings · Benchmark — Create
 
-## Purpose
-TODO(source: Motadata KG/docs) — what this screen is for.
+## 1. Purpose
+The form for creating a **benchmark**. The admin names it, adds a description and tags, and assembles
+it from one or more **Rule Groups** (**Add Rule Group**) — each group holding compliance rules. The
+saved benchmark becomes selectable by an Audit Policy.
 
-## Navigation
-Route: `/settings/compliance-settings/benchmark/create` (open the full URL; SPA routing must load the page).
+- **Business objective:** build a reusable compliance standard by grouping rules, so audits evaluate
+  a device against a structured baseline.
+- **Screen description:** a form with **Benchmark Name · Description · Tags** plus an **Add Rule
+  Group** builder, and actions **Reset** / **Create Benchmark**.
+- **Primary use cases:** create a benchmark, add rule groups (and rules within them), tag it, save.
+- **Who uses it:** network/compliance administrators. TODO(source: KG/docs) — role gating.
+- **Dependencies:** NCM/compliance licensed · **Rules** defined to add into groups.
 
-## Actions
-TODO(source: KG/docs) — the actions available here. Derive from the buttons/controls below.
+## 2. Navigation
+```
+Settings → Compliance Settings → Benchmark → Create Benchmark
+```
+- **Breadcrumb:** Settings › Compliance Settings › Benchmark › Create
+- **URL:** `/settings/compliance-settings/benchmark/create` (reached via **Create Benchmark**).
 
-## Components
-**Form fields (labels)**
-- Benchmark Name
-- Description
-- Tags
+## 3. Actions
+- **Add Rule Group** — add a rule-group section to the benchmark (`#add-rule-group`).
+- **Create Benchmark** — save the benchmark.
+- **Reset** — clear the form (`#reset-btn`).
+- **Tags** — enter/select tags (input placeholder _Enter Name_).
 
-**Inputs**
-- `bencmark-name` — _Benchmark Name_ (text)
-- `?` — _Description_ (text)
-- `?` — _Enter Name_ (text)
+## 4. Components
+| Field / control | Detail (from catalog) |
+|---|---|
+| Benchmark Name * | `input[name="bencmark-name"]` (text, placeholder _Benchmark Name_) — **note the misspelled `name` attribute `bencmark-name`** (sic, in product) |
+| Description | text input (placeholder _Description_) |
+| Tags | text input (placeholder _Enter Name_) — tag entry |
+| (dropdown) | 1 select on the screen — TODO(source: docs) identify (likely rule-group / rule picker) |
+| Add Rule Group | button `#add-rule-group` |
+| Reset | button `#reset-btn` |
+| Create Benchmark | button `#create-snmp-device-catalog-btn` |
 
-**Selects (dropdowns)**
-1 on the screen
+_Locators: raw sweep in `knowledge/locators/catalog/settings_compliance_settings_benchmark_create.json`;
+promote verified ones into the cookbook._
 
-**Buttons**
-- Add Rule Group
-- Reset
-- Create Benchmark
+> **Automation caveats:**
+> - The Benchmark Name input's name attribute is the **misspelled** `bencmark-name` — use it verbatim.
+> - The primary save button id is `#create-snmp-device-catalog-btn` — an id **reused from the SNMP
+>   Device Catalog create screen** (shared component). Scope by route so a test doesn't cross screens.
+> - The single `select` and the rule-group builder rows were not fully captured — harvest live before
+>   automating the "add rule group / add rules" flow.
 
-**Button ids**
-- `#add-rule-group`
-- `#reset-btn`
-- `#create-snmp-device-catalog-btn`
+## 5. Permissions
+- Expected **Admin / network-config-admin** to create; others no access. TODO(source: KG/docs) —
+  exact RBAC + license gate.
 
-_Locators: see `knowledge/locators/catalog/settings_compliance_settings_benchmark_create.json` (raw sweep) — promote verified ones into the cookbook._
+## 6. Entry Conditions
+- Logged in; Compliance Settings reachable; NCM/compliance licensed/enabled.
+- Rules should exist to add into rule groups. TODO(source: docs).
 
-## Permissions
-TODO(source: docs) — roles that can view/act.
+## 7. Exit Conditions
+- **On Create Benchmark (success):** benchmark saved, returns to the Benchmark list with the new row
+  (Used Count = 0); expected success toast. TODO(source: docs) — confirm toast + redirect.
+- **On Reset:** form cleared; no server call.
 
-## Entry Conditions
-Logged in. TODO(source: docs) — any feature flag / seeded data.
+## 8. Validations
+- **Benchmark Name** — required (placeholder-labeled field). TODO(source: docs) — uniqueness/length.
+- **Description / Tags** — TODO(source: docs) — required?
+- **Rule Group(s)** — at least one group (and rules) likely required to save a meaningful benchmark.
+  TODO(source: docs) — whether an empty benchmark can be saved.
 
-## Exit Conditions
-TODO(source: docs).
+## 9. Business Rules
+- A benchmark is **composed of rule groups**; **Add Rule Group** builds that structure. TODO(source:
+  KG) — max groups/rules, rule ordering, and how group/rule weights feed **Weighted Calculation**.
+- TODO(source: KG) — whether the same rule can appear in multiple groups/benchmarks.
 
-## Validations
-TODO(source: docs) — field validations + inline errors.
+## 10. Known Bugs
+None recorded for this create screen in `customer-issue-kb.md`. Do not invent bugs.
 
-## Business Rules
-TODO(source: Motadata KG) — uniqueness, defaults, dependencies, limits.
-
-## Known Bugs
-See `knowledge/known_issues/customer-issue-kb.md` for related customer issues, if any.
-
-## Edge Cases
-TODO — boundary / negative / timing cases.
+## 11. Edge Cases
+- Save with no rule groups (empty benchmark).
+- Add a rule group but leave it empty.
+- Duplicate benchmark name.
+- Reset after adding several rule groups (discards all).
+- Very long name/description; Unicode; many tags.
+- Save button id collides with SNMP Device Catalog create — verify correct screen in a spec.

@@ -48,7 +48,7 @@ test.describe.serial('Discovery — provision devices (data-driven)', () => {
     test.skip(!LIVE, 'Motadata_Aiops not set — provide .env to run against a live AIOps.');
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(120000);
+    page.setDefaultTimeout(90000);
     await flow.login(page);
   });
 

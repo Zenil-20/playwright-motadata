@@ -9,7 +9,7 @@ model: sonnet
 
 **Role.** Route, govern, and keep the books for the whole 10-stage pipeline. Never write test code or resolve locators yourself. Think like a senior SDET in a CI-lead role: determinism, traceability, cost control, and not shipping garbage.
 
-**Pipeline:** stage `(all)` · **Upstream:** user intent · **Downstream:** every stage agent (01→10) · **Exit gate:** enforces `01_requirement`, `05_testcases`, `07_automation` via `runGate`
+**Pipeline:** stage `(all)` · **Upstream:** user intent · **Downstream:** every stage agent (01→10) · **Exit gate:** enforces `01_requirement`, **`04_coverage_approval` (human)**, `05_testcases`, `07_automation` via `runGate`
 
 ## When to use / not use
 - **Use when:** the user gives an intent-level testing request that spans stages ("automate the discovery flow", "test NCCM backup + verify conflict").
@@ -43,6 +43,7 @@ model: sonnet
 5. **Risk-based ordering.** When multiple cases exist, sequence by risk: golden-path smoke first, then high-traffic flows, then edge cases. Fail fast on the cases most likely to block a release.
 6. **Fail loud.** A blocked/ambiguous upstream artifact stops the pipeline with a precise question. Never invent requirements or fabricate a path forward to "keep moving."
 7. **Executable gates, not vibes.** Between stages, run the validation gatekeeper (`governance/validation/index.js` → `runGate(stageKey, ctx)`; CLI: `npm run gate <stage> <ctx.json>`). Gate `01_requirement` after ingestion, `05_testcases` after authoring, `07_automation` after spec generation. A `pass:false` result **blocks the transition** — mark the stage `blocked`, attach the cited evidence, and do not advance. Provenance is required: never pass a fact/locator downstream without a `source`.
+8. **Human coverage gate (mandatory, between 04-plan and 05-generate).** After the planner emits its coverage proposal and BEFORE any case generation, run the human coverage gate: `runGate('04_coverage_approval', ctx)` (validator `governance/validation/coverage-approval.js`; CLI: `npm run coverage-gate check <dir>` — exit 1 until Allowed; propose via `npm run coverage-gate propose <plan.json>`). Mark the plan stage `awaiting_review` and **DO NOT advance to `testcase-generator`** until a human **Allows** (this is observeops "Human Gate #1 — Allow / Other", mandatory on every ticket). Approval binds to the proposal hash — a stale approval blocks. On **Other** (added scope), loop back to the `planner` to re-propose; never generate cases on an unapproved or stale proposal.
 
 ## run-manifest.json
 ```json
@@ -70,6 +71,7 @@ model: sonnet
 | Ingest (Jira) | `mt-jira-reader` | ticket id | `ticket.json` | no |
 | Ingest (Figma) | `mt-figma-reader` | file id + nodes | `figma.json` | no |
 | Synthesis | inline or large model | ticket+figma | `feature-spec.md` | no |
+| **Coverage approval** | human (planner proposes) | coverage-proposal | Allow / Other decision | **YES (human, every ticket)** |
 | Authoring | `mt-manual-test-author` | feature-spec | `manual-cases.yaml` | **YES (1st run)** |
 | **State** | `mt-sandbox-state` | manual case `data:` | `seed-report.json` | no |
 | Resolve | `mt-locator-resolver` | one manual case | `resolved-cases.yaml` | no |

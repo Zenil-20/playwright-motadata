@@ -4,57 +4,83 @@ module: Settings
 category: utility
 route: "/settings/utility/dns-resolver"
 build: 8.2.6
-status: generated
-sources: [catalog]            # knowledge/locators/catalog/settings_utility_dns_resolver.json (live Vue-router sweep 2026-07-02)
-verified: 2026-07-02
+status: draft
+sources: [catalog, kb]        # knowledge/locators/catalog/settings_utility_dns_resolver.json (live Vue-router sweep 2026-07-02) · customer-issue-kb
+verified: 2026-07-09
 ---
 
-# DNS Resolver · dns-resolver
+# Utility — DNS Resolver
 
-## Purpose
-TODO(source: Motadata KG/docs) — what this screen is for.
+## 1. Purpose
+An **ad-hoc DNS lookup tool**. The admin enters a hostname or IP and **Test** resolves it **from the
+collector**, returning the resolved IP (forward) or name (reverse).
 
-## Navigation
-Route: `/settings/utility/dns-resolver` (open the full URL; SPA routing must load the page).
+- **Business objective:** confirm the collector resolves a device's name correctly — stale or wrong
+  DNS is a documented cause of "UI never loads / wrong IP / data missing" (customer-issue-kb §3).
+- **Screen description:** a single field (**IP Address/Host Name**) with **Test** and **Reset**;
+  the resolved value renders below.
+- **Primary use cases:** verify a hostname resolves before adding a monitor by name; detect stale DNS
+  after an IP change; confirm reverse-DNS (PTR) for a device IP.
+- **Who uses it:** administrators / support engineers.
+- **Dependencies:** authenticated Settings session · a collector with working DNS configuration.
 
-## Actions
-TODO(source: KG/docs) — the actions available here. Derive from the buttons/controls below.
+## 2. Navigation
+```
+Settings → Utility → DNS Resolver
+```
+- **Breadcrumb:** Settings › Utility › DNS Resolver
+- **URL:** `/settings/utility/dns-resolver`
 
-## Components
-**Form fields (labels)**
-- IP Address/Host Name
+## 3. Actions
+- Enter **IP Address/Host Name**.
+- **Test** — resolve (`#utility-dns-resolver-test-btn`).
+- **Reset** — clear the field (`#utility-dns-resolver-reset-btn`).
 
-**Inputs**
-- `?` — _Search_ (text)
-- `?` — _172.31.11.52_ (text)
+## 4. Components
+| Component | Control (from catalog) |
+|---|---|
+| IP Address/Host Name * | text input · placeholder `172.31.11.52` |
+| **Reset** | `#utility-dns-resolver-reset-btn` |
+| **Test** | `#utility-dns-resolver-test-btn` |
 
-**Buttons**
-- Reset
-- Test
+> No selects/switches/radios/grid (catalog: all zero). The result block wasn't captured — TODO(source:
+> KG/docs) confirm whether it shows a single resolved value or a record list, and forward vs reverse.
 
-**Button ids**
-- `#utility-dns-resolver-reset-btn`
-- `#utility-dns-resolver-test-btn`
+_Locators: `knowledge/locators/catalog/settings_utility_dns_resolver.json` — promote verified ones to the cookbook._
 
-_Locators: see `knowledge/locators/catalog/settings_utility_dns_resolver.json` (raw sweep) — promote verified ones into the cookbook._
+## 5. Permissions
+- Settings-level, administrator-oriented. Expect **Admin** (possibly privileged Operator); **Viewer**
+  likely cannot. TODO(source: KG/docs) — exact RBAC.
 
-## Permissions
-TODO(source: docs) — roles that can view/act.
+## 6. Entry Conditions
+- Logged in with access to Settings → Utility.
+- A collector/poller with DNS reachable.
 
-## Entry Conditions
-Logged in. TODO(source: docs) — any feature flag / seeded data.
+## 7. Exit Conditions
+- **On Test (resolves):** the resolved IP (or name) renders.
+- **On Test (no record):** "not resolved / NXDOMAIN"-style message.
+- **On Reset:** field clears; no server call. Stateless — nothing persisted.
 
-## Exit Conditions
-TODO(source: docs).
+## 8. Validations
+- **IP Address/Host Name** — required before Test; accepts a hostname (forward) or an IP (reverse).
+- TODO(source: docs) — exact input format handling and error copy.
 
-## Validations
-TODO(source: docs) — field validations + inline errors.
+## 9. Business Rules
+- **Resolution uses the collector's DNS configuration**, so results reflect the collector's resolver,
+  not the browser's — the whole point when diagnosing stale/split DNS.
+- **Stateless & ad-hoc** — nothing is saved.
+- TODO(source: KG) — whether both forward (name→IP) and reverse (IP→name) are supported, and which
+  resolver/servers are used.
 
-## Business Rules
-TODO(source: Motadata KG) — uniqueness, defaults, dependencies, limits.
+## 10. Known Bugs
+**None recorded for this screen** in `customer-issue-kb.md` for build 8.2.6.
+> Context (not a defect here): "stale DNS / browser cache after public-IP change → UI never loads"
+> (PQD-30253, customer-issue-kb §3) and hostname/IP-resolution confusion (§3, PQD-27130) are what this
+> tool helps confirm from the collector side. Do not invent bugs.
 
-## Known Bugs
-See `knowledge/known_issues/customer-issue-kb.md` for related customer issues, if any.
-
-## Edge Cases
-TODO — boundary / negative / timing cases.
+## 11. Edge Cases
+- Name with no A record (NXDOMAIN); IP with no PTR record.
+- Multiple A records (round-robin) — which/how many returned?
+- Split-horizon / stale DNS (collector resolves differently than expected).
+- Trailing dot / FQDN vs short name; IPv6 (AAAA) lookup.
+- Empty required field; rapid re-run.

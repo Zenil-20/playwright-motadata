@@ -26,7 +26,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -177,7 +177,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For ServiceNow Integration',
 
   test("Navigate to Integration Profile and create a new Profile for ServiceNow Integration", async () => {
     test.skip(alreadyLoggedOut, 'ServiceNow integration already configured; skipping Integration Profile creation.');
-    test.setTimeout(300000);
+    test.setTimeout(90000);
     await page.locator("//input[@placeholder='Search']").first().fill('Integration Profile');
     await page.getByRole('link', { name: 'Integration Profile' }).click();
     await page.getByRole('button', { name: 'Create Integration Profile' }).click();

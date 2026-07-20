@@ -26,7 +26,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill('admin');
     await page.locator("//input[@placeholder='Password']").fill('admin');
     await page.locator("//button[@type='submit']").click();
@@ -68,7 +68,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For RabbitMQ', () => {
     await page.locator("//input[@name='discovery-search']").fill(process.env.Rabbitmq_linux_ip);
     await page.waitForTimeout(1000);
     await page.locator('[data-cy="rerun"]').click();
-    await expect(page.getByRole('gridcell', { name: process.env.Rabbitmq_linux_ip })).toBeVisible({ timeout: 100000 });
+    await expect(page.getByRole('gridcell', { name: process.env.Rabbitmq_linux_ip })).toBeVisible({ timeout: 90000 });
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
     await expect(page.getByText('provisioned successfully')).toBeVisible();
@@ -81,7 +81,7 @@ await page.getByRole('link', { name: 'Rediscover Settings' }).click();
 await page.locator("//input[@name='search']").fill('weekly');
 await page.waitForTimeout(1000);
 await page.locator('#start-rediscovery').click();
-  await page.locator('input[name="search"]').nth(1).fill('rabbitmq', { timeout: 128000 });
+  await page.locator('input[name="search"]').nth(1).fill('rabbitmq', { timeout: 90000 });
   const row = page.locator(".rediscover-row")
     .filter({ hasText: "RabbitMQ" })
     .filter({ hasText: "172.16.8.196" });
@@ -108,8 +108,8 @@ await page.locator('#start-rediscovery').click();
   await page.locator("//input[@placeholder='Search']").first().fill('device monitor settings');
   await page.getByRole('link', { name: 'Device Monitor Settings' }).click();
   await page.waitForTimeout(1000);
-  await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.196', { timeout: 128000 } );
-  await expect(page.getByText('RabbitMQ')).toBeVisible({ timeout: 120000 });
+  await page.locator("//input[@placeholder='Search']").nth(1).fill('172.16.8.196', { timeout: 90000 } );
+  await expect(page.getByText('RabbitMQ')).toBeVisible({ timeout: 90000 });
   await page.waitForTimeout(1000);
   await page.locator('svg[data-icon="ellipsis-v"]').click();
   await page.locator("#metric-collection-time").click();

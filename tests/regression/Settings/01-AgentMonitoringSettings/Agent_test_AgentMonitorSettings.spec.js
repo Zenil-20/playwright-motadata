@@ -265,7 +265,7 @@ test.describe.serial(
     test.beforeAll(async ({ browser }) => {
       const context = await browser.newContext();
       page = await context.newPage();
-      page.setDefaultTimeout(500000);
+      page.setDefaultTimeout(90000);
     });
 
     test.afterAll(async () => {
@@ -275,7 +275,7 @@ test.describe.serial(
     });
 
     test('Login to Motadata AIOps', async () => {
-      await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+      await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
 
       await page.locator("//input[@placeholder='Username']").fill('admin');
       await page.locator("//input[@placeholder='Password']").fill('admin');
@@ -304,7 +304,7 @@ test.describe.serial(
 
         const row = page.locator('tr', { hasText: '172.16.8.61' });
 
-        await row.waitFor({ state: 'visible', timeout: 120000 });
+        await row.waitFor({ state: 'visible', timeout: 90000 });
 
         // Add Tags
         await row.locator('svg[data-icon="ellipsis-v"]').click();
@@ -402,7 +402,7 @@ test.describe.serial(
             .locator('.ant-notification-notice')
             .filter({ hasText: 'restarted successfully' })
             .first()
-        ).toBeVisible({ timeout: 300000 });
+        ).toBeVisible({ timeout: 90000 });
 
         if (fs.existsSync(downloadPath)) {
           fs.unlinkSync(downloadPath);

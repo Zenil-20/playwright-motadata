@@ -1,68 +1,78 @@
 ---
-screen: Settings
+screen: APM Settings (section landing)
 module: Settings
 category: apm-settings
 route: "/settings/apm-settings/"
 build: 8.2.6
-status: generated
-sources: [catalog]            # knowledge/locators/catalog/settings_apm_settings.json (live Vue-router sweep 2026-07-02)
-verified: 2026-07-02
+status: draft
+sources: [catalog, screenshot, kb]   # settings_apm_settings.json · "APM.png" (consumer APM dashboard, related) · customer-issue-kb §12
+verified: 2026-07-10
 ---
 
-# Settings
+# APM Settings — Section Landing
 
-## Purpose
-TODO(source: Motadata KG/docs) — what this screen is for.
+## 1. Purpose
+The **landing route for APM Settings**. It hosts the configuration that feeds the APM (Application
+Performance Monitoring) module — primarily **Application Registration**, where instrumented services are
+registered so their distributed traces are attributed and shown in APM.
 
-## Navigation
-Route: `/settings/apm-settings/` (open the full URL; SPA routing must load the page).
+- **Business objective:** single entry point for APM configuration.
+- **Screen description:** the section root resolves to its default child. The captured catalog for
+  `/settings/apm-settings/` is **identical to Application Registration** (same
+  `#create-application-registration-btn-id`, `search-application-registration`, and the Services Name /
+  Type / IP / Language / Status / Service Attributes / Last Received Trace / Actions columns), so the
+  landing appears to render the Application Registration grid. TODO(source: KG/live) — confirm the
+  default child and whether other APM-settings sub-screens exist.
+- **Primary use cases:** reach Application Registration; manage APM onboarding.
+- **Who uses it:** APM/observability admins.
+- **Dependencies:** APM/tracing module + license.
 
-## Actions
-TODO(source: KG/docs) — the actions available here. Derive from the buttons/controls below.
+## 2. Navigation
+```
+Settings → APM Settings
+```
+- **URL:** `/settings/apm-settings/`
+- **Child:** Application Registration (`…/application-registration`)
+- **Consumer module:** the top-level **APM** dashboard (`APM.png`).
 
-## Components
-**Inputs**
-- `?` — _Search_ (text)
-- `search-application-registration` — _Search_ (text)
+## 3. Actions
+As captured (Application Registration view): **Application Registration**
+(`#create-application-registration-btn-id`), **Search**, row actions (`[data-cy='grid-action']`).
 
-**Grid columns**
-- Services Name
-- Type
-- IP
-- Language
-- Status
-- Service Attributes
-- Last Received Trace
-- Actions
+## 4. Components
+Captured content mirrors **Application Registration**:
+| Component | Control |
+|---|---|
+| Search | `input[name='search-application-registration']` |
+| Application Registration | `#create-application-registration-btn-id` |
+| Row action menu | `[data-cy='grid-action']` |
 
-**Buttons**
-- Application Registration
+**Grid columns:** Services Name · Type · IP · Language · Status · Service Attributes · Last Received
+Trace · Actions
 
-**Button ids**
-- `#create-application-registration-btn-id`
+> Authoritative documentation for these controls lives in `application-registration.md`.
 
-**data-cy hooks**
-- `[data-cy='grid-action']`
+_Locators: see `application-registration.md`._
 
-_Locators: see `knowledge/locators/catalog/settings_apm_settings.json` (raw sweep) — promote verified ones into the cookbook._
+## 5. Permissions
+- APM administration — admin-level. TODO(source: KG/docs) — exact RBAC.
 
-## Permissions
-TODO(source: docs) — roles that can view/act.
+## 6. Entry Conditions
+- Logged in; APM module enabled; Settings reachable.
 
-## Entry Conditions
-Logged in. TODO(source: docs) — any feature flag / seeded data.
+## 7. Exit Conditions
+- Lands on the default APM-Settings child (Application Registration per the capture; TODO confirm).
 
-## Exit Conditions
-TODO(source: docs).
+## 8. Validations
+- None at landing level (see the child form).
 
-## Validations
-TODO(source: docs) — field validations + inline errors.
+## 9. Business Rules
+- APM Settings centralizes service registration for tracing. TODO(source: KG) — confirm full child set.
 
-## Business Rules
-TODO(source: Motadata KG) — uniqueness, defaults, dependencies, limits.
+## 10. Known Bugs
+No landing-specific defects recorded. See `application-registration.md` §10 and
+`knowledge/known_issues/customer-issue-kb.md` §12 (APM licensing-count confusion, PQD-36926).
 
-## Known Bugs
-See `knowledge/known_issues/customer-issue-kb.md` for related customer issues, if any.
-
-## Edge Cases
-TODO — boundary / negative / timing cases.
+## 11. Edge Cases
+- Direct-navigating to `/settings/apm-settings/` — confirm it resolves to a valid child, not a blank page.
+- Deep-link vs. SPA routing.

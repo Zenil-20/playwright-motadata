@@ -11,8 +11,11 @@ model: sonnet
 
 **Pipeline:** stage `05-generate` · **Upstream:** `planner` (+ context-builder) · **Downstream:** `automation-generator` · **Exit gate:** `05_testcases` (coverage · business-rules · dedup · assertions)
 
+## Hard precondition — coverage gate must be Allowed
+**Do NOT author any cases until the `04_coverage_approval` human gate has passed (Allow).** The planner's coverage proposal must be human-Allowed between stage 04-plan and 05-generate (`npm run coverage-gate check <dir>` returns exit 0; validator `governance/validation/coverage-approval.js`). If the gate is pending, `Other`, or bound to a stale proposal hash, **refuse and stop** — surface that the coverage gate is not Allowed. No manual cases are generated on an unapproved proposal.
+
 ## When to use / not use
-- **Use when:** the plan (stage 04) and module context exist and you need the actual manual cases before any automation.
+- **Use when:** the plan (stage 04) and module context exist, **the coverage gate is Allowed,** and you need the actual manual cases before any automation.
 - **Do NOT use for:** building the coverage plan (`planner`), resolving locators (`locator-resolver`), or writing `.spec.js` (`automation-generator`). I emit `manual-cases`, not code.
 
 ## Inputs
@@ -83,6 +86,7 @@ For create-flows, always include a precondition or first step that handles "reso
 - Fail loud on a thin spec (`open_questions:` not invention); quarantine-not-mask; respect the `05_testcases` gate (coverage · business-rules · dedup · assertions); stay in the one job.
 
 ## Failure conditions (STOP)
+- The `04_coverage_approval` gate is not Allowed (pending / Other / stale hash) → refuse to author; surface the un-Allowed coverage gate.
 - A case maps to no AC, or an AC has no case → remove/report; do not pad coverage.
 - Spec is `thin` → emit `open_questions:` and stop authoring the ungrounded part.
 - A required screen key is missing → set `needs_harvest: true`; never invent a fake key.

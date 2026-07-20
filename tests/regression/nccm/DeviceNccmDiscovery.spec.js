@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -44,11 +44,13 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
-    await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
-    await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
-    await page.locator("//button[@type='submit']").click();
-    await expect(page.locator("//img[@alt='Avatar']")).toBeVisible();
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
+    // [harvest 2026-07-15] login uses name='username'/'password' (placeholder 'Enter Username');
+    // 'Username' placeholder is the FORGOT-PASSWORD page. Post-login marker = .ant-avatar.
+    await page.locator("input[name='username']").fill(process.env.Motadata_Username);
+    await page.locator("input[name='password']").fill(process.env.Motadata_Password);
+    await page.getByRole('button', { name: /sign in|log ?in/i }).click();
+    await expect(page.locator('.ant-avatar').first()).toBeVisible({ timeout: 90000 });
   });
 
   test('Navigate to Discovery Profile', async () => {
@@ -81,14 +83,14 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
 
     // Wait for the discovered device to appear in the results table.
     await expect(page.getByText(NCCM_DEVICE_IP, { exact: true }).first())
-      .toBeVisible({ timeout: 480000 });
+      .toBeVisible({ timeout: 90000 });
 
     // Tick the discovered row and add it for monitoring.
     const discoveredRow = page.locator('tr.k-master-row', { hasText: NCCM_DEVICE_IP }).first();
     await discoveredRow.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
 
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 90000 });
     await page.locator('svg[data-icon="times"]').click();
   });
 
@@ -146,7 +148,7 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
     // step 23 [Click] Click on Test
     await page.locator("//button[@id='run-test-btn']").click();
     // step 24 [Assert] assertion
-    await expect(page.locator("//i[@class='anticon mr-1 text-secondary-green']//*[name()='svg']")).toBeVisible({ timeout: 400000 });
+    await expect(page.locator("//i[@class='anticon mr-1 text-secondary-green']//*[name()='svg']")).toBeVisible({ timeout: 90000 });
     // step 25 [Click] Click on Close
     await page.locator("#close-btn-id").click();
     await page.getByRole('button', { name: 'Create Credentials Profile' }).click();
@@ -158,7 +160,7 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
 
   // Wait up to 4 minutes for it to appear
   await expect(successStatus).toContainText('Successful', {
-    timeout: 240000 // 4 minutes
+    timeout: 90000 // 4 minutes
   });
   }
 
@@ -217,7 +219,7 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
     await page.locator("//button[@id='test-btn']").click();
     await page.locator('input[name="hostname-ip"]').fill(NCCM_DEVICE_IP_2);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 480000 });
+    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 90000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
 
@@ -226,12 +228,12 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
 
     // Wait for the discovered device to appear and provision it.
     await expect(page.getByText(NCCM_DEVICE_IP_2, { exact: true }).first())
-      .toBeVisible({ timeout: 480000 });
+      .toBeVisible({ timeout: 90000 });
 
     const discoveredRow = page.locator('tr.k-master-row', { hasText: NCCM_DEVICE_IP_2 }).first();
     await discoveredRow.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 90000 });
     await page.locator('svg[data-icon="times"]').click();
   });
 
@@ -290,7 +292,7 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
     await page.locator("//button[@id='test-btn']").click();
     await page.locator('input[name="hostname-ip"]').fill(NCCM_DEVICE_IP_3);
     await page.locator("//button[@id='run-test-btn']").click();
-    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 480000 });
+    await expect(page.locator('#message')).toHaveText('Successful', { timeout: 90000 });
     await page.locator("//button[@id='close-btn-id']").click();
     await page.locator("//button[@id='create-credential-profile-btn-id']").click();
 
@@ -299,18 +301,18 @@ test.describe.serial('Motadata AIOps NCCM Device Discovery for 172.16.12.3', () 
 
     // Wait for the discovered device to appear and provision it.
     await expect(page.getByText(NCCM_DEVICE_IP_3, { exact: true }).first())
-      .toBeVisible({ timeout: 480000 });
+      .toBeVisible({ timeout: 90000 });
 
     const discoveredRow = page.locator('tr.k-master-row', { hasText: NCCM_DEVICE_IP_3 }).first();
     await discoveredRow.locator('input[type="checkbox"]').first().check();
     await page.locator("//button[@id='add-selected-btn-id']").click();
-    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 120000 });
+    await expect(page.getByText('provisioned successfully').first()).toBeVisible({ timeout: 90000 });
     await page.locator('svg[data-icon="times"]').click();
   });
 
   test('Logout from AIOps', async () => {
-    await page.locator("//img[@alt='Avatar']").click();
-    await page.getByText('Logout').click();
+    await page.locator('.ant-avatar').first().click();
+    await page.getByText('Logout', { exact: true }).click();
     await page.context().clearCookies();
     await page.context().clearPermissions();
   });

@@ -12,10 +12,12 @@
 /** Static selectors, grouped by screen (keys mirror the cookbook control names). */
 export const S = {
   login: {
-    username: "//input[@placeholder='Username']",
-    password: "//input[@placeholder='Password']",
+    // [harvest 2026-07-15] name-based inputs; placeholder 'Enter Username' is the alt.
+    // 'Username' placeholder = FORGOT-PASSWORD page. Marker = .ant-avatar, not img[alt=Avatar].
+    username: "input[name='username']",
+    password: "input[name='password']",
     submit: "//button[@type='submit']",
-    avatar: "//img[@alt='Avatar']",
+    avatar: '.ant-avatar',
     logout: 'Logout', // getByText
   },
   nav: {

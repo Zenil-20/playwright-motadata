@@ -15,7 +15,9 @@
     "gate": "node governance/validation/cli.mjs",
     "compile": "playwright test --list",
     "sync:claude": "node scripts/sync-claude.mjs",
-    "gen:screens": "node scripts/gen-screen-knowledge.mjs"
+    "gen:screens": "node scripts/gen-screen-knowledge.mjs",
+    "coverage-gate": "node scripts/coverage-gate.mjs",
+    "tfs:import": "node scripts/tfs-import.mjs"
   },
   "keywords": [],
   "author": "",

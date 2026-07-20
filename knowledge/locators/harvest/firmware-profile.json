@@ -1,0 +1,106 @@
+{
+ "target": "firmware-profile",
+ "labels": [
+  "Profile Name",
+  "Vendor",
+  "Description",
+  "Server URL/API",
+  "Customer ID",
+  "Credential Profile",
+  "Auto Sync"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "search",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Enter profile name"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select vendor",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "textarea",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Enter server URL/API"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Enter customer ID"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  }
+ ],
+ "buttons": [
+  "Create Firmware Profile",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers78",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯",
+  "Create Credential Profile",
+  "Reset",
+  "Test"
+ ],
+ "buttonIds": [
+  "create-credential-btn-id",
+  "test-btn",
+  "create-firmware-profile-btn"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "codeMirror": 0,
+ "tabs": [],
+ "gridHeaders": [
+  "PROFILE NAME",
+  "VENDOR",
+  "DESCRIPTION",
+  "ACTIONS"
+ ]
+}

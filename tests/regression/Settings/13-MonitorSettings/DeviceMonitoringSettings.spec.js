@@ -33,7 +33,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -43,7 +43,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -51,7 +51,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Bulk change interface speed for Aruba monitor', async () => {
-    test.setTimeout(180000);
+    test.setTimeout(90000);
 
     // Navigate to Device Monitor Settings
     await page.locator("//a[@href='/settings/']").click();
@@ -115,7 +115,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Verify updated speed in Metric Settings -> Network Interface', async () => {
-    test.setTimeout(120000);
+    test.setTimeout(90000);
 
     // Search "aruba" in the device monitor grid
     const gridSearch = page.locator("//input[@placeholder='Search']").last();
@@ -148,7 +148,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   test('Bulk assign tag to a monitor and verify on Device Monitor Settings', async () => {
     //For clearing the search filter and showing all the monitors in the grid for selecting the first row checkbox
     await page.reload();
-    test.setTimeout(120000);
+    test.setTimeout(90000);
 
     // Tick the first row checkbox in the grid
     await page.locator("//input[@type='checkbox']").first().click();
@@ -185,7 +185,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Disable the firewall monitor from grid action and verify status changes to Disable', async () => {
-    test.setTimeout(120000);
+    test.setTimeout(90000);
     await page.reload();
 
     // Scope to the one firewall monitor so only that device is disabled
@@ -201,7 +201,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Poll Now on disabled firewall monitor shows error, then re-enable it', async () => {
-    test.setTimeout(120000);
+    test.setTimeout(90000);
 
     // Target only the firewall monitor disabled in the previous test
     const monitorName = FIREWALL_MONITOR;
@@ -234,7 +234,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Put vCenter monitor in Maintenance, verify Poll Now is blocked, then turn it off', async () => {
-    test.setTimeout(180000);
+    test.setTimeout(90000);
     await page.reload();
 
     const MONITOR = '172.16.10.180';
@@ -281,7 +281,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Update the metric collection time for Aruba Wireless monitor and change the polling time between 60-90 seconds, then verify the changes are reflected in the Metric Settings drawer', async () => {
-    test.setTimeout(120000);
+    test.setTimeout(90000);
 
     // The previous test left us on the inventory page — go to Settings → Device Monitor
     // Settings and scope the grid to the Aruba Wireless monitor first.
@@ -334,7 +334,7 @@ test.describe.serial('Motadata AIOps Device Monitor Settings flow', () => {
   });
 
   test('Verify Metric Settings for 172.16.15.234 exposes Docker and Docker Container tabs', async () => {
-    test.setTimeout(120000);
+    test.setTimeout(90000);
 
     // Navigate to Device Monitor Settings
     await page.locator("//a[@href='/settings/']").click();

@@ -85,6 +85,9 @@ for (const f of files) {
   const name = base === 'overview' ? rawName : `${rawName} · ${base}`;
   const dir = path.join(OUT, module, subdir);
   fs.mkdirSync(dir, { recursive: true });
+  const outPath = path.join(dir, `${base}.md`);
+  // Never clobber a hand-curated screen: skip if the existing file is marked verified/draft.
+  if (fs.existsSync(outPath) && /^status:\s*(verified|draft)\b/m.test(fs.readFileSync(outPath, 'utf8'))) continue;
   const md = `---
 screen: ${name}
 module: ${module}${subdir ? `\ncategory: ${subdir}` : ''}
@@ -132,7 +135,7 @@ See \`knowledge/known_issues/customer-issue-kb.md\` for related customer issues,
 ## Edge Cases
 TODO — boundary / negative / timing cases.
 `;
-  fs.writeFileSync(path.join(dir, `${base}.md`), md);
+  fs.writeFileSync(outPath, md);
   perModule[module] = (perModule[module] || 0) + 1;
   n++;
 }

@@ -15,11 +15,11 @@ export const env = (name) => (name ? (process.env[name] || '') : '');
 
 /** Log in and confirm via the avatar (smart wait — no networkidle). */
 export async function login(page) {
-  await page.goto(process.env.Motadata_Aiops, { timeout: 120000 });
+  await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
   await page.locator(S.login.username).fill(process.env.Motadata_Username || 'admin');
   await page.locator(S.login.password).fill(process.env.Motadata_Password || 'admin');
   await page.locator(S.login.submit).click();
-  await expect(page.locator(S.login.avatar)).toBeVisible({ timeout: 120000 });
+  await expect(page.locator(S.login.avatar)).toBeVisible({ timeout: 90000 });
 }
 
 /** Log out and clear session. */
@@ -106,11 +106,11 @@ async function testCredential(page, row, kind) {
 export async function saveRunAndProvision(page, row) {
   const ip = env(row.ip_env);
   await page.locator(S.profile.save_run_btn).click();
-  await expect(page.getByText(ip, { exact: true }).first()).toBeVisible({ timeout: 480000 });
+  await expect(page.getByText(ip, { exact: true }).first()).toBeVisible({ timeout: 90000 });
 
   await discoveredRowCheckbox(page, ip).check();
   await page.locator(S.profile.add_selected_btn).click();
-  await expect(page.getByText(S.profile.success_toast).first()).toBeVisible({ timeout: 120000 });
+  await expect(page.getByText(S.profile.success_toast).first()).toBeVisible({ timeout: 90000 });
   await page.locator(S.profile.close_results_x).first().click();
 }
 

@@ -27,7 +27,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -37,7 +37,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.getByRole('textbox', { name: 'Username' }).fill('admin');
     await page.getByRole('textbox', { name: 'Password' }).fill('admin');
     await page.getByRole('button', { name: 'Login' }).click();
@@ -100,7 +100,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Proxmox Discovery', () =
     await page.locator("input[placeholder='Search']").first().fill("device monitor settings", { timeout: 60000 });
     page.getByRole('link', { name: 'Device Monitor Settings' }).click();
     await page.waitForTimeout(1000);
-    await page.locator("//input[@placeholder='Search']").nth(1).fill('proxmox', { timeout: 128000 } );
+    await page.locator("//input[@placeholder='Search']").nth(1).fill('proxmox', { timeout: 90000 } );
     await expect(page.locator('img[alt="Proxmox VE"]')).toBeVisible();
     await expect(page.getByRole('gridcell', { name: '172.16.12.117' }).first()).toBeVisible();
     await expect(page.locator('[title="Virtualization > Proxmox VE"]')).toBeVisible();

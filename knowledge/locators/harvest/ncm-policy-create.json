@@ -1,0 +1,106 @@
+{
+ "target": "ncm-policy-create",
+ "labels": [
+  "Policy Name",
+  "Tag",
+  "Evaluate on",
+  "Conflict detection for",
+  "Source Filter",
+  "Source",
+  "Severity",
+  "Critical",
+  "Major",
+  "Warning"
+ ],
+ "inputs": [
+  {
+   "name": "policy-name",
+   "id": "policy-name",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": " ",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "radio",
+   "ph": ""
+  }
+ ],
+ "buttons": [
+  "Create Policy",
+  "Reset",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers110",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯"
+ ],
+ "buttonIds": [],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "selects": 1,
+ "switches": 0,
+ "radios": 3,
+ "checkboxes": 0,
+ "codeMirror": 0,
+ "tabs": [],
+ "gridHeaders": []
+}

@@ -11,11 +11,11 @@ Build: 8.2.4 · Legend: ✅ harvested · 🟡 partial · ⬜ not yet harvested
 | 0 | **Global / cross-screen** | ✅ | login, logout, settings-nav, confirm, grid search, column eye |
 | 1 | Dashboards | 🟡 | Add Widget — Chart config (metric-description popover) [MOTADATA-8898] |
 | 2 | Monitors (Inventory) | ⬜ | — |
-| 3 | Alerts | ⬜ | — |
+| 3 | Alerts | 🟡 | Network Config category tab, alert-by-name link, row severity (2026-07-15) |
 | 4 | SLO | ⬜ | — |
-| 5 | Reports | ⬜ | — |
+| 5 | Reports | 🟡 | NCCM report search + exact-name link + Export-as-PDF (2026-07-15) |
 | 6 | Topology | ⬜ | — |
-| 7 | **NCCM** | ✅ | Explorer, Conflict drawer, Compare modal |
+| 7 | **NCCM** | ✅ | Explorer, Conflict drawer, Compare modal, Tag Inventory (filter) |
 | 8 | NetRoute | ⬜ | — |
 | 9 | Metric Explorer | ⬜ | — |
 | 10 | Log Explorer | ⬜ | — |
@@ -24,7 +24,7 @@ Build: 8.2.4 · Legend: ✅ harvested · 🟡 partial · ⬜ not yet harvested
 | 13 | Flow Explorer | ⬜ | — |
 | 14 | Trap Explorer | ⬜ | — |
 | 15 | Audits | ⬜ | — |
-| 16 | **Settings** | 🟡 | Discovery Profile, Create-Credential drawer, Runbook, Create Policy (unified) |
+| 16 | **Settings** | ✅ | Discovery Profile, Create-Credential drawer, Runbook (+create/CodeMirror), Create Policy, Storage Profile, Firmware Profile, Device Template (2026-07-13), RBAC Role+permission tree & User pickers (chrome-harvest 2026-07-15) |
 
 > When you harvest a new screen, add its row's screens + flip the status, then append the screen block under that module's `#` heading below. Keep modules in sidebar order.
 
@@ -33,14 +33,15 @@ Build: 8.2.4 · Legend: ✅ harvested · 🟡 partial · ⬜ not yet harvested
 # 0. Global / cross-screen
 
 ```yaml
-login:
-  username:   "//input[@placeholder='Username']"
-  password:   "//input[@placeholder='Password']"
-  submit:     "//button[@type='submit']"
-  logged_in_marker: "//img[@alt='Avatar']"          # smart wait; never networkidle
+login:                                                # [chrome-harvest 2026-07-15] — corrected
+  username:   "input[name='username']"                # placeholder 'Enter Username'
+  password:   "input[name='password']"
+  submit:     "button[type=submit] 'Sign in'"         # getByRole('button',{name:/sign in/i})
+  success:    "left /login route"                     # img[alt=Avatar] does NOT exist this build
 logout:
-  avatar:     "//img[@alt='Avatar']"
-  menu_item:  "page.getByText('Logout')"
+  avatar:     ".ant-avatar"                           # initials circle 'MA' (NOT img[alt=Avatar])
+  confirm:    "a[href='/settings/my-account/my-profile']"
+  menu_item:  "page.getByText('Logout', {exact:true})"
 settings_nav:                                         # the #phone-number focus is REQUIRED
   settings_link: "//a[@href='/settings/']"
   search_focus:  "//input[@id='phone-number']"
@@ -398,3 +399,351 @@ Rules:
 - Conditional controls (discovered row, Conflict/Sync/Backup badges) MUST set `conditional: true` + `trigger`, verified against the seeded state — never an empty screen.
 - Positional/index XPath (`//div[13]//span[1]`) is BANNED. Re-scope to role/label/data-cy/row first.
 - Prefer storing `locator` + `fallback` so a single locator rot is self-healable.
+
+---
+
+## NCCM / Settings — live harvest 2026-07-13 (172.16.15.156)
+
+Captured by `scripts/harvest-locators.mjs` (read-only DOM dump → `knowledge/locators/harvest/*.json`). All `count()===1` id/name/data-cy read from the rendered drawer/form. Folded into `framework/playwright/pages/nccm/locators.js` (provenance `[harvest]`).
+
+### Runbook — Create form (Settings > Runbook > Create Runbook)
+```yaml
+- key: runbook.name
+    locator: "input[name='runbook-name']"
+    confidence: high
+- key: runbook.description
+    locator: "input[name='runbook-description']"
+    confidence: high
+- key: runbook.port
+    locator: "input[name='port']"
+    confidence: high
+- key: runbook.timeout
+    locator: "input[name='timeout']"
+    confidence: high
+- key: runbook.scriptEditor
+    locator: ".CodeMirror"                 # SSH Script — set via cm.CodeMirror.setValue()
+    confidence: high
+    conditional: false
+- key: runbook.createCredentialPlus
+    locator: "#create-credential-btn-id"
+    confidence: high
+# verified 2026-07-13  (labels: Runbook Category, Monitor, Group, Credential Profile, GO)
+```
+
+### Storage Profile — Create drawer (Settings > Storage Profile)
+```yaml
+- key: storageProfile.name
+    locator: "#storage-profile-name"
+    confidence: high
+- key: storageProfile.ipHost
+    locator: "#ip-host"
+    confidence: high
+- key: storageProfile.port
+    locator: "#port-id"
+    confidence: high
+- key: storageProfile.userName          # conditional: SCP/FTP only (not TFTP)
+    locator: "#user-name"
+    confidence: high
+    conditional: true
+    trigger: "protocol = SCP or FTP"
+- key: storageProfile.password
+    locator: "#password"
+    confidence: high
+    conditional: true
+    trigger: "protocol = SCP or FTP"
+- key: storageProfile.path
+    locator: "#path"
+    confidence: high
+    conditional: true
+    trigger: "protocol = SCP or FTP"
+- key: storageProfile.createBtn / testBtn / resetBtn / externalStorageBtn
+    locator: "#create-storage-btn | #test-btn | #reset-btn | #external-storage-btn"
+    confidence: high
+# verified 2026-07-13
+```
+
+### Firmware Profile — Create (Settings > Firmware > Create Firmware Profile)
+```yaml
+- key: firmwareProfile.createBtn
+    locator: "#create-firmware-profile-btn"
+    confidence: high
+- key: firmwareProfile.testBtn
+    locator: "#test-btn"
+    confidence: high
+- key: firmwareProfile.credentialPicker
+    locator: "[data-cy='dropdown-trigger-input']"
+    confidence: medium                    # label-scope Vendor/Server URL/Customer ID (see locators.js)
+# verified 2026-07-13  (labels: Profile Name, Vendor, Server URL/API, Customer ID, Credential Profile, Auto Sync)
+```
+
+### Device Template — Create form (Settings > Device Template)
+```yaml
+- key: deviceTemplate.addOperationBtn
+    locator: "getByRole button 'Add Operation'"
+    confidence: high
+- key: deviceTemplate.removeMetricGroupBtn
+    locator: "#remove-metric-group"
+    confidence: high
+# verified 2026-07-13  (labels: Device Template Name, Vendor, OS Type, Command, Timeout (ms), Prompt)
+```
+
+### NCM Policy / Approval — confirmed openers
+```yaml
+- key: policy.nameInput
+    locator: "#policy-name"
+    confidence: high
+- key: approval.rowActionMenu
+    locator: "a[data-cy='grid-action']"    # Approve/Reject items need a PENDING request row
+    confidence: medium
+    conditional: true
+    trigger: "row has a pending change request"
+# verified 2026-07-13
+```
+
+---
+
+## RBAC / Tags — Claude-in-Chrome harvest 2026-07-15 (172.16.15.156)
+
+Verified count()===1 via the browser extension. **Gotcha:** several Ant wrappers reuse
+the same `id` on the wrapper div AND the inner input → a bare `#id` matches 2–3 elements.
+Scope by tag: `input#role-name`, `div#groups`, `span#role-picker`.
+
+### RBAC — Role create (Settings > Role > Create Role)
+```yaml
+- key: rbac.roleName
+    locator: "input#role-name"          # NOT #role-name (matches wrapper+input)
+    confidence: high
+- key: rbac.roleDescription
+    locator: "input[name='role-description']"
+    confidence: high
+- key: rbac.permCheckbox(module,col)    # collapse-header per module; cols 1=All 2=Read 3=R&W 4=Delete
+    locator: "//div[contains(@class,'ant-collapse-header')][.//div[contains(@class,'fixed-size')][normalize-space(text())='NCCM']]//div[contains(@class,'fixed-size')][3]//input[@type='checkbox']"
+    confidence: high                     # example: NCCM Read&Write (col index 3)
+# verified 2026-07-15
+```
+
+### RBAC — User create pickers (Settings > User > Create User)
+```yaml
+- key: rbac.groupsTrigger
+    locator: "div#groups"
+    confidence: high
+- key: rbac.groupsPopover               # checkbox-tree overlay, own Search + Select All
+    locator: ".ant-popover.picker-overlay.open"
+    confidence: high
+    conditional: true
+    trigger: "Groups trigger clicked"
+- key: rbac.roleTrigger
+    locator: "span#role-picker"
+    confidence: high
+- key: rbac.rolePopover                  # SIMPLE single-select list (.ant-popover-content), NOT picker-overlay
+    locator: ".ant-popover-content"
+    confidence: high
+    conditional: true
+    trigger: "Role trigger clicked"
+# NOTE: Password / Confirm Password field locators NOT yet harvested → user submit blocked.
+# verified 2026-07-15
+```
+
+### Tags — Tag Inventory (NCCM Explorer toolbar)  — READ-ONLY filter, NOT a creator
+```yaml
+- key: tags.tagInventoryBtn
+    locator: "#btn-tag-inventory"
+    confidence: high
+- key: tags.tagPopover
+    locator: ".ant-popover.picker-overlay"
+    confidence: high
+    conditional: true
+    trigger: "#btn-tag-inventory clicked"
+- key: tags.tagChipCheckboxByName(name)  # selecting filters grid immediately (no Apply)
+    locator: "//div[contains(@class,'ant-popover') and contains(@class,'picker-overlay')]//div[contains(@class,'item-view')][normalize-space(.)='dynamic']//input[@type='checkbox']"
+    confidence: high
+    conditional: true
+# Tag CREATION is not on this control — tags are created at DISCOVERY time. verified 2026-07-15
+```
+
+### Approval — /ncm-approval  (grid EMPTY at harvest — cannot verify row actions)
+```yaml
+- key: approval.filterDropdown
+    locator: "#filter-btn"
+    confidence: high
+- key: approval.rowActionMenu / Approve / Reject
+    locator: "a[data-cy='grid-action']"  # + //span[normalize-space()='Approve'|'Reject']
+    confidence: low
+    conditional: true
+    trigger: "a row with a PENDING change request must exist (none at harvest time)"
+# verified 2026-07-15 (opener spec only; unverified against a live row)
+```
+
+---
+
+## NCCM / Settings — Claude-in-Chrome harvest #2, 2026-07-15 (Tier A + B)
+
+Second extension pass. Several important CORRECTIONS to earlier assumptions.
+
+### User create — Password (Settings > User > Create User)
+```yaml
+- key: rbac.authTypeTrigger              # label-scoped (6 dropdown-triggers in this drawer)
+    locator: "//div[contains(@class,'ant-form-item') and .//label[contains(.,'Authentication Type')]]//input[@data-cy='dropdown-trigger-input']"
+    confidence: high
+- key: rbac.authTypeLocalOption
+    locator: "div#System"                # 'Local Authentication'
+    confidence: high
+    conditional: true
+    trigger: "auth-type dropdown open"
+- key: rbac.password / rbac.confirmPassword
+    locator: "input[name='password'] | input[name='confirm-password']"
+    confidence: high
+    conditional: true
+    trigger: "Authentication Type = Local"
+```
+
+### Runbook grid — NO DELETE ACTION (correction)
+```yaml
+# This build's runbook grid-action (⋮) menu = Assign Monitor, Remove Assigned Monitor,
+# Clone Runbook, Schedule Runbook.  There is NO Delete or Edit. Runbooks can't be UI-deleted.
+- key: runbook.actionAssignMonitorItem
+    locator: "//div[contains(@class,'ant-popover') and not(contains(@class,'ant-popover-hidden'))]//li[contains(@class,'ant-dropdown-menu-item') and contains(.,'Assign Monitor')]"
+    confidence: high
+```
+
+### Reports (left nav Reports > NCCM)
+```yaml
+- key: reports.search
+    locator: ".ant-col-10 input[name='search']"   # narrow category search also uses name=search
+    confidence: high
+- key: reports.reportByNameText(name)             # EXACT text (substring collides with row titles)
+    locator: "//a[normalize-space(.)='NCM Device Inventory']"
+    confidence: high
+- key: reports.exportPdfBtn
+    locator: "button[title='Export As PDF']"
+    confidence: high
+```
+
+### Alerts (left nav Alerts > Network Config tab)
+```yaml
+- key: alerts.networkConfigTab
+    locator: "//div[contains(@class,'ant-tabs-tab')][contains(.,'Network Config')]"
+    confidence: high
+- key: alerts.alertByNameText(name)               # exact text; names are policy-defined
+    locator: "//a[normalize-space(.)='<alert name>']"
+    confidence: high
+    conditional: true
+    trigger: "date range >= Last Week"
+- key: alerts.rowSeverityCritical                 # scope to the alert's row (summary badge also matches)
+    locator: "div.severity-dot.critical"
+    confidence: medium
+```
+
+### Explorer row-action menu — full item set + bulk toolbar
+```yaml
+# Menu items: Backup Now, Compare, Download Backup, Set as Baseline / Remove Baseline,
+#             SSH Terminal, View, Sync, Restore, Execute Runbook, Get Hardware Details, Firmware Upgrade
+- key: explorer.bulkBackupBtn                     # appears when 2+ row checkboxes ticked
+    locator: "#bulk-action-bulk_backup"
+    confidence: high
+    conditional: true
+    trigger: "2+ Explorer rows selected"
+- key: explorer.actionRemoveBaseline / actionSshTerminal / actionExecuteRunbook / actionDownloadBackup
+    locator: "//div[contains(@class,'ant-popover') and not(contains(@class,'ant-popover-hidden'))]//li[contains(@class,'ant-dropdown-menu-item') and contains(.,'<Item>')]"
+    confidence: high
+    conditional: true
+    trigger: "row grid-action (⋮) open"
+```
+
+### Restore modal (Explorer row > Restore) — no .ant-modal-footer in this build
+```yaml
+- key: restore.versionSelect
+    locator: "//div[contains(@class,'ant-modal')]//div[contains(@class,'ant-form-item') and .//label[contains(.,'Version')]]//input[@data-cy='dropdown-trigger-input']"
+    confidence: high
+- key: restore.runningRadio / startupRadio
+    locator: "input[value='running.config'] | input[value='startup.config']"
+    confidence: high
+- key: restore.restoreConfirmBtn                  # scope by exact text (global primary btn = 14)
+    locator: "//div[contains(@class,'ant-modal')]//button[normalize-space(.)='Restore']"
+    confidence: high
+```
+
+### SSH Terminal — open via ROW ACTION, not the drawer header button
+```yaml
+- key: sshTerminal.openViaRowAction              # explorer.actionSshTerminal — RELIABLE
+    note: "device-detail drawer header button[title='Terminal'] only closed the drawer — do not use"
+- key: sshTerminal.terminalInput
+    locator: "textarea.xterm-helper-textarea"
+    confidence: high
+    conditional: true
+    trigger: "SSH Terminal panel open"
+```
+
+### Approval — CORRECTED: device-detail drawer > Approval TAB (not a route, not a menu item)
+```yaml
+- key: approval.detailApprovalTab
+    locator: "//div[contains(@class,'ant-drawer-open')]//div[contains(@class,'ant-tabs-tab')][contains(.,'Approval')]"
+    confidence: high
+    conditional: true
+    trigger: "device-name link clicked (detail drawer open)"
+- key: approval.grid
+    locator: ".ant-drawer-open .k-grid"
+    confidence: high
+# Approve/Reject: still need a PENDING request row (none in env). verified 2026-07-15
+```
+
+---
+
+## NCM Device Template editor — Claude-in-Chrome harvest, 2026-07-15 (LAST gap)
+
+Clone flow: Settings > Device Template > row action > Clone. Apply flow: Settings >
+Network Config > Device Inventory > row action > Update Template > Re-run Discovery.
+
+```yaml
+- key: deviceTemplate.nameInput
+    locator: "//div[contains(@class,'ant-form-item') and .//label[contains(.,'Device Template Name')]]//input"
+    confidence: high
+- key: deviceTemplate.vendorTrigger + vendorOptionCisco
+    locator: "…label 'Vendor'…input[@data-cy='dropdown-trigger-input']  →  div#Cisco-Systems"
+    confidence: high      # readonly trigger; type 'Cisco Systems' in popup search first
+- key: deviceTemplate.osTypeInput
+    locator: "…label 'OS Type'…input"     # plain editable text, NOT a picker
+    confidence: high
+- key: deviceTemplate.protocolTab(name)
+    locator: "//button[contains(@class,'ant-btn') and .//span[normalize-space(.)='TFTP']]"
+    confidence: high      # sticky tab-bar; 'No protocol'|'TFTP'|'SCP/SFTP'
+- key: deviceTemplate.opCard(protocol, op)   # unique command-operation card
+    locator: "//div[contains(@class,'ant-collapse-item') and .//div[contains(@class,'ant-collapse-header') and contains(.,'TFTP')]]//div[contains(@class,'metric-group-item') and .//h6[normalize-space(.)='Backup Running Configuration']]"
+    confidence: high
+- key: deviceTemplate.opCommandCell           # relative to opCard; .nth(0)=primary command
+    locator: "input[placeholder='Write text here']"
+    confidence: high
+- key: deviceTemplate.opDropdownTrigger        # relative to op row; .nth(0)=Prompt .nth(1)=Prompt Command
+    locator: "[data-cy='dropdown-trigger-input']"
+    confidence: medium    # per-row indexing needs a live dry-run to confirm
+- key: deviceTemplate.fwSequenceOptionByLabel(label) + fwSequenceClearBtn
+    locator: "…popover…div.cursor-pointer contains '<label>'…input[type=checkbox]   |   button 'Clear'"
+    confidence: high      # 'Backup Existing Firmware Image' etc.; Clear = unselect all
+- key: deviceTemplate.saveBtn
+    locator: "//button[normalize-space(.)='Save']"
+    confidence: high
+- key: deviceTemplate.inventoryUpdateTemplateItem + rerunDiscoveryBtn
+    locator: "Device Inventory row menu 'Update Template' → drawer 'Re-run Discovery'"
+    confidence: high      # template grid row menu only has Clone/Download JSON — apply is via Device Inventory
+# fuzzy spots (dry-run to confirm): firmware-sequence TRIGGER (label-scoped guess),
+# and which opCard holds the added 'terminal length 0' command. verified 2026-07-15
+```
+
+---
+
+## Login / Logout — Claude-in-Chrome harvest, 2026-07-15 (CORRECTION)
+
+```yaml
+login:
+  username:  "input[name='username']"          # placeholder 'Enter Username' (NOT 'Username')
+  password:  "input[name='password']"          # placeholder = bullet dots
+  sign_in:   "button[type=submit] text 'Sign in'"   # getByRole('button',{name:/sign in/i})
+  forgot:    "text 'Forgot password?'"
+  # 'Username' placeholder = the FORGOT-PASSWORD page, not login.
+  success:   "left /login route (avatar img[alt=Avatar] does NOT exist this build)"
+logout:
+  avatar:      ".ant-avatar"                    # top-right initials circle ('MA'), NOT img[alt=Avatar]
+  confirm_open: "a[href='/settings/my-account/my-profile']"   # My Profile link in dropdown
+  logout_link: "text 'Logout'"                  # red, bottom of dropdown
+# verified 2026-07-15
+```

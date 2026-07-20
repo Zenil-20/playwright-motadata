@@ -1,0 +1,197 @@
+{
+ "target": "user-create-rbac",
+ "labels": [
+  "First Name",
+  "Last Name",
+  "Email Address",
+  "Mobile Number",
+  "User Name",
+  "Authentication Type",
+  "Password",
+  "Confirm Password",
+  "Groups",
+  "Role",
+  "Session Expiry",
+  "Status"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "search",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "first-name",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "last-name",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "email-address",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "mobile-number",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "user-name",
+   "id": "",
+   "type": "text",
+   "ph": "Must be unique"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "password",
+   "id": "",
+   "type": "password",
+   "ph": "Do not use simple password"
+  },
+  {
+   "name": "confirm-password",
+   "id": "",
+   "type": "password",
+   "ph": "Same as the password field"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  }
+ ],
+ "buttons": [
+  "Create User",
+  "ON",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers78",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯",
+  "Reset"
+ ],
+ "buttonIds": [
+  "btn-show-hide-columns",
+  "create-user-btn",
+  "1234",
+  "2345",
+  "aadil",
+  "aadilshaikh",
+  "abhishek",
+  "admin",
+  "anant",
+  "ansh",
+  "bhaving",
+  "bhavya",
+  "chaitas",
+  "chandresh",
+  "chandu",
+  "deven",
+  "gaurang",
+  "Jeeva",
+  "Manish",
+  "nandini-shah",
+  "nandini-shah-ldap",
+  "ronak",
+  "rum1",
+  "rum9",
+  "shivani",
+  "user1",
+  "zenil",
+  "zenil.local.20260630134427",
+  "zenil20",
+  "zenilrad",
+  "zenu20",
+  "status",
+  "reset-btn-id",
+  "submit-btn"
+ ],
+ "dataCy": [
+  "grid-action",
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [
+  "users-search-input",
+  "users-export-pdf-btn",
+  "users-export-csv-btn",
+  "users-create-btn",
+  "user-form-first-name",
+  "user-form-last-name",
+  "user-form-email",
+  "user-form-mobile",
+  "user-form-username",
+  "user-form-user-type",
+  "user-form-password",
+  "user-form-confirm-password",
+  "session-expiry",
+  "user-form-reset-btn",
+  "user-form-submit-btn"
+ ],
+ "selects": 0,
+ "switches": 30,
+ "radios": 0,
+ "checkboxes": 0,
+ "codeMirror": 0,
+ "tabs": [],
+ "gridHeaders": [
+  "User Name",
+  "First Name",
+  "Last Name",
+  "Role",
+  "Type",
+  "Groups",
+  "User Profile",
+  "Status",
+  "Email",
+  "Ip/Host",
+  "Actions"
+ ]
+}

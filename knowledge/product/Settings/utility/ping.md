@@ -4,57 +4,84 @@ module: Settings
 category: utility
 route: "/settings/utility/ping"
 build: 8.2.6
-status: generated
-sources: [catalog]            # knowledge/locators/catalog/settings_utility_ping.json (live Vue-router sweep 2026-07-02)
-verified: 2026-07-02
+status: draft
+sources: [catalog, kb]        # knowledge/locators/catalog/settings_utility_ping.json (live Vue-router sweep 2026-07-02) · customer-issue-kb
+verified: 2026-07-09
 ---
 
-# Ping · ping
+# Utility — Ping
 
-## Purpose
-TODO(source: Motadata KG/docs) — what this screen is for.
+## 1. Purpose
+An **ad-hoc ICMP reachability test**. The admin enters an IP address or hostname and clicks **Test**;
+the product pings the target **from the collector/poller** and reports whether it is reachable.
 
-## Navigation
-Route: `/settings/utility/ping` (open the full URL; SPA routing must load the page).
+- **Business objective:** answer "is this device reachable from Motadata?" in one click, without
+  shelling into the collector — the first triage step for "device down / no data" tickets.
+- **Screen description:** a single field (**IP Address/Host Name**) with **Test** and **Reset**
+  buttons; the result renders below. It is the **default landing tool** of Settings → Utility.
+- **Primary use cases:** confirm a target is up before adding a monitor; sanity-check a firewall/route
+  change; distinguish "device down" from "credential/SNMP problem" (Ping OK but SNMP fails ⇒ not ICMP).
+- **Who uses it:** administrators / support engineers.
+- **Dependencies:** authenticated Settings session · a collector able to reach the target's network ·
+  ICMP allowed along the path.
 
-## Actions
-TODO(source: KG/docs) — the actions available here. Derive from the buttons/controls below.
+## 2. Navigation
+```
+Settings → Utility → Ping
+```
+- **Breadcrumb:** Settings › Utility › Ping
+- **URL:** `/settings/utility/ping` (also the default at `/settings/utility/`)
 
-## Components
-**Form fields (labels)**
-- IP Address/Host Name
+## 3. Actions
+- Enter **IP Address/Host Name**.
+- **Test** — run the ping (`#utility-ping-test-btn`).
+- **Reset** — clear the field (`#utility-ping-reset-btn`).
 
-**Inputs**
-- `?` — _Search_ (text)
-- `?` — _172.31.11.52_ (text)
+## 4. Components
+| Component | Control (from catalog) |
+|---|---|
+| IP Address/Host Name * | text input · placeholder `172.31.11.52` |
+| Settings left-nav **Search** | shared shell · `input[placeholder="Search"]` |
+| **Reset** | `#utility-ping-reset-btn` |
+| **Test** | `#utility-ping-test-btn` |
 
-**Buttons**
-- Reset
-- Test
+> No selects/switches/radios/grid on this screen (catalog: all zero). The result output block was not
+> captured in the sweep — TODO(source: KG/docs) confirm its structure (latency / packet-loss / raw lines).
 
-**Button ids**
-- `#utility-ping-reset-btn`
-- `#utility-ping-test-btn`
+_Locators: `knowledge/locators/catalog/settings_utility_ping.json` — promote verified ones to the cookbook._
 
-_Locators: see `knowledge/locators/catalog/settings_utility_ping.json` (raw sweep) — promote verified ones into the cookbook._
+## 5. Permissions
+- Settings-level, administrator-oriented. Expect **Admin** (and possibly privileged Operator) to run;
+  **Viewer** likely cannot. TODO(source: KG/docs) — exact RBAC.
 
-## Permissions
-TODO(source: docs) — roles that can view/act.
+## 6. Entry Conditions
+- Logged in with access to Settings → Utility.
+- A collector/poller reachable and able to reach the target network.
 
-## Entry Conditions
-Logged in. TODO(source: docs) — any feature flag / seeded data.
+## 7. Exit Conditions
+- **On Test (reachable):** success result renders (reachable / latency). TODO(source: KG/docs) — exact fields.
+- **On Test (unreachable):** timeout / "not reachable" message renders.
+- **On Reset:** field clears; no server call. Stateless — nothing is persisted.
 
-## Exit Conditions
-TODO(source: docs).
+## 8. Validations
+- **IP Address/Host Name** — required before Test; accepts an IP or a resolvable hostname.
+- TODO(source: docs) — IPv4/IPv6/hostname format enforcement and inline error copy.
 
-## Validations
-TODO(source: docs) — field validations + inline errors.
+## 9. Business Rules
+- **Ping runs from the collector**, so the result reflects collector→target reachability, not the
+  browser's — a firewalled ICMP path fails even when the device is up.
+- **Stateless & ad-hoc** — no monitor is created, nothing is saved.
+- A hostname is resolved via DNS first; a resolution failure surfaces before the ICMP attempt
+  (see the DNS Resolver tool). TODO(source: KG) confirm.
 
-## Business Rules
-TODO(source: Motadata KG) — uniqueness, defaults, dependencies, limits.
+## 10. Known Bugs
+**None recorded for this screen** in `customer-issue-kb.md` for build 8.2.6.
+> Context (not a defect here): Ping is the tool used to triage the "device unreachable / data missing"
+> class in customer-issue-kb §1. Note availability method Heartbeat→Ping is a documented remedy for an
+> agent-down case (PQD-41189) — relevant background, not a bug in this screen. Do not invent bugs.
 
-## Known Bugs
-See `knowledge/known_issues/customer-issue-kb.md` for related customer issues, if any.
-
-## Edge Cases
-TODO — boundary / negative / timing cases.
+## 11. Edge Cases
+- Unreachable / firewalled (ICMP blocked) target — expect a clean timeout message, not a hang.
+- Hostname that fails DNS resolution.
+- IPv6 target; hostname vs raw IP; leading/trailing spaces.
+- Rapid double-**Test**; **Test** with an empty field; very long hostname.

@@ -1,0 +1,112 @@
+{
+ "target": "storage-profile",
+ "labels": [
+  "Storage Profile Name",
+  "Storage Destination",
+  "IP/Host",
+  "Port",
+  "User Name",
+  "Password",
+  "Path"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "storage-search",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "storage-profile-name",
+   "id": "storage-profile-name",
+   "type": "text",
+   "ph": "Must be unique"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "ip-host",
+   "id": "ip/host",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "port-id",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "user-name",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "password",
+   "id": "password-id",
+   "type": "password",
+   "ph": ""
+  },
+  {
+   "name": "path",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  }
+ ],
+ "buttons": [
+  "Create Storage Profile",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers76",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯",
+  "Reset",
+  "Test"
+ ],
+ "buttonIds": [
+  "create-storage-btn",
+  "reset-btn",
+  "test-btn",
+  "external-storage-btn"
+ ],
+ "dataCy": [
+  "grid-action",
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 0,
+ "codeMirror": 0,
+ "tabs": [],
+ "gridHeaders": [
+  "Storage Profile Name",
+  "Used Count",
+  "Storage Destination",
+  "Actions"
+ ]
+}

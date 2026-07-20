@@ -27,7 +27,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.47 for v1 cred
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -37,7 +37,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.47 for v1 cred
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill('admin');
     await page.locator("//input[@placeholder='Password']").fill('admin');
     await page.locator("//button[@type='submit']").click();
@@ -75,7 +75,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For 172.16.10.47 for v1 cred
 
    await expect(
    page.getByText(deviceName, { exact: true })
-   ).toBeVisible({ timeout: 480000 });
+   ).toBeVisible({ timeout: 90000 });
 
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.locator("//button[@id='add-selected-btn-id']").click();

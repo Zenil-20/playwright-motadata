@@ -1,0 +1,541 @@
+{
+ "target": "role-create-rbac",
+ "labels": [
+  "Role Name",
+  "Role Description"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "role-search",
+   "id": "",
+   "type": "text",
+   "ph": "Search"
+  },
+  {
+   "name": "role-name",
+   "id": "role-name",
+   "type": "text",
+   "ph": "Must be unique"
+  },
+  {
+   "name": "role-description",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "checkbox",
+   "ph": ""
+  }
+ ],
+ "buttons": [
+  "Create Role",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers108",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯",
+  "Hide all",
+  "Show all",
+  "Reset"
+ ],
+ "buttonIds": [
+  "create-role-btn",
+  "reset-btn",
+  "role-submit-btn"
+ ],
+ "dataCy": [
+  "grid-action"
+ ],
+ "dataTestid": [
+  "roles-search-input",
+  "roles-export-pdf-btn",
+  "roles-export-csv-btn",
+  "roles-create-btn",
+  "roles-reset-btn",
+  "roles-submit-btn"
+ ],
+ "selects": 0,
+ "switches": 0,
+ "radios": 0,
+ "checkboxes": 160,
+ "codeMirror": 0,
+ "tabs": [
+  "Permissions(7/41)",
+  "Navigation(16/16)"
+ ],
+ "gridHeaders": [
+  "Role Name",
+  "Description",
+  "Used Count",
+  "Actions"
+ ]
+}

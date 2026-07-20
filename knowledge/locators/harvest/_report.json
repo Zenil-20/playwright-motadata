@@ -1,0 +1,42 @@
+[
+ {
+  "target": "runbook-create",
+  "ok": true,
+  "controls": 37
+ },
+ {
+  "target": "user-create-rbac",
+  "ok": true,
+  "controls": 33
+ },
+ {
+  "target": "role-create-rbac",
+  "ok": true,
+  "controls": 100
+ },
+ {
+  "target": "ncm-policy-create",
+  "ok": true,
+  "controls": 27
+ },
+ {
+  "target": "device-template",
+  "ok": true,
+  "controls": 33
+ },
+ {
+  "target": "firmware-profile",
+  "ok": true,
+  "controls": 28
+ },
+ {
+  "target": "storage-profile",
+  "ok": true,
+  "controls": 29
+ },
+ {
+  "target": "ncm-approval",
+  "ok": true,
+  "controls": 23
+ }
+]

@@ -1,0 +1,112 @@
+{
+ "target": "device-template",
+ "labels": [
+  "Device Template Name",
+  "Description",
+  "Vendor",
+  "OS Type",
+  "Delay Time (ms)",
+  "Command",
+  "Timeout (ms)",
+  "Prompt",
+  "Prompt Command"
+ ],
+ "inputs": [
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Vendor",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Write text here"
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": ""
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  },
+  {
+   "name": "",
+   "id": "",
+   "type": "text",
+   "ph": "Select",
+   "readonly": true
+  }
+ ],
+ "buttons": [
+  "Add Operation",
+  "SCP/SFTP",
+  "TFTP",
+  "No protocol",
+  "OFF",
+  "Select From Catalog",
+  "Reset",
+  "Save",
+  "ⓘ",
+  "⊞",
+  "⎘",
+  "⇄",
+  "⚡",
+  "–",
+  "×",
+  "Components",
+  "Bus",
+  "Vuex",
+  "History",
+  "Workers76",
+  "+",
+  "Refresh page widgetsidle",
+  "🎯"
+ ],
+ "buttonIds": [
+  "remove-metric-group"
+ ],
+ "dataCy": [
+  "dropdown-trigger-input"
+ ],
+ "dataTestid": [],
+ "selects": 0,
+ "switches": 1,
+ "radios": 0,
+ "checkboxes": 0,
+ "codeMirror": 0,
+ "tabs": [],
+ "gridHeaders": []
+}

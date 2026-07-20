@@ -27,7 +27,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Nutanix Discovery', () =
     // Create a single browser context and page shared across all tests
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -37,7 +37,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Nutanix Discovery', () =
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.getByRole('textbox', { name: 'Username' }).fill('admin');
     await page.getByRole('textbox', { name: 'Password' }).fill('admin');
     await page.getByRole('button', { name: 'Login' }).click();
@@ -68,7 +68,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Nutanix Discovery', () =
     await page.getByRole('button', { name: 'Create Credentials Profile' }).click();
     await page.getByRole('button', { name: 'Save and Run' }).click();
 
-    await expect(page.getByText(process.env.Nutanix_ip)).toBeVisible({ timeout: 400000 });
+    await expect(page.getByText(process.env.Nutanix_ip)).toBeVisible({ timeout: 90000 });
 
     await page.locator('input[type="checkbox"]').nth(1).check();
     await page.getByRole('button', { name: 'Add Selected' }).click();

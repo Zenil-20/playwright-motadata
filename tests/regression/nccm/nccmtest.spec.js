@@ -28,7 +28,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    page.setDefaultTimeout(90000);
   });
 
   test.afterAll(async () => {
@@ -36,7 +36,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
   });
 
   test('Login to Motadata AIOps', async () => {
-    await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+    await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
     await page.locator("//input[@placeholder='Username']").fill(process.env.Motadata_Username);
     await page.locator("//input[@placeholder='Password']").fill(process.env.Motadata_Password);
     await page.locator("//button[@type='submit']").click();
@@ -45,7 +45,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
 
   test('dummy func byu zenil', async () => {
         // Sync + Backup each poll up to 5 min; give the whole test room to finish.
-        test.setTimeout(900000);
+        test.setTimeout(90000);
         // Navigate into the NCCM module first — after login the page sits on the
         // default dashboard, where the Explorer tab does not exist.
         await page.getByRole('link', { name: 'NCCM' }).click();
@@ -90,7 +90,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
     
         await expect(
           explorerRow.locator("button.button-transparent span.text-primary", { hasText: 'Sync Successful' }).first()
-        ).toBeVisible({ timeout: 300000 });
+        ).toBeVisible({ timeout: 90000 });
         await expect(explorerRow.locator('span.text-secondary-green', { hasText: 'In Sync' }).first())
           .toBeVisible({ timeout: 30000 });
     
@@ -104,7 +104,7 @@ test.describe.serial('Motadata AIOps NCCM Actions for 172.16.14.6', () => {
         const backupSuccessBtn = explorerRow.locator(
           "button.button-transparent span.text-primary", { hasText: 'Backup Successful' }
         ).first();
-        await expect(backupSuccessBtn).toBeVisible({ timeout: 300000 });
+        await expect(backupSuccessBtn).toBeVisible({ timeout: 90000 });
     
         // Open the Backup Successful drawer, then close it.
         await backupSuccessBtn.click();

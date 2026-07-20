@@ -157,7 +157,7 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
         // Create a single browser context and page shared across all tests
         const context = await browser.newContext();
         page = await context.newPage();
-        page.setDefaultTimeout(500000);
+        page.setDefaultTimeout(90000);
     });
 
     test.afterAll(async () => {
@@ -167,7 +167,7 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
     });
 
     test('Login to Motadata AIOps', async () => {
-        await page.goto(process.env.Motadata_Aiops, { timeout: 500000 });
+        await page.goto(process.env.Motadata_Aiops, { timeout: 90000 });
         await page.locator("//input[@placeholder='Username']").fill('admin');
         await page.locator("//input[@placeholder='Password']").fill('admin');
         await page.locator("//button[@type='submit']").click();
@@ -208,7 +208,7 @@ test.describe.serial('Motadata AIOps Create Netroute', () => {
         await expect(checkbox1).toBeVisible({ timeout: 5000 });
         await checkbox1.click();
           await page.locator("//button[@id='create-credential-profile-btn-id']").click();
-          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 300000 });
+          await page.getByRole('button', { name: 'Create Runbook Plugin' }).click({ timeout: 90000 });
     });
 
     test('Logout from AIOps', async () => {
