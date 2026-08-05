@@ -37,6 +37,23 @@ test.describe.serial('Create Application Registration for APM Java, DotNet, Node
     }
   });
 
+  // Registration is a hard `dependencies: ['settings_07_apm']` for settings_04_policy_apm
+  // (playwright.config.js), so this whole file re-runs on every APM policy run. The backend
+  // rejects a duplicate service name, so without this guard a second run fails registration
+  // outright and blocks the policy suite behind it. Skip-if-exists makes it idempotent.
+  async function isServiceRegistered(serviceName) {
+    await page.locator("//input[@name='search-application-registration']").fill(serviceName);
+    const serviceRow = page.locator('tr.k-master-row', {
+      has: page.locator(`span:has-text("${serviceName}")`),
+    });
+    try {
+      await expect(serviceRow).toBeVisible({ timeout: 5000 });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   test('Login to Motadata AIOps', async () => {
     await login(page);
   });
@@ -52,6 +69,8 @@ test.describe.serial('Create Application Registration for APM Java, DotNet, Node
     const serviceName = "hibernatewithmysql";
     const path = "/root/APM/APM/HibernateWithMySQLExample/spring_boot_crud_example_2_0.0.1_SNAPSHOT.jar";
 
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
+
     await page.getByRole('button', { name: 'Application Registration', exact: true }).click();
     await page.locator("//input[@placeholder='Select Agent']").click();
     await page.locator("//input[@id='assign-monitor-search']").fill(process.env.APM_Agent);
@@ -60,14 +79,21 @@ test.describe.serial('Create Application Registration for APM Java, DotNet, Node
     // also match rows from the main grid sitting behind the dropdown.
     const agentPopup = page.locator('.ant-popover.picker-overlay.grid-dropdown:not(.ant-popover-hidden)');
     const rows = agentPopup.locator('tr.k-master-row');
-    // Verify only one agent row is present in the filtered popup
-    await expect(rows).toHaveCount(1);
+    // Verify only one agent row is present in the filtered popup. The popup opens with ALL
+    // monitors unfiltered (e.g. 5 rows) and narrows to the search match asynchronously — the
+    // default 5s expect timeout isn't always enough for that filter to converge, so it's raised
+    // here (toHaveCount already auto-retries; this just gives it a realistic window).
+    await expect(rows).toHaveCount(1, { timeout: 30_000 });
     // Get the agent name text
     const agentName = rows.locator('td').nth(2).locator('span.text-ellipsis');
     // Verify the agent name
     await expect(agentName).toHaveText(new RegExp(process.env.APM_Agent, 'i'));
     // Perform operation only after validation
     await rows.locator('input[type="checkbox"]').first().click();
+    // Close the picker explicitly: checking the row does NOT auto-dismiss it, and closing the
+    // drawer later while it's left dangling causes the NEXT drawer open to hang on this same
+    // "Select Agent" input (confirmed live 04-08-2026 — root cause of the flaky toHaveCount race).
+    await page.keyboard.press('Escape');
     await page.locator("//input[@placeholder='Enter your service name']").fill(serviceName);
     await page.locator("//input[@placeholder='/home/user/app/application.jar']").fill(path);
     await page.getByRole('button', { name: 'Apply Configuration', exact: true }).click();
@@ -130,9 +156,14 @@ await expect(serviceRow).toBeVisible({
 
     const agentPopup = page.locator('.ant-popover.picker-overlay.grid-dropdown:not(.ant-popover-hidden)');
     const rows = agentPopup.locator('tr.k-master-row');
-    await expect(rows).toHaveCount(1);
+    // The popup opens with ALL monitors unfiltered (e.g. 5 rows) and narrows to the search
+    // match asynchronously — the default 5s expect timeout isn't always enough for that filter
+    // to converge (observed: count flapping 0/5, never settling to 1, within 5s on 04-08-2026).
+    await expect(rows).toHaveCount(1, { timeout: 30_000 });
     await expect(rows.locator('td').nth(2).locator('span.text-ellipsis')).toHaveText(/apmagentanant/i);
     await rows.locator('input[type="checkbox"]').first().click();
+    // Close the picker explicitly — see the identical comment in the Java test above.
+    await page.keyboard.press('Escape');
   }
 
   async function createService({ language, serviceName, path }) {
@@ -168,37 +199,51 @@ await expect(serviceRow).toBeVisible({
   }
 
   test('Create Service for Dotnet', async () => {
-    await createService({ language: 'dotnet', serviceName: 'ProductCatalog_dotnet.' });
+    const serviceName = 'ProductCatalog_dotnet.';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
+    await createService({ language: 'dotnet', serviceName });
   });
 
   test('Create Service for Dotnet (Host/VM)', async () => {
-    await createService({ language: 'dotnet', serviceName: 'APMPlayGround_RedisWebAPI' });
+    const serviceName = 'APMPlayGround_RedisWebAPI';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
+    await createService({ language: 'dotnet', serviceName });
   });
 
   test('Create Service for NodeJS', async () => {
-    await createService({ language: 'nodejs', serviceName: 'NodeJs_mongodb' });
+    const serviceName = 'NodeJs_mongodb';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
+    await createService({ language: 'nodejs', serviceName });
   });
 
   test('Create Service for Python', async () => {
-    await createService({ language: 'python', serviceName: 'flask_app' });
+    const serviceName = 'flask_app';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
+    await createService({ language: 'python', serviceName });
   });
 
   test('Create Service for Ruby', async () => {
-    await createService({ language: 'ruby', serviceName: 'Qwitch' });
+    const serviceName = 'Qwitch';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
+    await createService({ language: 'ruby', serviceName });
   });
 
   test('Create Service for PHP', async () => {
+    const serviceName = 'laravel_app';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
     await createService({
       language: 'php',
-      serviceName: 'laravel_app',
+      serviceName,
       path: '/opt/remi/php84/root/usr/bin/php',
     });
   });
 
   test('Create Service for Go', async () => {
+    const serviceName = 'Go_TestInstGo';
+    test.skip(await isServiceRegistered(serviceName), `${serviceName} already registered`);
     await createService({
       language: 'go',
-      serviceName: 'Go_TestInstGo',
+      serviceName,
       path: '/root/APM/APM_Go/apps_to_qa/go-instrumentation-test-copy/go-app-1.23',
     });
   });

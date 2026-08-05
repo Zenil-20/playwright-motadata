@@ -16,7 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
-import { selectApmCounter } from './_apm.helpers.js';
+import { selectApmCounter, runTag } from './_apm.helpers.js';
 import { login, logout } from '../../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
@@ -53,7 +53,8 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
     await page.getByRole('button', { name: 'Create Policy' }).click();
 
     // Policy name
-    await page.locator('input#policy-name').fill('Trace Duration Playwright Policy');
+    const policyName = `Trace Duration Playwright Policy ${runTag()}`;
+    await page.locator('input#policy-name').fill(policyName);
 
     // Tags
     const tags = ['apm', 'automation', 'trace analytics'];
@@ -86,9 +87,20 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
     await page.locator("//input[@placeholder='Select']").first().click();
     await page.getByText('Source Host', { exact: true }).click();
 
-    // Source -> open the picker and select all monitors
+    // Source -> open the picker and select all monitors. Source is required, so it MUST be
+    // populated or "Create Policy" silently won't submit. Wait for an actual DATA ROW (a
+    // row-level checkbox) before clicking the header select-all: the header renders before the
+    // grid body, and clicking it with zero rows loaded selects nothing (leaving Source empty).
+    // A genuinely empty grid ("No records available") still fails fast with a clear message.
     await page.locator("//input[@placeholder=' ']").click();       // Source picker
-    await page.locator('thead input[type="checkbox"]').click();    // select-all checkbox
+    const firstSourceRowCheckbox = page.locator('tbody input[type="checkbox"]').first();
+    await firstSourceRowCheckbox.waitFor({ state: 'visible', timeout: 60000 }).catch(() => {
+      throw new Error(
+        'Source picker has no rows ("No records available") — no APM source hosts to select. ' +
+        'Needs 07-APM registered + trace data propagated; run WITHOUT --no-deps.',
+      );
+    });
+    await page.locator('thead input[type="checkbox"]').click();    // select-all (rows present now)
     await page.keyboard.press('Escape');                           // close the picker
 
     // Result By -> service.trace.service.name (checkbox option)
@@ -97,7 +109,10 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
     await page.getByText('service.trace.service.name', { exact: true }).click();
 
     // Severity -> Critical
-    await page.getByText('Critical', { exact: true }).click();
+    // Severity is an Ant radio-BUTTON: the real <input type="radio"> is visually hidden, so
+    // click the visible label text. Scope to #main-content-container so a transient alert
+    // notification (div.notification-header ... 'Critical') can't collide (strict-mode).
+    await page.locator('#main-content-container').getByText('Critical', { exact: true }).click();
 
     // Set Alert Message, Notification, and Declare Incident are left at their
     // default values — no changes made to those sections.
@@ -106,7 +121,7 @@ test.describe.serial('Motadata ObserveOps APM Trace Analytics Policy creation', 
 
     // Verify the policy was created
     await expect(
-      page.locator('td', { hasText: 'Trace Duration Playwright Policy' })
-    ).toBeVisible();
+      page.locator('td', { hasText: policyName })
+    ).toBeVisible({ timeout: 30000 });
   });
 });

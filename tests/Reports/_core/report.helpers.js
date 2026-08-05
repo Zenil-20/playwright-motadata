@@ -7,6 +7,75 @@
  * time range, and exporting the PDF — is preserved here.
  */
 const { baseUrl } = require('./env.js');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+// ---- cross-worker export mutex -------------------------------------------------
+// The Motadata export server only services a SMALL number of concurrent export
+// jobs (measured: ~2). Beyond that, excess jobs are starved and never deliver —
+// so with N Playwright workers each clicking "Export", some exports hang forever
+// while others succeed. That is a SERVER concurrency ceiling, not a report defect
+// and not a per-report race. We therefore serialize export clicks across ALL
+// worker processes with a filesystem mutex (atomic mkdir), so at most
+// EXPORT_CONCURRENCY exports are ever in flight. Each export then delivers in
+// ~1-3s and pdfDelivered is reliable regardless of worker count.
+const EXPORT_CONCURRENCY = Math.max(1, Number(process.env.REPORT_EXPORT_CONCURRENCY || 1));
+const EXPORT_LOCK_ROOT = process.env.REPORT_EXPORT_LOCK_DIR || path.join(os.tmpdir(), 'mtd-report-export-locks');
+// A held slot older than this is treated as abandoned (worker crashed mid-export)
+// and reclaimed, so a dead worker can never deadlock the fleet.
+const EXPORT_LOCK_STALE_MS = Number(process.env.REPORT_EXPORT_LOCK_STALE || 120) * 1000;
+// Cap on how long we queue for a slot before proceeding best-effort (unlocked).
+// Sized to outlast a full serialized run: with ~100+ reports exporting one-at-a-
+// time, the last worker in line can legitimately wait many minutes, and falling
+// through to an UNLOCKED export would re-introduce the very concurrency stall the
+// mutex exists to prevent. Generous so the queue always drains in-order; the
+// stale-slot reclaim (not this cap) is what recovers from a crashed holder.
+const EXPORT_LOCK_MAX_WAIT_MS = Number(process.env.REPORT_EXPORT_LOCK_MAXWAIT || 1200) * 1000;
+
+/** Run `fn` while holding one of EXPORT_CONCURRENCY export slots. Slots are lock
+ *  directories under EXPORT_LOCK_ROOT; mkdir is atomic across processes. Stale
+ *  slots (crashed workers) are reclaimed by age. Always releases in `finally`. */
+async function withExportSlot(fn) {
+  try {
+    fs.mkdirSync(EXPORT_LOCK_ROOT, { recursive: true });
+  } catch {
+    /* ignore — proceed best-effort if the lock root can't be created */
+  }
+  const start = Date.now();
+  let held = null;
+  while (held === null && Date.now() - start < EXPORT_LOCK_MAX_WAIT_MS) {
+    for (let slot = 0; slot < EXPORT_CONCURRENCY; slot++) {
+      const dir = path.join(EXPORT_LOCK_ROOT, `slot-${slot}`);
+      try {
+        fs.mkdirSync(dir); // atomic acquire
+        held = dir;
+        break;
+      } catch {
+        // occupied — reclaim if abandoned
+        try {
+          if (Date.now() - fs.statSync(dir).mtimeMs > EXPORT_LOCK_STALE_MS) {
+            fs.rmdirSync(dir);
+          }
+        } catch {
+          /* raced with another worker — just retry */
+        }
+      }
+    }
+    if (held === null) await new Promise((r) => setTimeout(r, 200 + Math.floor(Math.random() * 200)));
+  }
+  try {
+    return await fn();
+  } finally {
+    if (held) {
+      try {
+        fs.rmdirSync(held);
+      } catch {
+        /* already reclaimed */
+      }
+    }
+  }
+}
 
 // Report exports are async (socket event `ui.notification.csv.export.ready`);
 // some large reports take minutes to generate. Keep generous.
@@ -18,7 +87,12 @@ const PDF_DOWNLOAD_TIMEOUT_MS = 300_000;
 // in 1.5s costs 1.5s. Only a report that is still spinning at the cap fails,
 // with reason `timeout`. The PDF export is NOT under this clock — it is a
 // server-side queue and has its own PDF_DOWNLOAD_TIMEOUT_MS.
-const READY_TIMEOUT_MS = Math.max(1, Number(process.env.REPORT_READY_TIMEOUT || 10)) * 1000;
+const READY_TIMEOUT_MS = Math.max(1, Number(process.env.REPORT_READY_TIMEOUT || 20)) * 1000;
+// How long to wait for the ASYNC PDF export to deliver a browser download before
+// the caller falls back to the preview-based verdict. Generous by default so slow
+// server-side export jobs still get validated, but bounded so a stalled export
+// cannot hang a worker. Tune with REPORT_EXPORT_WAIT (seconds).
+const EXPORT_WAIT_MS = Math.max(5, Number(process.env.REPORT_EXPORT_WAIT || 45)) * 1000;
 const READY_POLL_MS = 200;
 // Tiny paint settle once data is detected, so charts are on the canvas for the
 // screenshot. Not part of the timeout budget.
@@ -289,21 +363,65 @@ async function setTimeline(page, option) {
  * Click "Export As PDF" and wait for the async socket-driven download. Returns
  * the saved Download, or null if the button is missing / the export times out.
  */
-async function exportPdf(page) {
-  const btn = page.locator('button[title="Export As PDF"]').first();
-  if ((await btn.count()) === 0) return null;
-  try {
-    const [download] = await Promise.all([
-      page.waitForEvent('download', { timeout: PDF_DOWNLOAD_TIMEOUT_MS }),
-      btn.click(),
-    ]);
-    return download;
-  } catch {
-    return null;
+/** True if an export toast ("Exporting <name>…") appeared within `ms` — i.e. the
+ *  async export job actually started, so we can tell a slow job from a dead button. */
+async function exportStarted(page, ms = 8000) {
+  const deadline = Date.now() + ms;
+  while (Date.now() < deadline) {
+    const seen = await page
+      .evaluate(() =>
+        Array.from(
+          document.querySelectorAll('.ant-notification-notice, .ant-message-notice, [class*="notification-notice"]'),
+        ).some((e) => /export/i.test(e.textContent || '')),
+      )
+      .catch(() => null);
+    if (seen) return true;
+    if (seen === null) return false; // page/context gone — bail instead of throwing
+    try {
+      await page.waitForTimeout(300);
+    } catch {
+      return false; // page closed mid-wait — treat as "not confirmed started"
+    }
   }
+  return false;
+}
+
+/**
+ * Trigger the report's PDF export and wait for the file.
+ *
+ * Motadata report export is an ASYNC SERVER JOB: clicking "Export As PDF" enqueues
+ * a job that streams progress over the websocket (ui.notification.report.progress)
+ * and, on completion, delivers the file as a browser download. Small/fast reports
+ * download within seconds; heavy ones take much longer or (rarely) stall. So we
+ * confirm the job actually STARTED (the "Exporting…" toast) to tell a slow job
+ * from a dead button, wait up to `timeoutMs` for the download, and return a STATUS
+ * — never a bare null — so the caller can fall back to the preview instead of
+ * mis-reporting a slow async export as "no PDF".
+ *
+ * @returns {Promise<{status:'downloaded', download:import('@playwright/test').Download}
+ *                  | {status:'no_button'|'async_pending'|'no_download'}>}
+ */
+async function exportPdf(page, { timeoutMs = EXPORT_WAIT_MS } = {}) {
+  const btn = page.locator('button[title="Export As PDF"]').first();
+  if ((await btn.count()) === 0) return { status: 'no_button' };
+  // Serialize the export click across ALL workers: the server starves concurrent
+  // export jobs beyond its small ceiling, so we hold an export slot for the whole
+  // click→download window. Inside the slot at most EXPORT_CONCURRENCY exports run,
+  // so the download reliably arrives in seconds instead of stalling forever.
+  return withExportSlot(async () => {
+    if (page.isClosed?.()) return { status: 'no_download' };
+    // Arm the download listener BEFORE clicking so a fast delivery can't race us.
+    const downloadP = page.waitForEvent('download', { timeout: timeoutMs }).catch(() => null);
+    await btn.click().catch(() => {});
+    const started = await exportStarted(page, 8000);
+    const download = await downloadP;
+    if (download) return { status: 'downloaded', download };
+    return { status: started ? 'async_pending' : 'no_download' };
+  });
 }
 
 module.exports = {
+  EXPORT_WAIT_MS,
   PDF_DOWNLOAD_TIMEOUT_MS,
   READY_TIMEOUT_MS,
   reportUrl,

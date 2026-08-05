@@ -40,7 +40,10 @@ const STATUS_META = {
  * defect, a missing export, or a slow/broken load.
  */
 function bugType(r) {
-  if (r.status === 'ok') return { key: 'pass', label: 'Pass', cls: 'pass', hint: 'Data rendered on screen and in the exported PDF' };
+  if (r.status === 'ok')
+    return r.pdfDelivered === false
+      ? { key: 'pass_preview', label: 'Pass (preview)', cls: 'warn', hint: 'Preview has data; the async PDF export did not deliver a file within the budget — not a report defect' }
+      : { key: 'pass', label: 'Pass', cls: 'pass', hint: 'Data rendered on screen and in the exported PDF' };
   if (r.status === 'created') return { key: 'created', label: 'Created', cls: 'pass', hint: 'Report created via the creation wizard (not separately validated)' };
   if (r.status === 'skipped') return { key: 'skipped', label: 'Not available', cls: 'warn', hint: 'Report type/tile not available on this instance — scenario skipped' };
   if (r.status === 'failed_create') return { key: 'create_fail', label: 'Create failed', cls: 'fail', hint: 'The creation wizard did not produce a report id' };
@@ -94,6 +97,8 @@ class ReportRegressionHtmlReporter {
         else if (rec.status === 'failed') status = 'failed_create';
         else status = rec.validation || 'created'; // 'created', or the validation verdict when chained
         this.rows.set(`${test.id}#c${idx}`, {
+          source: 'creation',
+          category: rec.category || '',
           title: rec.name || `${rec.category}-${rec.scenario}`,
           id: rec.id || '',
           name: rec.name || `${rec.category}/${rec.scenario}`,
@@ -103,6 +108,7 @@ class ReportRegressionHtmlReporter {
           reason: rec.reason || rec.validationReason || '',
           preview: rec.preview || { rows: 0, cols: 0 },
           pdf: rec.pdf || { rows: 0, cols: 0 },
+          pdfDelivered: rec.pdfDelivered !== false,
           shapeMatch: null,
           srNoColumn: false,
           loadMs: 0,
@@ -132,6 +138,7 @@ class ReportRegressionHtmlReporter {
         : cleanError(result.error && (result.error.message || String(result.error)));
 
     this.rows.set(test.id, {
+      source: 'validation',
       title: test.title,
       id: verdict ? verdict.id : idFromTitle(test.title),
       name: verdict ? verdict.name : test.title,
@@ -141,6 +148,7 @@ class ReportRegressionHtmlReporter {
       reason: reason || '',
       preview: (verdict && verdict.preview) || { rows: 0, cols: 0 },
       pdf: (verdict && verdict.pdf) || { rows: 0, cols: 0 },
+      pdfDelivered: verdict ? verdict.pdfDelivered !== false : true,
       shapeMatch: verdict ? verdict.shapeMatch : null,
       srNoColumn: !!(verdict && verdict.srNoColumn),
       loadMs: (verdict && verdict.loadMs) || 0,
@@ -281,9 +289,20 @@ function renderHtml(rows, meta) {
   const typeCounts = new Map();
   for (const r of rows) {
     const t = bugType(r);
-    if (t.key === 'pass') continue;
+    if (t.key === 'pass' || t.key === 'pass_preview') continue;
     typeCounts.set(t.key, { label: t.label, cls: t.cls, n: (typeCounts.get(t.key)?.n || 0) + 1 });
   }
+
+  // Source tabs — let the user view Validation (catalog) vs Creation (matrix) separately.
+  const nVal = rows.filter((r) => r.source !== 'creation').length;
+  const nCre = rows.filter((r) => r.source === 'creation').length;
+  const sourceTabs = nCre > 0
+    ? `<div class="srcbar">
+         <button class="srctab sel" data-src="all">All <b>${total}</b></button>
+         <button class="srctab" data-src="validation">① Validation <b>${nVal}</b></button>
+         <button class="srctab" data-src="creation">② Creation <b>${nCre}</b></button>
+       </div>`
+    : '';
 
   const cards = [
     `<button class="card" data-f="all"><div class="n">${total}</div><div class="l">Reports</div></button>`,
@@ -317,6 +336,11 @@ function renderHtml(rows, meta) {
       pdf: r.pdf,
       loadMs: r.loadMs,
       status: m.label,
+      // Carried into DATA so the section filters and any downstream analysis read
+      // the real values. Omitting them made every row look like source-unknown /
+      // export-undelivered to anything reading DATA rather than the row markup.
+      source: r.source || 'validation',
+      pdfDelivered: r.pdfDelivered !== false,
     });
 
     const mismatch =
@@ -337,7 +361,7 @@ function renderHtml(rows, meta) {
       .filter(Boolean)
       .join(' ');
 
-    return `<tr data-group="${m.group}" data-type="${esc(t.key)}" data-q="${esc(`${r.name} ${r.id} ${t.label} ${r.reason}`.toLowerCase())}" data-name="${esc(String(r.name).toLowerCase())}" data-load="${r.loadMs}" data-rank="${isFail ? 0 : 1}">
+    return `<tr data-source="${esc(r.source || 'validation')}" data-group="${m.group}" data-type="${esc(t.key)}" data-q="${esc(`${r.name} ${r.id} ${t.label} ${r.reason}`.toLowerCase())}" data-name="${esc(String(r.name).toLowerCase())}" data-load="${r.loadMs}" data-rank="${isFail ? 0 : 1}">
   <td class="i">${i + 1}</td>
   <td class="nm"><div class="t">${esc(r.name)}</div><div class="id">id ${esc(r.id)}</div></td>
   <td><span class="badge ${t.cls}" title="${esc(t.hint)}">${esc(t.label)}</span></td>
@@ -367,6 +391,10 @@ function renderHtml(rows, meta) {
   h1 { margin:0 0 4px; font-size:20px; letter-spacing:-0.01em; }
   .meta { color:var(--dim); font-size:12.5px; margin-bottom:16px; }
   .meta b { color:var(--fg); font-weight:600; }
+  .srcbar { display:flex; gap:8px; margin-bottom:14px; }
+  .srctab { background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 18px; font-size:14px; cursor:pointer; color:inherit; }
+  .srctab b { margin-left:6px; opacity:.7; }
+  .srctab.sel { background:#2563eb; color:#fff; border-color:#2563eb; }
   .cards { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
   .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 16px; min-width:104px;
           text-align:left; cursor:pointer; font:inherit; color:inherit; }
@@ -431,6 +459,7 @@ function renderHtml(rows, meta) {
     data timeout ${meta.readyTimeoutS}s/report &middot;
     shape compare ${meta.compareShape ? 'enforced' : 'reported only'}
   </div>
+  ${sourceTabs}
   <div class="cards">${cards}</div>
   <div class="bar">
     <input id="q" type="search" placeholder="Filter by name, id, type, reason…">
@@ -460,20 +489,29 @@ ${bodyRows.join('\n')}
   var META = { server: ${JSON.stringify(meta.baseUrl || '').replace(/</g, '\\u003c')}, when: ${JSON.stringify(new Date(meta.startedAt).toLocaleString())} };
   var rows = Array.prototype.slice.call(document.querySelectorAll('tbody tr'));
   var tbody = document.querySelector('tbody');
-  var group = 'all', typeF = '', q = '';
+  var group = 'all', typeF = '', q = '', source = 'all';
 
   function apply() {
     var shown = 0;
     rows.forEach(function (r) {
+      var okS = source === 'all' || (r.dataset.source || 'validation') === source;
       var okG = group === 'all' || r.dataset.group === group;
       var okT = !typeF || r.dataset.type === typeF;
       var okQ = !q || r.dataset.q.indexOf(q) !== -1;
-      var vis = okG && okT && okQ;
+      var vis = okS && okG && okT && okQ;
       r.style.display = vis ? '' : 'none';
       if (vis) shown++;
     });
     document.getElementById('shown').textContent = shown + ' shown';
   }
+  document.querySelectorAll('.srctab[data-src]').forEach(function (b) {
+    b.onclick = function () {
+      source = b.dataset.src;
+      document.querySelectorAll('.srctab').forEach(function (t) { t.classList.remove('sel'); });
+      b.classList.add('sel');
+      apply();
+    };
+  });
   function selectCard(el) {
     document.querySelectorAll('.card').forEach(function (c) { c.classList.remove('sel'); });
     if (el) el.classList.add('sel');

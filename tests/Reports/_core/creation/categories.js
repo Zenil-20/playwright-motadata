@@ -38,6 +38,7 @@ const {
   setSourceFilter,
   openSourceTable,
   selectMonitors,
+  isNextEnabled,
 } = require('./wizard.js');
 
 const sc = (name, over = {}) => ({ name, counters: 1, counterIndex: 0, monitors: 1, ...over });
@@ -103,6 +104,37 @@ function sourceOnlyHandler({ tryCounter = true, waitPreview = true } = {}) {
 }
 
 /** Alert categories — Policy Type + Severity are the interesting knobs; everything is optional. */
+/**
+ * Some alert categories (Metric Alerts) leave the widget invalid — and Next
+ * disabled — until a Policy Type and a Source scope are chosen, while others
+ * (Availability Status) validate on backend defaults. Rather than over-filling
+ * every alert scenario (which would change what the passing ones actually
+ * assert), fill the minimum extra fields ONLY when Next is still disabled, and
+ * stop as soon as it enables.
+ */
+async function ensureAlertWidgetValid(page, picked) {
+  if (await isNextEnabled(page)) return;
+  if (!picked.policy_type && (await openPickerByLabel(page, 'Policy Type'))) {
+    picked.policy_type = await pickOption(page, { index: 0 });
+    await waitNoLoader(page, 10_000);
+  }
+  if (await isNextEnabled(page)) return;
+  await setSourceFilter(page, 'Monitor').catch(() => {});
+  if (await isNextEnabled(page)) return;
+  // Measured on 8.2.6: Policy Type, Severity, Source Filter and Policy ALL leave
+  // Next disabled — the widget only becomes valid once an actual source MONITOR
+  // is selected. That is the step this handler was missing.
+  try {
+    await openSourceTable(page);
+    picked.monitors = await selectMonitors(page, 1);
+  } catch {
+    /* source table empty on this instance — nothing to select, leave invalid */
+  }
+  if (await isNextEnabled(page)) return;
+  // Last resort: let a preview round-trip settle the validity flag.
+  await previewWait(page, picked);
+}
+
 function alertHandler() {
   return async (page, s, picked) => {
     if (s.policyType) {
@@ -117,6 +149,7 @@ function alertHandler() {
       }
     }
     await previewWait(page, picked);
+    await ensureAlertWidgetValid(page, picked);
   };
 }
 

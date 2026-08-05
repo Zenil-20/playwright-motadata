@@ -130,7 +130,10 @@ The tests collectively validate this pipeline. Each box is a product stage; the 
 | NCCM | ✅ | Discovery + full config lifecycle (baseline, backup, conflict, sync, compare) |
 | Runbooks | ✅ | Create & test (Database, Custom) |
 | Integrations (Jira, ServiceNow, Motadata ServiceOps) | ✅ | Configure, test, profile mapping |
-| APM registration | ✅ | Trace-service creation per runtime |
+| APM — Trace Service registration | ✅ | Trace-service creation per runtime (7 runtimes) |
+| APM — Alert Policies (Trace Analytics & Trace Metric) | ⚠️ | Create → verify in list; counter gated on trace-data propagation; **no alert-fire** |
+| APM — Explorer (Services & Business Services) | ✅ | Card/grid browsing, filters, search, pagination |
+| APM — Statistics Dashboard | ✅ | Tiles, trend charts, top-service chart+grid pairs |
 | RUM registration | ✅ | App registration per framework |
 | Platform Admin (Proxy, Storage Backup, Rule-Based Tags, LDAP, User/RBAC) | ✅ | Configure/test/verify |
 
@@ -262,6 +265,7 @@ It is **idempotent** — already-onboarded apps are skipped.
 | **Metric policy** | Alerts when a numeric metric breaches a threshold operator | Full lifecycle: create (always-breaching Critical) → appears in list → **Critical alert actually fires** on the monitor's Active Alerts → disable → delete (with safety cleanup) |
 | **NetRoute policy** | Alerts on a network-path metric | Create with **Source-to-destination** and, separately, **Hop-to-Hop** route evaluation; both confirmed in list |
 | **Availability policy** | Alerts on up/down state change | Create → disable → delete only (**no alert-fire** step — see limitations) |
+| **APM policy** | Alerts on application trace telemetry (Trace Analytics & Trace Metric) | Create → appears in the APM policy list; counter selection is gated on trace-data propagation. Full detail in [5.14 APM](#514-apm--application-performance-monitoring) |
 | **NetRoute Settings** | Define a monitored route (name, destination, port, source monitor) | Route appears in the NetRoute list |
 
 ### 5.9 Service Level Objectives (SLO)
@@ -311,9 +315,19 @@ It is **idempotent** — already-onboarded apps are skipped.
 
 ### 5.14 APM — Application Performance Monitoring
 
-**What it is.** Registering application **Trace Services** so an APM agent can instrument them for distributed tracing.
+**What it is.** End-to-end coverage of the APM (distributed-tracing) area: registering application **Trace Services**, alerting on their trace telemetry, and browsing/visualising the resulting service data.
 
-**Covered:** registering a Trace Service for each supported runtime — **Java, .NET, NodeJS, Python, Ruby, PHP, Go** — selecting the APM agent, language, service name (and executable/jar path where required); confirms "Trace Service created successfully" and the row in the registration grid.
+**Trace Service Registration.** Registering a Trace Service for each supported runtime — **Java, .NET (incl. a Host/VM variant), NodeJS, Python, Ruby, PHP, Go** — selecting the APM agent, language, service name (and executable/jar path where required); confirms "Trace Service created successfully" and the row in the registration grid.
+
+**APM Alert Policies.** Creating policies that alert on trace-derived counters. A counter only becomes selectable **after** a registered service has reported traces (a fixed propagation floor — see [Cross-Cutting Behaviours](#7-cross-cutting-behaviours)), so each flow waits for the counter to appear before building on it. Two policy shapes are covered:
+- **Trace Analytics** (per-trace evaluation: counter → aggregation → operator → value → source-host filter → result-by service name → severity) — for **Span Duration**, **Trace Duration**, and **Trace Span Errors**.
+- **Trace Metric** (critical/major/warning thresholds on a metric) — for **Error Rate**, **Trace Rate**, and **Trace Volume**.
+
+Each confirms the new policy appears in the APM policy list.
+
+**APM Explorer — Services.** The service-browsing workspace: default landing (Services tab active, four tabs, card view, 1-hour range), per-service tiles (Response Time, Throughput, Error Count with sparklines and a severity indicator), grid view with all labelled columns, card↔grid toggle preserving the set, search-and-clear, grid filters (Event Source, Type, + Filter), time-range refresh, pagination footer & items-per-page, and the **Business Services** card & grid views (skipped when none are provisioned).
+
+**APM Statistics Dashboard.** The shipped APM Statistics system dashboard: metric tiles (Service Count, Total Events, Total Trace/Span Volume), trend charts (Trace per Minute, Trace Volume, Span Volume), and Top-Services chart+grid pairs (by Events, Trace Count, Span Count, Ingestion Volume) with a per-row service-type icon in each grid.
 
 ### 5.15 Real User Monitoring (RUM)
 
@@ -354,6 +368,8 @@ Discovery + Provisioning ─────────► produces MONITORS, requi
 NetRoute Settings ────────────────► NetRoute policy needs a defined route
 Business service + source scope ──► SLO Profiles
 Trap Listener + Trap Policy ──────► must exist BEFORE a trap arrives (no retro-match)
+APM Trace Service registration ───► APM alert policies (trace counters appear only
+                                    after the service reports data + propagation)
 ```
 
 **Key ordering rules the tests rely on:**
@@ -361,6 +377,7 @@ Trap Listener + Trap Policy ──────► must exist BEFORE a trap arriv
 - A **NetRoute policy** needs a NetRoute defined first.
 - **Trap policies** act at processing time — they must exist *before* the matching trap is received.
 - **Application/DB rediscovery** needs the host already monitored and the apps actually running on it.
+- **APM alert policies** need a **Trace Service registered first** and its trace data propagated — the trace counter is not selectable until then; APM Explorer & Statistics likewise assume trace data already exists.
 
 ---
 
@@ -370,6 +387,7 @@ Trap Listener + Trap Policy ──────► must exist BEFORE a trap arriv
 - **Provisioning consumes a license** — onboarding steps confirm the license-consuming "Add Instance" / Provision confirmation.
 - **Trap flush latency (~5 minutes)** — stored traps and trap-triggered alerts take a fixed ~5 minutes to surface; the Live Trap Viewer bypasses this for real-time checks.
 - **Real alert latency** — a metric policy's Critical alert can take ~2 minutes of real breach time to appear.
+- **APM trace-data propagation (~4–5 minutes)** — after a Trace Service is registered, its trace-derived counters take a fixed few minutes to become usable; APM policy creation waits for the counter to appear (a smart wait, up to ~10 minutes) before proceeding rather than assuming it's ready.
 - **Idempotency & cleanup** — rediscovery, SLO, integrations, monitoring-hour, custom-field, proxy, RUM, and policy areas detect pre-existing state and skip or clean up, keeping the shared environment reusable. Forever-firing test policies are always disabled/deleted afterwards.
 - **Dynamic-result tolerance** — range/ping scans assert "at least one provisioned" because live host counts vary.
 - **Notifications** — discovery profiles and rediscover schedulers can attach notification recipients (email).
@@ -393,6 +411,7 @@ The test suite assumes:
 Within the areas that **are** covered, note the following boundaries:
 
 - **Availability Policy** — only the create → disable → delete lifecycle is covered; **no alert-fire** verification (a DOWN state cannot be forced deterministically).
+- **APM Alert Policies** — coverage is **create → verify-in-list only**; there is **no alert-fire** verification, and the created policies are **not deleted afterward**, so re-runs assume prior APM policy/service data is cleaned. They also depend on a registered Trace Service having reported data (environment/propagation-dependent). **APM Explorer & the APM Statistics dashboard assume trace data already exists** in the environment and are not gated on registration.
 - **Application Rediscovery** — **MongoDB is intentionally excluded**. Coverage requires the target host to actually have the applications discovered on it (environment-dependent). Onboarding is one-shot per app: once onboarded, an app no longer appears for re-onboarding.
 - **RabbitMQ & Sybase** — covered via the **host-then-app rediscovery** flow on their own hosts; they are **not** part of the multi-application onboarding matrix.
 - **MongoDB Database Discovery** — uses non-blocking (soft) assertions.
@@ -411,9 +430,9 @@ Coverage depth by area:
 | Depth | Meaning | Areas |
 |---|---|---|
 | **End-to-end (with outcome)** | Drives the full business outcome and verifies the result event | Metric Policy (alert fires), NCCM (baseline→conflict→sync→compare), Trap Policy Trigger (alert), Trap Propagation, Application Rediscovery |
-| **Create → Provision → Verify** | Onboards and confirms the entity exists/monitors | All Discovery, Database Discovery, Service Checks, Rediscovery, Dashboards, Metric Explorer |
+| **Create → Provision → Verify** | Onboards and confirms the entity exists/monitors | All Discovery, Database Discovery, Service Checks, Rediscovery, Dashboards, Metric Explorer, APM Explorer, APM Statistics Dashboard |
 | **Full config lifecycle** | Create → verify → disable/delete or assign | Policies, Monitoring Configuration, Rule-Based Tags |
-| **Configure & Test** | Sets up and validates connectivity/creation | Integrations, Runbooks, SLO, Storage Backup, Proxy, LDAP, Metric Plugin, APM, RUM, User/RBAC |
+| **Configure & Test** | Sets up and validates connectivity/creation | Integrations, Runbooks, SLO, Storage Backup, Proxy, LDAP, Metric Plugin, APM (Trace Service registration & alert policies), RUM, User/RBAC |
 
 ---
 

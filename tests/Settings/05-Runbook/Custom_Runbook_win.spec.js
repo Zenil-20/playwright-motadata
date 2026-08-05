@@ -151,7 +151,7 @@ func cleanUp(client *winrmclient.WinRMClient, result MotadataMap) {
     client.Destroy() 
 }`;
 
-test.describe.serial('Motadata AIOps Create Netroute', () => {
+test.describe.serial('Motadata AIOps Custom Runbook', () => {
     let page;
 
     test.beforeAll(async ({ browser }) => {

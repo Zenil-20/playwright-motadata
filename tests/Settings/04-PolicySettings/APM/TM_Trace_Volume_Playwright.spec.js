@@ -16,7 +16,7 @@
 
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
-import { selectApmCounter } from './_apm.helpers.js';
+import { selectApmCounter, runTag } from './_apm.helpers.js';
 import { login, logout } from '../../../fixtures/auth.js';
 
 dotenv.config({ path: '.env', quiet: true });
@@ -52,7 +52,8 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
     await page.locator('a[href="/settings/policy-settings/apm"]').click();
     await page.getByRole('button', { name: 'Create Policy' }).click();
 
-    await page.locator('input#policy-name').fill('APM Playwright Policy');
+    const policyName = `APM Playwright Policy ${runTag()}`;
+    await page.locator('input#policy-name').fill(policyName);
 
     const tags = ['apm', 'automation', 'trace metric'];
     const tagBox = page.locator('[role="combobox"]');
@@ -69,9 +70,20 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
     // Source Filter -> Monitor, then select all monitors
     await page.locator("//input[@placeholder='Select']").first().click();
     await page.getByText('Monitor', { exact: true }).click();
+    // Wait for an actual DATA ROW before clicking the header select-all: the header renders
+    // before the grid body, and clicking it with zero rows loaded selects nothing (leaving
+    // Source empty, so "Create Policy" silently won't submit). Same picker component as the
+    // TA specs — mirrors their already-verified guard. # verified 2026-07-20 on 172.16.15.177
     await page.locator("//input[@placeholder=' ']").click(); // Source picker
-    await page.locator('thead input[type="checkbox"]').click(); // select-all checkbox
-    await page.locator('body').click({ position: { x: 400, y: 308 } }); // close the picker
+    const firstSourceRowCheckbox = page.locator('tbody input[type="checkbox"]').first();
+    await firstSourceRowCheckbox.waitFor({ state: 'visible', timeout: 60000 }).catch(() => {
+      throw new Error(
+        'Source picker has no rows ("No records available") — no APM source hosts to select. ' +
+        'Needs 07-APM registered + trace data propagated; run WITHOUT --no-deps.',
+      );
+    });
+    await page.locator('thead input[type="checkbox"]').click(); // select-all (rows present now)
+    await page.keyboard.press('Escape'); // close the picker
 
     // Thresholds
     const setThreshold = async (rowLocator, value) => {
@@ -80,9 +92,15 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
       await rowLocator.locator("input[placeholder='Value']").fill(value);
     };
 
-    const criticalRow = page.locator('text=critical').locator('xpath=ancestor::*[self::div][1]');
-    const majorRow = page.locator('text=major').locator('xpath=ancestor::*[self::div][1]');
-    const warningRow = page.locator('text=warning').locator('xpath=ancestor::*[self::div][1]');
+    // Severity rows: scope to the actual row container (div.label-highlight-select-value),
+    // which holds the operator Select + Value inputs. The old ancestor::*[self::div][1]
+    // resolved to the label-only cell (div.severity, 0 inputs), so the operator click hung
+    // until the worker was torn down. # verified 2026-07-20 on 172.16.15.177
+    const severityRow = (sev) =>
+      page.locator('div.label-highlight-select-value').filter({ has: page.locator(`span.text.${sev}`) });
+    const criticalRow = severityRow('critical');
+    const majorRow = severityRow('major');
+    const warningRow = severityRow('warning');
 
     await setThreshold(criticalRow, '10240');
     await setThreshold(majorRow, '5124');
@@ -95,7 +113,7 @@ test.describe.serial('Motadata ObserveOps APM Trace Metric Policy creation', () 
 
     // Verify the policy was created
     await expect(
-      page.locator('td', { hasText: 'APM Playwright Policy' })
-    ).toBeVisible();
+      page.locator('td', { hasText: policyName })
+    ).toBeVisible({ timeout: 30000 });
   });
 });

@@ -51,30 +51,94 @@ async function gotoCreate(page) {
  * with the SHORTEST text (the most specific one).
  * Returns false when no tile matches (category not on this instance).
  */
-async function selectCategoryTile(page, label) {
-  const box = await page.evaluate((target) => {
-    const norm = (t) => (t || '').replace(/\s+/g, ' ').trim().toLowerCase();
-    const key = norm(target);
-    const cards = Array.from(document.querySelectorAll('.type-card, [class*="type-card"]'));
-    let best = null;
-    for (const el of cards) {
-      const txt = norm(el.textContent);
-      if (!txt.includes(key)) continue;
-      const r = el.getBoundingClientRect();
-      if (r.width === 0 || r.height === 0) continue;
-      if (!best || txt.length < best.len) best = { len: txt.length, x: r.x + r.width / 2, y: r.y + r.height / 2 };
-    }
-    return best ? { x: best.x, y: best.y } : null;
-  }, label);
-  if (!box) return false;
-  await page.mouse.click(box.x, box.y);
-  // Step 1 auto-advances — wait for the tile grid to detach.
-  for (let i = 0; i < 30; i++) {
-    await page.waitForTimeout(300);
-    if ((await page.locator('.report-type-container').count()) === 0) break;
+/** True when the step-2 "Next" button exists and is enabled (widget is valid). */
+async function isNextEnabled(page) {
+  return page
+    .evaluate(() => {
+      const b = Array.from(document.querySelectorAll('button')).find((x) =>
+        /^next$/i.test((x.textContent || '').trim()),
+      );
+      return !!b && !b.disabled;
+    })
+    .catch(() => false);
+}
+
+async function tilesVisible(page) {
+  return page.evaluate(() =>
+    Array.from(document.querySelectorAll('.type-card, [class*="type-card"]')).some((e) => {
+      const r = e.getBoundingClientRect();
+      return r.width > 0 && r.height > 0;
+    }),
+  );
+}
+
+/**
+ * Block until the step-2 criteria form is actually USABLE, not merely mounted.
+ * The form mounts its labels first and populates each picker's options from
+ * async calls a beat later. A handler that starts filling in that gap silently
+ * gets nulls — pickers "open" with no options, setSourceFilter finds no
+ * "Monitor", the source table reports 0 rows — and the run fails with a
+ * misleading "field missing" instead of "not loaded yet". Observed flipping
+ * between passing and failing across identical consecutive runs, which is
+ * exactly the flake that shows up under multi-worker load.
+ */
+async function waitStep2Ready(page, timeoutMs = 20_000) {
+  const deadline = Date.now() + timeoutMs;
+  // 1. at least one criteria label rendered
+  while (Date.now() < deadline) {
+    const labels = await page
+      .evaluate(() => document.querySelectorAll('label').length)
+      .catch(() => 0);
+    if (labels > 0) break;
+    await page.waitForTimeout(250);
   }
+  // 2. no spinner still resolving the pickers' option sets
+  await waitNoLoader(page, Math.max(0, deadline - Date.now()));
+  // 3. small settle so option lists are attached before the handler opens them
   await page.waitForTimeout(800);
-  return true;
+}
+
+async function selectCategoryTile(page, label) {
+  const norm = (t) => (t || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const key = norm(label);
+  const cards = page.locator('.type-card, [class*="type-card"]');
+  // The tile grid renders asynchronously after /reports/create loads; count it
+  // only once at least one tile is on screen, else we mis-report every category
+  // as "not on this instance".
+  await cards.first().waitFor({ state: 'visible', timeout: 20_000 }).catch(() => {});
+  const n = await cards.count();
+  // Pick the SHORTEST-text card containing the label so "Availability" doesn't
+  // match "Availability Flap Summary".
+  let bestIdx = -1;
+  let bestLen = Infinity;
+  for (let i = 0; i < n; i++) {
+    const txt = norm(await cards.nth(i).innerText().catch(() => ''));
+    if (!txt.includes(key)) continue;
+    if (txt.length < bestLen) {
+      bestLen = txt.length;
+      bestIdx = i;
+    }
+  }
+  if (bestIdx < 0) return false;
+  const card = cards.nth(bestIdx);
+  // Use a REAL element click (auto-scrolls into view) — a raw mouse.click at the
+  // card's viewport coordinate silently misses tiles below the fold (Historical
+  // Trend, Metric Alerts, NCCM, NetRoute), so step 1 never advances and every
+  // downstream step-2 field looks "missing". Retry once if the grid doesn't
+  // detach (a fast re-render can eat the first click).
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await card.scrollIntoViewIfNeeded().catch(() => {});
+    await card.click().catch(() => {});
+    for (let i = 0; i < 40; i++) {
+      await page.waitForTimeout(250);
+      if (!(await tilesVisible(page))) {
+        await waitStep2Ready(page);
+        return true; // advanced to step 2 AND its form is populated
+      }
+    }
+  }
+  // Clicked but never advanced — report as not-selectable so the caller fails loudly.
+  return false;
 }
 
 // ------------------------------ generic waits --------------------------------
@@ -134,13 +198,22 @@ async function openPickerByLabel(page, labelText) {
 }
 
 /** Pick one visible dropdown option (by index or by exact-ish text). Returns its text. */
-async function pickOption(page, { index = 0, text = null } = {}) {
+async function pickOption(page, { index = 0, text = null, waitMs = 8000 } = {}) {
   let opt;
   if (text) {
     opt = page.locator(`.scroll-dropdown-menu-item:has-text("${text}"):visible, .ant-select-item-option:has-text("${text}"):visible`).first();
   } else {
+    // An opened picker paints its menu before the async option set lands, so a
+    // single count() reads 0 and silently returns null (the field looks
+    // "unfillable"). Poll briefly for options to attach instead.
     const opts = page.locator(OPTION_SEL);
-    const n = await opts.count();
+    let n = 0;
+    const deadline = Date.now() + waitMs;
+    do {
+      n = await opts.count().catch(() => 0);
+      if (n) break;
+      await page.waitForTimeout(250);
+    } while (Date.now() < deadline);
     if (!n) return null;
     opt = opts.nth(index < n ? index : 0);
   }
@@ -227,6 +300,26 @@ async function pickCounter(page, { slot = 0, index = 0 } = {}) {
     if ((await add.count()) > 0) {
       await add.click();
       await page.waitForTimeout(400);
+    }
+  }
+  // Prefer the field actually LABELLED "Counters" over the first dropdown on the
+  // form. Not every category puts the counter first — Availability's step 2 is
+  // [Availability By, Counters, Source Filter, Source, Result By], so selecting
+  // slot 0 positionally sets "Availability By" (picking a value like "monitor"
+  // instead of "monitor.uptime.percent"), silently leaves Counters empty, and
+  // the widget never validates. Positional stays as the fallback for categories
+  // whose counter field carries no matching label.
+  if (slot === 0) {
+    for (const lbl of ['Counters', 'Counter']) {
+      if (await openPickerByLabel(page, lbl)) {
+        const picked = await pickOption(page, { index });
+        if (picked) {
+          await page.waitForTimeout(400);
+          return picked;
+        }
+        await page.keyboard.press('Escape').catch(() => {});
+        await page.waitForTimeout(200);
+      }
     }
   }
   const input = page.locator('.first-dropdown-div input, [placeholder*="counter" i]').nth(slot);
@@ -487,6 +580,7 @@ module.exports = {
   setSourceFilter,
   openSourceTable,
   selectMonitors,
+  isNextEnabled,
   clickNextWhenEnabled,
   fillNameAndSave,
   createOne,

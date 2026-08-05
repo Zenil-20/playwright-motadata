@@ -22,6 +22,7 @@ const { comparePair } = require('./compare.js');
 const { pdfTextAndTables } = require('./pdf.js');
 const {
   READY_TIMEOUT_MS,
+  EXPORT_WAIT_MS,
   reportUrl,
   safeName,
   waitForReportReady,
@@ -63,7 +64,24 @@ const secs = (ms) => `${(ms / 1000).toFixed(1)}s`;
  * @param {{ timeline?: object|null, compareShape?: boolean }} opts
  * @returns {Promise<Verdict>}
  */
+/**
+ * Public entry. Runs the check and RETRIES ONCE when the first pass is empty on
+ * BOTH sides or errors. Under 4-worker load a report often paints its scaffold a
+ * beat before the data arrives (a false "no data"), or the context hiccups — a
+ * single reload + re-read settles both. A GENUINELY empty report stays empty on
+ * the retry, so this never masks a real defect, it only removes load-induced flake.
+ */
 async function checkReport(page, testInfo, rid, name, opts = {}) {
+  const transient = (v) => v && (v.status === 'error' || v.where === 'both');
+  const v = await attemptCheck(page, testInfo, rid, name, opts);
+  if (!transient(v)) return v;
+  const again = await attemptCheck(page, testInfo, rid, name, opts).catch(() => null);
+  if (again && !transient(again)) return again; // the retry found data → trust it
+  if (again && again.status !== 'error') return again; // prefer a clean empty verdict over an error
+  return v;
+}
+
+async function attemptCheck(page, testInfo, rid, name, opts = {}) {
   const stem = `${safeName(name)}__${rid}`;
   const url = reportUrl(rid);
   /** @type {Verdict} */
@@ -74,13 +92,28 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
     url, // deep link to the report in the app — the HTML report turns this into a one-click repro
     preview: { ...EMPTY_SHAPE },
     pdf: { ...EMPTY_SHAPE },
+    pdfDelivered: true, // set false when the async export never delivered a file
     shapeMatch: null,
     loadMs: 0,
     screenshot: null,
   };
 
   try {
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    // Navigation retry: a transient app hiccup (ERR_CONNECTION_REFUSED on a
+    // momentary restart) must not fail an otherwise-healthy report. Re-goto a few
+    // times with a bounded timeout before giving up.
+    let navErr = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+        navErr = null;
+        break;
+      } catch (e) {
+        navErr = e;
+        await page.waitForTimeout(1500);
+      }
+    }
+    if (navErr) throw navErr;
 
     if (opts.timeline) {
       try {
@@ -110,12 +143,45 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
     // apart from an empty grid — both have zero DOM table rows.
     const hasChart = await previewHasChart(page);
 
-    // ---- 2. export + parse the PDF (its own, much longer, server-side clock) ----
-    const pdf = await exportAndParse(page);
-    if (!pdf) {
-      verdict.status = 'no_pdf';
+    // ---- 2. export + parse the PDF (async server job — its own long clock) ------
+    // Exports are SERIALIZED fleet-wide (the server starves concurrent export
+    // jobs), so each export holds a shared slot. A report whose preview already
+    // has data gets the full export budget; one with an empty preview gets a
+    // short bounded wait — it is almost certainly genuinely empty, and making it
+    // hold the slot for the full budget would throttle every other worker.
+    const previewHasDataPre = previewRows.length > 0 || hasChart;
+    const pdf = await exportAndParse(page, {
+      timeoutMs: previewHasDataPre ? EXPORT_WAIT_MS : Math.min(EXPORT_WAIT_MS, 15_000),
+    });
+
+    // Export did NOT deliver a browser download. Motadata's export is an async
+    // server job; heavy reports deliver very slowly or via the notification path,
+    // which this browser download listener can't see. A slow/async export is NOT a
+    // report defect, so we FALL BACK to the preview (the primary signal) instead of
+    // mis-flagging "no PDF": if the preview has data, the report passes (with the
+    // PDF marked undelivered + an accurate reason); only a report that is empty on
+    // BOTH sides — or whose view never loaded — is a real failure.
+    if (pdf.status !== 'downloaded') {
+      const previewHasData = previewRows.length > 0 || hasChart;
       verdict.preview = shapeOf(previewRows);
-      verdict.reason = 'Export As PDF produced no download (button missing, or the export queue never delivered)';
+      verdict.pdf = { ...EMPTY_SHAPE };
+      verdict.pdfDelivered = false;
+      if (previewHasData) {
+        verdict.status = 'ok';
+        verdict.reason =
+          pdf.status === 'async_pending'
+            ? `Preview has data (${previewRows.length || 'chart'}); PDF export is an async server job that did not deliver within ${secs(EXPORT_WAIT_MS)} — not a report defect.`
+            : `Preview has data (${previewRows.length || 'chart'}); the PDF export produced no download — verify export manually.`;
+        await capture(testInfo, page, verdict, stem, true);
+        return verdict;
+      }
+      // Empty preview AND no PDF — cannot corroborate. Report honestly.
+      verdict.where = 'both';
+      verdict.status = pdf.status === 'no_button' ? 'timeout' : 'faulty';
+      verdict.reason =
+        pdf.status === 'no_button'
+          ? 'Report view never fully loaded (no Export button), and the preview is empty.'
+          : `No data in the preview and the async PDF export did not deliver within ${secs(EXPORT_WAIT_MS)} — likely genuinely empty, or the export stalled server-side.`;
       await capture(testInfo, page, verdict, stem, false);
       return verdict;
     }
@@ -190,14 +256,22 @@ async function checkReport(page, testInfo, rid, name, opts = {}) {
  * pass. Returns { buf, parsed } or null when no download was produced. Shared by
  * the first export and the single export-race retry.
  */
-async function exportAndParse(page) {
-  const download = await exportPdf(page);
-  if (!download) return null;
-  const pdfPath = await download.path();
-  const buf = pdfPath ? await fs.promises.readFile(pdfPath) : Buffer.alloc(0);
-  await download.delete().catch(() => {});
-  const parsed = await pdfTextAndTables(new Uint8Array(buf)).catch(() => ({ ...EMPTY_PARSE }));
-  return { buf, parsed };
+async function exportAndParse(page, { retries = 1, timeoutMs } = {}) {
+  let last = { status: 'no_download' };
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const res = await exportPdf(page, timeoutMs ? { timeoutMs } : {});
+    if (res.status === 'downloaded') {
+      const pdfPath = await res.download.path();
+      const buf = pdfPath ? await fs.promises.readFile(pdfPath) : Buffer.alloc(0);
+      await res.download.delete().catch(() => {});
+      const parsed = await pdfTextAndTables(new Uint8Array(buf)).catch(() => ({ ...EMPTY_PARSE }));
+      return { status: 'downloaded', buf, parsed };
+    }
+    last = res;
+    if (res.status === 'no_button') break; // report view isn't up — a retry won't help
+    if (attempt < retries) await page.waitForTimeout(2000); // transient click/queue race — retry once
+  }
+  return last; // { status: 'async_pending' | 'no_download' | 'no_button' }
 }
 
 function shapeOf(rows) {

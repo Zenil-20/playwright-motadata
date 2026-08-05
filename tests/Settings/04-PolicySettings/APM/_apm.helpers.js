@@ -70,3 +70,21 @@ export async function selectApmCounter(page, counter, { timeout = 10 * 60_000 } 
   // Data has propagated and the option is showing — select it.
   await option.click();
 }
+
+/**
+ * Short IST run tag for UNIQUE, re-runnable policy names. The APM policy backend rejects
+ * duplicate policy names: a re-run that reuses a fixed name has its "Create Policy" rejected,
+ * so the form never redirects to the list and the row-visible verify fails. Appending this
+ * tag makes every run create a fresh policy. Mirrors the istStamp approach already used by
+ * rumPolicyInspector.spec.js. Format: DDMM-HHMMSS (IST), e.g. "2007-164512".
+ */
+export function runTag() {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata', hour12: false,
+      day: '2-digit', month: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    }).formatToParts(new Date()).map((x) => [x.type, x.value]),
+  );
+  return `${p.day}${p.month}-${p.hour}${p.minute}${p.second}`;
+}
