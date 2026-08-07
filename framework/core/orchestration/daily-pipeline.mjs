@@ -1,24 +1,36 @@
 #!/usr/bin/env node
 /*
  * Daily orchestration pipeline — JS port of observeops-qa framework/core/orchestration
- * (workflow.py + daily_stages.py). 14 defensive stages: each SKIPS (not fails) when
+ * (workflow.py + daily_stages.py). 15 defensive stages: each SKIPS (not fails) when
  * its inputs are absent, so the pipeline runs end-to-end even with partial data.
  *
  *   node framework/core/orchestration/daily-pipeline.mjs           # run
  *   node framework/core/orchestration/daily-pipeline.mjs --dry     # plan only, no test execution
  *   node framework/core/orchestration/daily-pipeline.mjs --project discovery_data_driven
+ *   node framework/core/orchestration/daily-pipeline.mjs --jira MOTADATA-7506
+ *
+ * --jira turns on the publish_ado stage, which pushes that ticket's manual cases into
+ * an Azure DevOps Test Plans suite named MOTADATA-<jiraId>. Without it the stage skips.
  */
 
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import dotenv from 'dotenv';
 import { loadRegression, promote } from '../testcase-store/store.js';
 import { detectChanges, impactedDevices } from '../../integrations/vcs.js';
+
+dotenv.config();
 
 const args = process.argv.slice(2);
 const DRY = args.includes('--dry');
 const projectIdx = args.indexOf('--project');
 const PROJECT = projectIdx >= 0 ? args[projectIdx + 1] : null;
+const jiraIdx = args.indexOf('--jira');
+const rawJira = jiraIdx >= 0 ? args[jiraIdx + 1] : process.env.JIRA_ID || null;
+const JIRA_ID = rawJira
+  ? (/^MOTADATA-/i.test(rawJira) ? rawJira.toUpperCase() : `MOTADATA-${rawJira}`)
+  : null;
 
 const bag = {};
 const results = [];
@@ -79,6 +91,27 @@ const STAGES = [
     if (!bag.changes?.length) return skip('generate_cases', 'no changes');
     return skip('generate_cases', 'authoring is agent-driven (the pipeline) — no offline gen');
   },
+  /* Push this ticket's manual cases into Azure DevOps Test Plans, in a suite named
+   * MOTADATA-<jiraId>. Idempotent: the suite is reused and existing titles skipped,
+   * so running the pipeline repeatedly on a ticket never duplicates cases. */
+  async function publish_ado() {
+    if (!JIRA_ID) return skip('publish_ado', 'no --jira <MOTADATA-id>');
+    const casesPath = path.join('workspace', JIRA_ID, 'manual-cases.json');
+    if (!fs.existsSync(casesPath)) return skip('publish_ado', `no ${casesPath}`);
+
+    const { cfg, publishManualCases } = await import('../../integrations/azure-testplans.js');
+    const { org, pat, planId } = cfg();
+    if (!org || !pat) return skip('publish_ado', 'AZURE_ORG_URL / AZURE_PAT not set');
+    if (!planId) return skip('publish_ado', 'AZURE_TEST_PLAN_ID not set');
+
+    const parsed = JSON.parse(fs.readFileSync(casesPath, 'utf8'));
+    const cases = Array.isArray(parsed) ? parsed : parsed.cases || [];
+    if (!cases.length) return skip('publish_ado', `${casesPath} holds no cases`);
+
+    const r = await publishManualCases({ jiraId: JIRA_ID, cases, dryRun: DRY });
+    bag.ado = r;
+    return ok('publish_ado', `${r.suite.name}: +${r.created.length} new, ${r.skipped.length} existing, assigned ${r.assignee.value || '(default)'}${DRY ? ' (dry)' : ''}`);
+  },
   function store_csv() {
     if (!bag.generatedSlug) return skip('store_csv', 'nothing generated');
     return ok('store_csv', bag.generatedSlug);
@@ -115,7 +148,7 @@ function countFiles(dir, ext) {
 console.log(`\n=== daily pipeline ${DRY ? '(dry) ' : ''}===`);
 for (const stage of STAGES) {
   let res;
-  try { res = stage(); } catch (e) { res = { name: stage.name, ok: false, message: `error: ${e.message}` }; }
+  try { res = await stage(); } catch (e) { res = { name: stage.name, ok: false, message: `error: ${e.message}` }; }
   results.push(res);
   console.log(`${res.ok ? '✓' : '✗'} ${res.name.padEnd(20)} ${res.message}`);
 }

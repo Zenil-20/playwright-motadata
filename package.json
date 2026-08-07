@@ -17,7 +17,8 @@
     "sync:claude": "node scripts/sync-claude.mjs",
     "gen:screens": "node scripts/gen-screen-knowledge.mjs",
     "coverage-gate": "node scripts/coverage-gate.mjs",
-    "tfs:import": "node scripts/tfs-import.mjs"
+    "tfs:import": "node scripts/tfs-import.mjs",
+    "ado:publish": "node scripts/ado-publish.mjs"
   },
   "keywords": [],
   "author": "",
