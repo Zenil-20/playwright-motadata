@@ -9,7 +9,7 @@ Build: 8.2.4 · Legend: ✅ harvested · 🟡 partial · ⬜ not yet harvested
 | # | Module | Status | Screens covered |
 |---|---|---|---|
 | 0 | **Global / cross-screen** | ✅ | login, logout, settings-nav, confirm, grid search, column eye |
-| 1 | Dashboards | 🟡 | Add Widget — Chart config (metric-description popover) [MOTADATA-8898] |
+| 1 | Dashboards | 🟡 | Add Widget — Chart config (metric-description popover) [MOTADATA-8898]; APM Statistics (default dashboard, id 10000000001100) |
 | 2 | Monitors (Inventory) | ⬜ | — |
 | 3 | Alerts | ⬜ | — |
 | 4 | SLO | ⬜ | — |
@@ -97,6 +97,61 @@ metric_description_popover:                                       # THE feature 
 #   Log    ❌ EMPTY for all 4 counters (event.source/.category/.source.type/.severity) —
 #          popover header renders but body is blank; NO 'unavailable' message (see A7 finding).
 # verified 2026-06-02
+```
+
+## 1.2 APM Statistics — default APM dashboard   (Dashboards > APM Statistics, system dashboard id 10000000001100)
+
+```yaml
+screen: APM Statistics (default/system dashboard shipped with the product — NOT user-created)
+notes:
+  - "Stable system dashboard id confirmed IDENTICAL across two separate live instances (172.16.15.68 data-rich, 172.16.15.151 empty): GET /dashboard/10000000001100. Safe to deep-link after login rather than driving the collapsible dashboard-tree/search side panel, whose expand toggle is ambiguous (multiple chevron-right icons, one belongs to the left nav, ordinary click gets intercepted)."
+  - "TRAP: a floating Vue 'DEV widget-inspector' overlay panel can render top-right of the dashboard and lists every widget's title as plain text too (e.g. 'Total Events WIDGET Gauge · MetroTile'). A bare getByText('Total Events') double-matches. ALWAYS scope widget lookups via the widget_by_title pattern below, never a bare title getByText."
+  - "TRAP: Kendo grid column headers are CSS text-transform:uppercase for DISPLAY only. The real DOM text is mixed/lower-case ('service.name', 'Type', 'Event Count', 'Trace Count', 'Span Count', 'Ingestion Volume'). getByText/exact must use the real case — matching the visually-rendered uppercase text finds nothing."
+  - "TRAP: the widget grid lazy-loads each widget's data only once it is scrolled into view. Call .scrollIntoViewIfNeeded() on a widget before asserting its content, especially for widgets below the fold (the 4 grid/pie pairs)."
+  - "EMPTY STATE: when a widget has no data for the selected range it renders literal text 'No data found' (metric tile: no .metro-tile-value at all; chart: no highcharts svg at all; grid: no .k-grid-header/rows at all, replaced by a single <h5>No data found</h5>). Structurally this is a valid, non-crashing state the test must handle without erroring out of the whole run — but per this suite's requirement, each occurrence is surfaced as a NAMED soft-failure (`expect.soft(false, 'Widget \"<title>\" shows No data found')`) so the report lists exactly which widgets had no data, rather than passing silently."
+locators:
+  dashboards_nav:        "li#dashboard"                                              # confidence high # verified 2026-07-08
+  navigate_direct:       "page.goto(`${BASE}/dashboard/10000000001100`)"              # after login; confidence high (see notes) # verified 2026-07-08
+  dashboard_title:       "page.locator('h3', { hasText: 'APM Statistics' })"          # confidence high # verified 2026-07-08
+  global_timerange_pill: "page.locator('.dashboard-selector-bar .timerange-pill').first()"   # confidence high # verified 2026-07-08 — do NOT hasText a specific value ('today'/'week'/...): the current range is whatever a user last picked on that dashboard, and differs across shared instances (seen 'today' on 172.16.15.151, 'week' on the shared 172.16.15.68)
+  widget_by_title:       "page.locator('.widget-view').filter({ has: page.locator(`[title=\"<Exact Widget Title>\"]`) })"  # THE core scoping pattern — count()===1 verified for ALL 15 widgets below, on both instances # verified 2026-07-08
+  widget_titles:         # exact strings to substitute into widget_by_title
+    - "Service Count"                    # KPI/Grid count tile
+    - "Total Events"                     # Gauge/MetroTile
+    - "Total Trace Volume"               # Gauge/MetroTile
+    - "Total Span Volume"                # Gauge/MetroTile
+    - "Trace per Minute"                 # Area chart
+    - "Trace Volume"                     # Area chart
+    - "Span Volume"                      # Area chart
+    - "Top Services by Events"           # Pie
+    - "Services by Event"                # Grid (cols: service.name, Type, Event Count)
+    - "Top Services by Trace Count"      # Pie
+    - "Services by Trace Count"          # Grid (cols: service.name, Type, Trace Count)
+    - "Top Services by Span Count"       # Pie
+    - "Services by Span Count"           # Grid (cols: service.name, Type, Span Count)
+    - "Top Services by Ingestion Volume" # Pie
+    - "Services by Ingestion Volume"     # Grid (cols: service.name, Type, Ingestion Volume)
+  tile_value:            "<widget_by_title>.locator('.metro-tile-value')"             # e.g. '10', '477K', '128.40MB', '0Bytes' — absent (use empty_state) when Service Count has no data # verified 2026-07-08
+  chart_svg:             "<widget_by_title>.locator('.highcharts-container svg')"     # present only when data exists # verified 2026-07-08
+  grid_header_cell:      "<widget_by_title>.locator('.k-grid-header').getByText('<real-case text>', { exact: true })"  # present only when data exists; see TRAP above for casing # verified 2026-07-08
+  grid_row_by_service:   "<widget_by_title>.locator('tr.k-master-row', { hasText: '<service name>' })"   # scoped to ONE grid — verified no cross-grid collision # verified 2026-07-08
+  grid_row_metric_cell:  "<grid_row_by_service>.locator('td').nth(2)"                 # 3rd column = the metric (service.name=0, Type=1, metric=2) # verified 2026-07-08
+  empty_state:           "<widget_by_title>.getByText('No data found')"               # metric tile / chart: getByText anywhere in widget; grid specifically renders "<widget_by_title>.locator('h5', { hasText: 'No data found' })" # verified 2026-07-08
+  kebab_action_icon:     "<widget_by_title>.locator('[data-cy=\"grid-action\"]')"      # ALWAYS in the DOM (CSS-only hover reveal); call .hover() on the widget first to match real user behavior, then .click(). count()===1 verified on every widget type, populated AND empty # verified 2026-07-08
+  kebab_action_menu:     "page.locator('.ant-dropdown-menu:visible')"                  # opens at end of <body>; count()===1 as long as only one menu is open at a time # verified 2026-07-08
+  kebab_menu_items_by_widget_type:  # exact item set differs by widget type — verified on both a populated AND an empty widget of each type
+    metro_tile_or_pie: ["Full Screen", "Share"]                   # e.g. Service Count, Total Events, AND the 4 "Top Services by X" pies (no CSV — pie has no exportable table)
+    area_chart_or_grid: ["Full Screen", "Share", "Export as CSV"] # e.g. Trace per Minute, Services by Event
+  pie_hover_tooltip:     # ONLY the 4 "Top Services by X" pie widgets were asked for; trend-line charts are markedly flakier to hover-trigger (Highcharts nearest-point-by-x hit testing) — out of scope unless requested
+    point:      "<widget_by_title>.locator('.highcharts-point').first()"   # absent when the pie has no data — skip the check, don't fail
+    hover_call: "point.hover({ force: true })"                    # plain .hover() works (real mouse position), NOT dispatchEvent('mouseover') — dispatchEvent leaves the tooltip's computed style un-triggered in some cases
+    tooltip:    "<widget_by_title>.locator('div.highcharts-tooltip')"   # IMPORTANT: '.highcharts-tooltip' alone matches 6 elements (SVG bg/border paths + the real HTML div) — scope to the `div.` tag to get just the text-bearing one. count()===1
+    caveat:     "tooltip.isVisible() unreliably returns false even when style shows opacity:1/visibility:inherit and .innerText() returns real text — assert on non-empty innerText, not toBeVisible()"
+    text_shape: "'<ServiceName>\\n<metric.key>\\n<value>'"        # e.g. 'APM_RUM\nservice.events.sum\n444'
+  grid_type_icon:        "<grid_row_by_service>.locator('td').nth(1).locator('svg')"   # TYPE column icon (data-icon e.g. 'java'/'ruby'/'cpp'/...); count()===0 on a row = missing/broken icon — report the row's service name # verified 2026-07-08
+# verified 2026-07-08 — env note: 172.16.15.68 (admin/Mind@123) is data-rich; a shared instance, other testers' state can change (e.g. the global time-range value). 172.16.15.151 (same creds) currently has NO APM data seeded (every widget empty) — good for exercising the empty-state path specifically.
+# TRAP: scrollIntoViewIfNeeded() waits for the element to be visually "stable" (identical bounding box across frames) before scrolling — a widget stuck on a loading shimmer/skeleton never stabilizes and the call can hang for the FULL default action timeout (60s) instead of erroring. Wrap it: `locator.scrollIntoViewIfNeeded({ timeout: 10000 }).catch(() => {})` (see safeScroll() in the spec) so one slow widget can't stall the whole test.
+# ENV FLAKINESS OBSERVED 2026-07-08: 172.16.15.151 became unresponsive mid-suite during extended interaction (many sequential hover/click/scroll actions) — a test hung past its own bounded timeouts AND the global 120s test timeout with no error surfacing, which points to the shared backend/browser session itself stalling, not a locator bug. Confirmed by re-running the identical suite cleanly (2x) against 172.16.15.68. If a suite hangs against .151 specifically, suspect the environment before the test.
 ```
 
 # 2. Monitors (Inventory)

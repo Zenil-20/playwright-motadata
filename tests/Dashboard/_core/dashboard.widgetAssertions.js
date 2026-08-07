@@ -25,6 +25,91 @@ export function widgetByTitle(page, title) {
   return page.locator('.widget-view').filter({ has: page.locator(`[title="${title}"]`) });
 }
 
+/**
+ * Wait until the dashboard's widgets are ALL loaded — not just the first one mounted, which is
+ * all the old `.widget-view.first()` wait proved. Verified live: the app renders a
+ * `.motadata-loader` spinner in TWO places while a dashboard is settling — one page-level
+ * instance during the dashboard-shell fetch, then one INSIDE each `.widget-view` while that
+ * widget fetches its own data. As each widget's data arrives its spinner clears, so the live
+ * loader count ticks DOWN toward zero.
+ *
+ * We do NOT wait for the count to strictly reach zero: verified live that some widgets can stay
+ * stuck on their spinner indefinitely on a slow/degraded environment (e.g. 4 Flow Summary
+ * widgets held their loader for 16s+ while the rest of the dashboard finished). Blocking for
+ * zero there just burns the whole timeout on every re-navigation. Instead we wait for the loader
+ * count to STABILISE — return the instant it hits zero (healthy env, ~2-3s), OR as soon as it
+ * has stopped dropping for `dwellMs` (the remaining loaders are stuck, not still-arriving), so a
+ * permanently-stuck widget costs ~`dwellMs`, not the full timeout. Whatever's still spinning is
+ * then reported by name by validateAllWidgetsLoaded.
+ *
+ * @returns {Promise<number>} the number of mounted widgets once the dashboard has settled
+ */
+export async function waitForAllWidgetsLoaded(page, { timeout = 30000, dwellMs = 3000 } = {}) {
+  await page.locator('.widget-view').first().waitFor({ state: 'visible', timeout: Math.min(timeout, 30000) });
+  const loaders = page.locator('.motadata-loader');
+  const deadline = Date.now() + timeout;
+  let lastCount = -1;
+  let stableSince = Date.now();
+  while (Date.now() < deadline) {
+    const n = await loaders.count().catch(() => 0);
+    if (n === 0) {
+      // Re-check after a short settle to skip the transient frame where widgets have mounted but
+      // their per-widget spinners haven't attached yet (a false "0 loaders" a tick too early).
+      await page.waitForTimeout(400);
+      if ((await loaders.count().catch(() => 0)) === 0) break;
+      continue;
+    }
+    if (n !== lastCount) {
+      lastCount = n;
+      stableSince = Date.now();
+    } else if (Date.now() - stableSince >= dwellMs) {
+      break; // loader count stopped dropping — the rest are stuck, don't wait out the timeout
+    }
+    await page.waitForTimeout(300);
+  }
+  return page.locator('.widget-view').count();
+}
+
+/**
+ * Explicit, reported validation that EVERY widget on the dashboard finished loading. Waits for
+ * the settled state (above), then double-checks each mounted widget actually rendered real
+ * content — a chart svg/canvas, a grid table, a tile/group numeric value, or the "No data found"
+ * empty state — and soft-fails listing, by title, any widget still blank (loader gone but nothing
+ * drawn). Records the widget count as a report annotation so the run shows how many loaded.
+ *
+ * @returns {Promise<number>} widget count, or -1 if the dashboard never reached the settled state
+ */
+export async function validateAllWidgetsLoaded(page, testInfo) {
+  let count;
+  try {
+    count = await waitForAllWidgetsLoaded(page);
+  } catch {
+    count = -1;
+  }
+  const blank = await page.evaluate(() => {
+    const out = [];
+    document.querySelectorAll('.widget-view').forEach((w) => {
+      const hasLoader = !!w.querySelector('.motadata-loader');
+      const hasContent =
+        !!w.querySelector('svg, canvas, table, .metro-tile-value, .numeric-value, .row.py-2') ||
+        /No data found/.test(w.textContent || '');
+      if (hasLoader || !hasContent) {
+        const t = w.querySelector('[title]');
+        out.push(t ? t.getAttribute('title') : '(untitled widget)');
+      }
+    });
+    return out;
+  });
+  if (testInfo) {
+    testInfo.annotations.push({
+      type: 'WIDGETS LOADED',
+      description: count >= 0 ? `${count - blank.length}/${count} widgets loaded` : 'dashboard never settled',
+    });
+  }
+  expect.soft(blank, 'Widgets that never finished loading (spinner stuck or blank)').toEqual([]);
+  return count;
+}
+
 function escapeRegExp(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -217,21 +302,138 @@ export async function expectFullScreenWorks(page, widget, label) {
 }
 
 /**
- * "Export as CSV" is verified functionally: clicking it should raise an Ant notification
- * (top-right, class ant-notification-notice) mentioning "Export" — "Export Started / The file
- * will be downloaded once ready" when the widget has data, "Export Error / No data available to
- * export" when it doesn't. Either is a legitimate, working response; both mention "Export".
+ * "Export as CSV" is verified functionally by BOTH signals the app raises (confirmed live):
+ *   1. an in-app Ant notification (top-right) — "Export Started / The file will be downloaded
+ *      once ready" on this build; earlier builds phrased it "Success / CSV file has been
+ *      downloaded". We only require SOME non-empty notification text, not a literal word, so a
+ *      wording change across builds doesn't cause a false failure.
+ *   2. an actual file download whose name is "<widget title>_<YYYY-MM-DD>.csv" (verified live:
+ *      "Top Monitor Interface by Error Packets_2026-07-17.csv"). This is the real proof the export
+ *      worked — the browser's download popup in the screenshot is this event, not a second toast.
+ *
+ * The download listener is armed BEFORE the menu click so the event can't be missed in the gap.
  */
 export async function expectExportCsvNotifies(page, widget, label) {
   await scrollAndWaitVisible(widget);
   await widget.hover();
   await widget.locator('[data-cy="grid-action"]').click();
+  const downloadPromise = page.waitForEvent('download', { timeout: 30000 }).catch(() => null);
   await page.locator('.ant-dropdown-menu:visible').getByText('Export as CSV', { exact: true }).click();
-  const notice = page.locator('.ant-notification-notice').filter({ hasText: /Export/ });
+
+  const notice = page.locator('.ant-notification-notice').last();
   await expect.soft(notice, `${label}: exporting as CSV should raise a notification`).toBeVisible();
   const text = (await notice.innerText().catch(() => '')).trim();
   expect.soft(text.length > 0, `${label}: export notification should have text`).toBeTruthy();
+
+  const download = await downloadPromise;
+  await expect.soft(download, `${label}: exporting as CSV should download a file`).toBeTruthy();
+  if (download) {
+    const name = download.suggestedFilename();
+    expect.soft(
+      name.startsWith(label) && name.toLowerCase().endsWith('.csv'),
+      `${label}: downloaded CSV should be named "${label}_<date>.csv" (got "${name}")`
+    ).toBeTruthy();
+  }
   await page.mouse.click(5, 5); // dismiss, keep the page clean for whatever runs next
+}
+
+/**
+ * "by Group" list widget (e.g. "System CPU Percent by Group", "Memory Used Bytes by Group"):
+ * each row shows a metric VALUE (with its unit) alongside the GROUP name it belongs to — verified
+ * live these render as `.row.py-2` rows, value in `.numeric-value` (e.g. "67.65 %") and the group
+ * label as the rest of the row text (e.g. "Database > PostgreSQL"). Asserts BOTH are present on
+ * each of the first few rows: a numeric value (optionally carrying an expected `unit`) AND a
+ * non-empty group name beside it. Empty widgets are reported the usual way.
+ *
+ * @param {string|RegExp} [unit] - expected unit in the value cell ('%' for a percent group,
+ *   /[KMGT]?B\b/ for a bytes group). Omit to only require a numeric value.
+ */
+export async function expectGroupTileValues(widget, label, unit, emptyWidgets) {
+  await scrollAndWaitVisible(widget);
+  const rows = widget.locator('.row.py-2');
+  const empty = widget.getByText('No data found');
+  await waitForEitherState(rows, empty);
+  const n = await rows.count();
+  if (n === 0) {
+    await expect.soft(empty, `${label}: expected the empty state`).toBeVisible();
+    collectEmptyWidget(label, emptyWidgets);
+    return;
+  }
+  const rowsToCheck = Math.min(n, 5); // a representative sample is enough — every row is the same shape
+  for (let i = 0; i < rowsToCheck; i++) {
+    const row = rows.nth(i);
+    const valText = (await row.locator('.numeric-value').innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+    expect.soft(/\d/.test(valText), `${label}: row ${i + 1} should show a numeric value (got "${valText}")`).toBeTruthy();
+    if (unit) {
+      const ok = unit instanceof RegExp ? unit.test(valText) : valText.includes(unit);
+      expect.soft(ok, `${label}: row ${i + 1} value should carry the "${unit}" unit (got "${valText}")`).toBeTruthy();
+    }
+    const rowText = (await row.innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+    const groupName = rowText.replace(valText, '').trim();
+    expect.soft(groupName.length > 0, `${label}: row ${i + 1} should show a group name beside its value (row: "${rowText}")`).toBeTruthy();
+  }
+}
+
+/**
+ * Reads the CURRENTLY-shown Highcharts tooltip text for a hovered widget. Tooltips render in two
+ * places depending on chart kind (verified live): a PIE keeps its tooltip inside the widget's own
+ * SVG (`widget .highcharts-tooltip`, whose isVisible() is unreliable, so we read innerText and
+ * take the first non-empty), while a SPARKLINE line-chart is configured tooltip.outside=true and
+ * renders into a page-level `.highcharts-tooltip-container`. Try both and return the first
+ * non-empty text.
+ */
+async function readChartTooltip(page, widget) {
+  const sources = [widget.locator('.highcharts-tooltip'), page.locator('.highcharts-tooltip-container')];
+  for (const loc of sources) {
+    const count = await loc.count();
+    for (let i = 0; i < count; i++) {
+      const text = (await loc.nth(i).innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+      if (text) return text;
+    }
+  }
+  return '';
+}
+
+/**
+ * Hover a chart widget (pie OR in-grid sparkline) and assert the tooltip reveals a real data
+ * value — and, when an expected `unit` is given, that the value carries it (e.g. a CPU chart's
+ * tooltip shows "%", a latency chart "ms"). Pie slices are hovered at their centre; sparklines
+ * need the pointer swept across the plot width to land on a data point, so we try several x
+ * positions (plus any explicit point) until a tooltip appears. Silently returns if the widget has
+ * no chart at all (e.g. an all-zero grid that renders no sparkline) — nothing to hover there.
+ *
+ * @param {string|RegExp} [unit] - expected unit token in the tooltip ('%', 'ms', 'bps', …).
+ */
+export async function expectChartHoverValue(page, widget, label, unit) {
+  await scrollAndWaitVisible(widget);
+  const chart = widget.locator('.highcharts-container').first();
+  if (await chart.count() === 0) return; // no chart rendered on this widget/env — nothing to hover
+  const box = await chart.boundingBox();
+  if (!box) return;
+
+  const positions = [];
+  const point = widget.locator('.highcharts-point').first();
+  if (await point.count() > 0) {
+    const pb = await point.boundingBox().catch(() => null);
+    if (pb) positions.push([pb.x + pb.width / 2, pb.y + pb.height / 2]);
+  }
+  for (const f of [0.5, 0.4, 0.6, 0.3, 0.7, 0.8, 0.2, 0.9]) {
+    positions.push([box.x + box.width * f, box.y + box.height / 2]);
+  }
+
+  let text = '';
+  for (const [x, y] of positions) {
+    await page.mouse.move(x, y, { steps: 3 });
+    await page.waitForTimeout(250);
+    text = await readChartTooltip(page, widget);
+    if (text) break;
+  }
+  expect.soft(text.length > 0, `${label}: hovering the chart should reveal a tooltip value`).toBeTruthy();
+  if (unit && text) {
+    const ok = unit instanceof RegExp ? unit.test(text) : text.includes(unit);
+    expect.soft(ok, `${label}: chart tooltip should show values in "${unit}" (got "${text}")`).toBeTruthy();
+  }
+  await page.mouse.move(5, 5); // move off the plot so the tooltip clears before the next widget
 }
 
 /**
