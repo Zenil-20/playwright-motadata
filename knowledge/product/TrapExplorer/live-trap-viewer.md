@@ -4,9 +4,12 @@ module: TrapExplorer
 route: "/trap-explorer/live-trap-viewer"
 build: 8.2.6
 status: draft
-sources: [catalog, screenshot, kb]   # locators/catalog/trap_explorer_live_trap_viewer.json · screenshots/TRAP.png (BUILD 8.2.5, parent screen) · known_issues/customer-issue-kb.md
-verified: 2026-07-09
+sources: [catalog, screenshot, kb, docs, live]   # locators/catalog/trap_explorer_live_trap_viewer.json · screenshots/TRAP.png (BUILD 8.2.5, parent screen) · known_issues/customer-issue-kb.md · docs.motadata.com SNMP-Trap-Explorer · live app 8.2.3 (2026-04-05, entry button only)
+verified: 2026-07-09                 # 8.2.6 baseline; docs/live additions merged 2026-08-07
 ---
+
+> Module context — architecture, processing pipeline, prerequisite chain and test coverage:
+> [`README.md`](./README.md). **This screen currently has no ADO test suite** — see README §7.2.
 
 # Trap Explorer · live-trap-viewer
 
@@ -53,6 +56,10 @@ Trap Explorer (/trap-explorer/) → "Live Trap Viewer" button (top-right) → /t
 
 > Only the five grid columns were captured — no search, buttons, filter, or time-range picker. This is
 > consistent with a live tail view. Confirm any pause/clear controls live.
+>
+> **Live check (observed 8.2.3):** the **Live Trap Viewer** entry button is confirmed present on the
+> parent Trap Explorer header (top-right, blue). The viewer itself was not opened in that pass — its
+> internals still rest on the catalog alone.
 
 _Locators: see `knowledge/locators/catalog/trap_explorer_live_trap_viewer.json`. No `id`s captured;
 harvest the row-expander and grid locators live and promote to `selector-cookbook.md`

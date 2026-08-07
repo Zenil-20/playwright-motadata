@@ -4,10 +4,13 @@ module: Settings
 category: snmp-trap
 route: "/settings/snmp-trap/snmp-trap-forwarder"
 build: 8.2.6
-status: draft                        # authored from catalog + customer-issue-kb; create-form fields TODO
-sources: [catalog, kb]               # locators/catalog/settings_snmp_trap_snmp_trap_forwarder.json · known_issues/customer-issue-kb.md §7,§5
-verified: 2026-07-09
+status: draft                        # create-form FIELDS now documented (§4); their LOCATORS still unharvested
+sources: [catalog, kb, docs]         # locators/catalog/settings_snmp_trap_snmp_trap_forwarder.json · known_issues/customer-issue-kb.md §7,§5 · docs.motadata.com SNMP-Trap-Forwarder
+verified: 2026-07-09                 # 8.2.6 baseline; docs additions merged 2026-08-07
 ---
+
+> Module context — architecture, processing pipeline, prerequisite chain and test coverage:
+> [`../../TrapExplorer/README.md`](../../TrapExplorer/README.md).
 
 # SNMP Trap · Trap Forwarder
 
@@ -48,9 +51,15 @@ Settings → SNMP Trap → SNMP Trap Forwarder
 | Search | `input[placeholder="Search"]` · `input[name="search-trap-forwarding"]` |
 | Grid columns | SNMP Trap Forwarder Name · SNMP Trap Profiles · Destination IP/Host · Port · Actions |
 
-> The **create-forwarder form fields were not captured** (grid + create button only). Expected fields —
-> Forwarder Name, SNMP Trap Profiles (multi-select), Destination IP/Host, Port, and likely SNMP
-> version/credentials for the outbound relay — must be harvested live. TODO(source: KG).
+> The **create-forwarder form fields were not captured** in this catalog sweep (grid + create button
+> only). The product docs give the field set below; **the locators still must be harvested live**.
+
+**Create-form fields (source: docs):** Forwarder Name · **SNMP Trap Profiles (multi-select)** ·
+Destination IP · Port · Type · SNMP Version · Community.
+
+This confirms the outbound relay carries **its own SNMP version and community** — it is re-encoded for
+the destination, not passed through verbatim, so inbound and outbound SNMP settings are independent
+and must be tested as such.
 
 _Locators: see `knowledge/locators/catalog/settings_snmp_trap_snmp_trap_forwarder.json`; promote verified ones into the cookbook._
 
@@ -77,10 +86,16 @@ _Locators: see `knowledge/locators/catalog/settings_snmp_trap_snmp_trap_forwarde
 
 ## 9. Business Rules
 - A forwarder relays only the **selected Trap Profiles** to the destination — profiles are the filter.
+  **Multiple profiles per forwarder** are supported (source: docs).
 - Forwarding depends on traps first being **received** (a working Listener) and **classified** to a
   selected profile.
-- TODO(source: Motadata KG) — outbound SNMP version/credentials, whether raw vs. re-encoded traps are
-  sent, and name/destination uniqueness rules.
+- **Forwarding is non-blocking — local ingestion ALWAYS occurs** (source: docs). An unreachable
+  destination, a wrong port, or a failed relay must never remove the trap from Trap Explorer. Any test
+  asserting forwarding failure must also assert the trap is still present locally.
+- The relay carries its **own SNMP Version and Community** (§4), independent of the inbound listener.
+- Each referenced profile's **Used Count** reflects forwarder references (see
+  `snmp-trap-profiles.md` §9).
+- TODO(source: Motadata KG) — the `Type` field's enumeration, and name/destination uniqueness rules.
 
 ## 10. Known Bugs
 - **None recorded for this exact screen.** The closest cited items are trap-adjacent, not forwarder
@@ -91,7 +106,11 @@ _Locators: see `knowledge/locators/catalog/settings_snmp_trap_snmp_trap_forwarde
 
 ## 11. Edge Cases
 - Create a forwarder with no profiles selected (forwards nothing).
-- Unreachable destination IP/host or blocked port (traps received but never delivered).
+- Unreachable destination IP/host or blocked port — traps never delivered, but **must still appear in
+  Trap Explorer** (non-blocking, §9). This is the key assertion for the whole screen.
+- Delete a forwarder while it is actively forwarding.
+- Outbound SNMP Version / Community mismatched to what the destination expects.
+- One forwarder with many profiles vs. many forwarders sharing one profile (Used Count accuracy).
 - Destination = the AIOps host itself (loop).
 - High trap volume causing forwarding backlog.
 - Forward a profile that is later deleted (dangling reference).

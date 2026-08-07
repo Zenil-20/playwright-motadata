@@ -5,9 +5,12 @@ category: policy-settings
 route: "/settings/policy-settings/trap"
 build: 8.2.6
 status: draft
-sources: [catalog, screenshot, kb]   # locators/catalog/settings_policy_settings_trap.json (sweep 2026-07-02) + screenshots/TRAP.png (module data view) + known_issues/customer-issue-kb.md §7/§5
-verified: 2026-07-09
+sources: [catalog, screenshot, kb, docs]   # locators/catalog/settings_policy_settings_trap.json (sweep 2026-07-02) + screenshots/TRAP.png (module data view) + known_issues/customer-issue-kb.md §7/§5 + docs.motadata.com trap-management
+verified: 2026-07-09                 # 8.2.6 baseline; docs additions merged 2026-08-07
 ---
+
+> Module context — architecture, processing pipeline, prerequisite chain and test coverage:
+> [`../../TrapExplorer/README.md`](../../TrapExplorer/README.md).
 
 # Policy Settings · Trap
 
@@ -97,7 +100,23 @@ _Locators: catalog `settings_policy_settings_trap.json`; promote verified ones i
   verify before asserting a policy fires.
 - **Match on OID/varbind, not on a numeric threshold** (no Threshold Value column) — trap policies are
   event-classification policies.
+- **Trap alerting is a separate system** from Metric/Log/Flow policies (source: docs) — shared
+  behavior must not be assumed from those policy types.
+- A profile with **`Filter = Yes` drops the trap before the policy engine sees it** (see
+  `../snmp-trap/snmp-trap-profiles.md` §9) — a second, non-obvious way a policy silently never fires.
 - Uniqueness / defaults / limits — TODO(source: Motadata KG/docs).
+
+### Authoring workflow (source: docs)
+```
+New → Source = "Traps" → filter criteria (Source Host, Value/Count, operators)
+    → combine rules (AND / OR) → Clear Rules → Severity → Actions → email notification
+```
+- **Email placeholders:** `$alert-name$`, `$alert-severity-description$`, `$alert-triggered-time$`.
+- Policies can be **Enabled, Disabled, Deleted**; severity is colour-coded; the listing shows a
+  **24-hour trigger frequency** and an **hourly trend**.
+- Alerts can also be created **directly from a received trap** via the Trap Explorer row **Action**
+  column — a cross-module entry point into this screen with no test suite today
+  (see `../../TrapExplorer/README.md` §7.2).
 
 ## 10. Known Bugs
 From `customer-issue-kb.md` (§5 Policies, §7 Trap Explorer):

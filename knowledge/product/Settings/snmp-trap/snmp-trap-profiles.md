@@ -4,10 +4,13 @@ module: Settings
 category: snmp-trap
 route: "/settings/snmp-trap/snmp-trap-profiles"
 build: 8.2.6
-status: draft                        # authored from catalog + TRAP.png + customer-issue-kb §7; create-form fields TODO
-sources: [catalog, screenshot, kb]   # locators/catalog/settings_snmp_trap_snmp_trap_profiles.json · screenshots/TRAP.png · known_issues/customer-issue-kb.md §7
-verified: 2026-07-09
+status: draft                        # create-form FIELDS now documented (§4); their LOCATORS still unharvested
+sources: [catalog, screenshot, kb, docs]   # locators/catalog/settings_snmp_trap_snmp_trap_profiles.json · screenshots/TRAP.png · known_issues/customer-issue-kb.md §7 · docs.motadata.com SNMP-Trap-Profile
+verified: 2026-07-09                 # 8.2.6 baseline; docs additions merged 2026-08-07
 ---
+
+> Module context — architecture, processing pipeline, prerequisite chain and test coverage:
+> [`../../TrapExplorer/README.md`](../../TrapExplorer/README.md).
 
 # SNMP Trap · Trap Profiles
 
@@ -50,9 +53,21 @@ Settings → SNMP Trap → SNMP Trap Profiles
 | Row action menu | `[data-cy='grid-action']` |
 | Grid columns | SNMP Trap Profile Name · Trap OID · Used Count · Actions |
 
-> The **create-profile form fields were not captured** in this sweep (only the grid + create button).
-> Expected fields — Profile Name, Trap OID, varbind/message mapping, severity — must be harvested live
-> before writing tests against the create flow. TODO(source: KG).
+> The **create-profile form fields were not captured** in this catalog sweep (grid + create button
+> only). The product docs give the field set below; **the locators still must be harvested live**
+> before writing tests against the create flow.
+
+**Create-form fields (source: docs):**
+
+| Field | Type | Logic |
+|---|---|---|
+| Profile Name | text, **required** | Unique identifier |
+| Trap OID | OID, **required** | Unique per profile |
+| **Filter** | Yes/No, **required** | **Yes = the trap is DROPPED silently. No = ingested normally.** |
+| Translator | text | The message displayed in Trap Explorer |
+| Severity | selection | Assigned to every trap matching this OID |
+
+⚠️ **`Filter` is the most destructive control on this screen** — see §9.
 
 _Locators: see `knowledge/locators/catalog/settings_snmp_trap_snmp_trap_profiles.json`; promote verified ones into the cookbook._
 
@@ -70,17 +85,29 @@ _Locators: see `knowledge/locators/catalog/settings_snmp_trap_snmp_trap_profiles
 - **Delete:** removed; TODO(source: KG/docs) — behavior when Used Count > 0 (blocked/warned).
 
 ## 8. Validations
-- **Profile Name** — required; likely unique. TODO(source: docs).
-- **Trap OID** — required; must be a valid dotted OID (e.g. `.1.3.6.1.4.1.9.9.41.2.0.1`).
-  TODO(source: docs) confirm format enforcement + uniqueness.
-- TODO(source: docs) — remaining create-form field rules (not captured).
+- **Profile Name** — required; unique identifier (source: docs).
+- **Trap OID** — required; **unique per profile**; must be a valid dotted OID
+  (e.g. `.1.3.6.1.4.1.9.9.41.2.0.1`). TODO(source: docs) confirm format enforcement.
+- **Filter** — required (Yes/No). TODO(source: docs) confirm the default; given the drop semantics, a
+  default of `Yes` would be a serious footgun and is worth explicitly asserting.
+- **Translator** / **Severity** — optional; no constraints documented.
 
 ## 9. Business Rules
-- One profile ↔ one **Trap OID** classification; **Used Count** tracks how many consumers reference it.
+- One profile ↔ one **Trap OID** classification; **Used Count** tracks how many consumers reference it
+  — specifically **forwarder references** (source: docs).
 - A trap only classifies if the sending device's credentials/version match the **Listener** — the
   profile alone does not make traps appear (see Known Bugs).
-- TODO(source: Motadata KG) — Trap OID uniqueness across profiles; shipped default profiles; varbind
-  mapping to message.
+- **`Filter = Yes` silently DROPS every matching trap** (source: docs). The trap is discarded at
+  processing step 3 — it never reaches Trap Explorer, never forwards, and never triggers an alert, with
+  **no error and no audit surface**. This is the only true data-loss path in trap processing, and it is
+  a single Yes/No away from normal operation.
+  - Contrast with an **unmatched** OID, which is *not* a drop: it still ingests and appears in Explorer
+    with blank name/severity/message. "No profile" and "profile with Filter=Yes" produce opposite
+    outcomes and must be tested as separate cases.
+- **Inbuilt profiles cannot be deleted** — they may only be **cloned or viewed** (source: docs). A
+  delete attempt must fail.
+- TODO(source: Motadata KG) — Trap OID uniqueness enforcement across profiles; the shipped inbuilt
+  profile list; varbind mapping to message.
 
 ## 10. Known Bugs
 From `customer-issue-kb.md` §7 (Log / Flow / Trap Explorers):
@@ -95,4 +122,10 @@ From `customer-issue-kb.md` §7 (Log / Flow / Trap Explorers):
 - Malformed OID string; extremely long OID.
 - Enterprise-specific vs standard OID (`.1.3.6.1.4.1.<enterprise>...`).
 - High-volume trap OID (thousands/hour per TRAP.png) — classification/search performance.
-- Delete a profile currently referenced by an alert policy or forwarder.
+- Delete a profile currently referenced by an alert policy or forwarder (Used Count > 0).
+- **Delete an inbuilt profile — must fail** (§9); confirm Clone and View remain available.
+- **`Filter = Yes` end-to-end:** send a matching trap and assert it is absent from Trap Explorer, not
+  forwarded, and raises no alert — then flip to `No` and assert it appears.
+- Flip `Filter` Yes→No→Yes while traps are arriving (does the change apply to in-flight traps?).
+- Used Count after a forwarder that references the profile is edited or deleted.
+- Edit a profile's Severity/Translator while matching traps are arriving — do existing rows re-label?

@@ -9,6 +9,9 @@ sources: [catalog, screenshot, kb]   # locators/catalog/settings_snmp_trap.json 
 verified: 2026-07-09
 ---
 
+> Module context — architecture, processing pipeline, prerequisite chain and test coverage:
+> [`../../TrapExplorer/README.md`](../../TrapExplorer/README.md).
+
 # SNMP Trap Settings
 
 ## 1. Purpose

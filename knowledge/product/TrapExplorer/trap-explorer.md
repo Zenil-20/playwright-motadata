@@ -4,9 +4,12 @@ module: TrapExplorer
 route: "/trap-explorer/"
 build: 8.2.6
 status: draft
-sources: [catalog, screenshot, kb]   # locators/catalog/trap_explorer.json · screenshots/TRAP.png (BUILD 8.2.5) · known_issues/customer-issue-kb.md
-verified: 2026-07-09
+sources: [catalog, screenshot, kb, docs, live]   # locators/catalog/trap_explorer.json · screenshots/TRAP.png (BUILD 8.2.5) · known_issues/customer-issue-kb.md · docs.motadata.com trap-management · live app 8.2.3 (2026-04-05, chrome only)
+verified: 2026-07-09                 # 8.2.6 baseline; docs/live additions merged 2026-08-07
 ---
+
+> Module context — architecture, processing pipeline, prerequisite chain and test coverage:
+> [`README.md`](./README.md).
 
 # Trap Explorer · trap-explorer
 
@@ -66,6 +69,13 @@ Left icon rail → Trap Explorer (binoculars icon) → /trap-explorer/
 > Catalog `gridHeaders` list `Trap Name · Trap OID · Source · Count · Message · Timestamp ·
 > Acknowledged · Action`; the screenshot also shows a **Vendor** column (and Vendor as a quick-filter
 > chip). Treat Vendor as present.
+>
+> **Live check (observed 8.2.3, `https://172.16.15.199/trap-explorer/`):** those eight catalog columns
+> were all confirmed present, as were the **Live Trap Viewer** button, the **Search** box, a **column
+> visibility (eye)** toggle, **Export As PDF**, **Export As CSV**, and the **filter funnel**. The page
+> was empty ("No data found" chart, "No records available" grid), so the observation covers **chrome
+> only — not rendered row data**. Vendor was *not* separately confirmed in that pass; it rests on the
+> 8.2.5 screenshot.
 
 _Locators: see `knowledge/locators/catalog/trap_explorer.json`. `#filter-btn` and `#btn-show-hide-columns`
 are stable; harvest the row Acknowledge / Create-Trap / export-icon locators live and promote to
@@ -96,12 +106,22 @@ are stable; harvest the row Acknowledge / Create-Trap / export-icon locators liv
 ## 9. Business Rules
 - Grid rows are **aggregated per trap** — the **Count** column implies repeated identical traps are
   rolled up with an occurrence count (screenshot shows counts like 1468 / 15 / 9).
-- Chart and grid are **time-scoped** by the shared range picker.
+- Chart and grid are **time-scoped** by the shared range picker; the chart buckets by
+  **hour / day / week / month** (source: docs).
 - **Create Trap** turns a received trap into a reusable trap definition/policy (Action column).
 - Traps only appear if the receiver's **community string (v2c)** or **v3 credentials** match the
   sender — see Known Bugs.
-- TODO(source: Motadata KG) — trap retention, how Vendor is resolved, and what Acknowledge changes
-  downstream (alerting).
+- **Acknowledgment is transient — re-receiving the same trap OVERRIDES the acknowledgment**
+  (source: docs). Ack is therefore a "seen since last occurrence" marker, not a durable state.
+- **An unmatched OID is still ingested**, not dropped — the row appears with **blank name, severity
+  and message** because no Trap Profile supplied the metadata (source: docs, Trap Processing step 4).
+  The one case that *is* a silent drop is a profile with **Filter = Yes** — see
+  `Settings/snmp-trap/snmp-trap-profiles.md` §9.
+- **Retention:** raw trap data **7 days**, aggregated trap data **180 days** (source: docs).
+- Traps are correlated with performance metrics, configuration data, log information, inventory
+  details, and geographic location (source: docs).
+- TODO(source: Motadata KG) — how Vendor is resolved, and what Acknowledge changes downstream
+  (alerting).
 
 ## 10. Known Bugs
 - **Traps not visible** (kb §7, PQD-33528): traps seen in `tcpdump` at the receiver but **not shown in
@@ -115,7 +135,12 @@ are stable; harvest the row Acknowledge / Create-Trap / export-icon locators liv
 - Empty range → no traps / empty chart.
 - Very high Count values (formatting/sort).
 - Unknown OID / unresolved Vendor (blank Vendor cell).
-- Acknowledge then new traps of the same OID arrive (does the ack persist / re-arm?).
+- Acknowledge, then new traps of the same OID arrive — **answered: the ack is overridden** (§9). Assert
+  the row returns to un-acknowledged rather than persisting.
+- A trap whose OID matches no profile — row present, metadata columns blank (graceful degradation).
+- A trap whose profile has **Filter = Yes** — expect **nothing** in the grid (silent drop, data-loss
+  class; contrast with the unmatched-OID case above).
+- Sustained high ingest (thousands of traps/second) — no loss, and chart buckets stay accurate.
 - Create Trap from a trap that already has a definition (duplicate?).
 - Export with an active filter (does the export honour the filter?).
 - Long Message text truncation; rapid time-range switching mid-query.
