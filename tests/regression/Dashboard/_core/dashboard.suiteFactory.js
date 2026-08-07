@@ -31,6 +31,10 @@ import {
   expectExportCsvNotifies,
   expectPieHoverTooltip,
   expectWidgetPresent,
+  expectGroupTileValues,
+  expectChartHoverValue,
+  waitForAllWidgetsLoaded,
+  validateAllWidgetsLoaded,
 } from './dashboard.widgetAssertions.js';
 
 /**
@@ -43,6 +47,8 @@ import {
  * @param {string[]} [config.trendCharts] - standalone Highcharts trend/pie widget titles
  * @param {{chart: string, grid: string, columns: string[]}[]} [config.chartGridPairs] - paired chart+grid widgets checked together, incl. cross-consistency + hover tooltip
  * @param {{title: string, columns: string[]}[]} [config.grids] - standalone grid widgets (no paired chart)
+ * @param {{title: string, unit?: string|RegExp}[]} [config.groupTiles] - "by Group" list widgets (e.g. "System CPU Percent by Group"); asserts each row shows a metric value (with `unit` if given) AND the group name beside it
+ * @param {{title: string, unit?: string|RegExp}[]} [config.chartHovers] - chart/sparkline widgets to hover; asserts the tooltip reveals a value in the expected `unit` ('%', 'ms', 'bps', …)
  * @param {{title: string, kind: 'tile'|'pie'|'chart'|'grid', fullScreen?: boolean, exportCsv?: boolean}[]} [config.actionMenuChecks] - one representative widget per menu-item-set is enough; don't loop every widget
  * @param {(page: import('@playwright/test').Page) => Promise<void>} [config.afterNavigate] - optional per-dashboard hook (e.g. closing an env-specific overlay)
  * @param {(ctx: { page: import('@playwright/test').Page, emptyWidgets: string[], goToDashboard: (page: import('@playwright/test').Page) => Promise<void> }) => Promise<void>} [config.extraChecks] - awaited once, inside the SAME single test, for dashboard-specific checks that don't fit the generic shapes above (e.g. APM's per-row TYPE-icon check). Call `await ctx.goToDashboard(ctx.page)` first if the check needs a freshly-mounted widget grid.
@@ -126,6 +132,8 @@ function registerDashboardTest(config, getPage) {
     trendCharts = [],
     chartGridPairs = [],
     grids = [],
+    groupTiles = [],
+    chartHovers = [],
     actionMenuChecks = [],
     afterNavigate,
     extraChecks,
@@ -148,7 +156,12 @@ function registerDashboardTest(config, getPage) {
     // depend on.
     await page.goto(`${process.env.Motadata_Aiops}/dashboard/${dashboardId}`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('h3', { hasText: dashboardTitle })).toBeVisible();
-    await page.locator('.widget-view').first().waitFor({ state: 'visible', timeout: 30000 });
+    // Wait for the WHOLE widget grid to finish loading (every per-widget spinner cleared), not
+    // just the first widget to mount — so each phase below runs against a fully-settled dashboard.
+    // Non-fatal on timeout: fall through to the phase checks (and the explicit
+    // validateAllWidgetsLoaded assertion) so a single slow widget surfaces by name rather than
+    // aborting the whole navigation.
+    await waitForAllWidgetsLoaded(page).catch(() => {});
     if (afterNavigate) await afterNavigate(page);
   }
 
@@ -164,6 +177,12 @@ function registerDashboardTest(config, getPage) {
     // deep-link after login rather than driving the collapsible dashboard-tree/search panel.
     await goToDashboard(page);
     await expect(page).toHaveTitle(titlePattern ?? new RegExp(dashboardTitle));
+
+    // Explicit, reported validation that the WHOLE dashboard loaded — every widget mounted, every
+    // loading spinner cleared, and each widget actually drew content (or "No data found"). Any
+    // widget still blank/stuck is soft-failed by name; the "WIDGETS LOADED" annotation records
+    // the loaded/total count in the report header.
+    await validateAllWidgetsLoaded(page, testInfo);
 
     // Runs over EVERY widget on the dashboard — so this is what guarantees any widget showing
     // "No data found" is reported by name, whether or not a precise tile/chart/grid check below
@@ -190,6 +209,24 @@ function registerDashboardTest(config, getPage) {
       await goToDashboard(page);
       for (const { title, columns } of grids) {
         await expectGridOrEmpty(widgetByTitle(page, title), columns, title, emptyWidgets);
+      }
+    }
+
+    // "by Group" list widgets: each row must show BOTH a metric value (with its unit) AND the
+    // group name beside it (e.g. "67.65 % — Database > PostgreSQL").
+    if (groupTiles.length) {
+      await goToDashboard(page);
+      for (const { title, unit } of groupTiles) {
+        await expectGroupTileValues(widgetByTitle(page, title), title, unit, emptyWidgets);
+      }
+    }
+
+    // Hover each chart/sparkline widget and confirm its tooltip reveals a real value in the
+    // expected unit (a % chart shows "%", a latency chart "ms", …).
+    if (chartHovers.length) {
+      await goToDashboard(page);
+      for (const { title, unit } of chartHovers) {
+        await expectChartHoverValue(page, widgetByTitle(page, title), title, unit);
       }
     }
 

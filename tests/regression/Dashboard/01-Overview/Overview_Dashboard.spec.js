@@ -65,8 +65,29 @@ createDashboardCategorySuite('Overview', [
     { title: 'Top Monitor by Disk IOPS', columns: ['MONITOR', 'DISK IOPS'] },
     { title: 'Top Monitor by Network Bits/s', columns: ['MONITOR', 'NETWORK BITS/S'] },
   ],
+  // "by Group" widgets: every row must show both a value (with its unit) and the group name.
+  // Verified live (172.16.15.170): CPU group in %, Memory group in bytes (GB/MB/KB).
+  groupTiles: [
+    { title: 'System CPU Percent by Group', unit: '%' },
+    { title: 'Memory Used Bytes by Group', unit: /\b[KMGT]?B\b/ },
+  ],
+  // Hover every chart/sparkline and confirm the tooltip shows a value in the expected unit —
+  // units captured live from each widget's Highcharts tooltip. The all-zero "…Error Packets"
+  // grid renders no sparkline on this env, so it has no chart to hover (export-only below).
+  chartHovers: [
+    { title: 'Top Monitor by CPU Utilization', unit: '%' },
+    { title: 'Top Monitor by Memory Percent', unit: '%' },
+    { title: 'Top Monitor by Latency', unit: 'ms' },
+    { title: 'Top Monitor by Network Bits/s', unit: 'bps' },
+    { title: 'Top Monitor by Network Packets per Second' },
+    { title: 'Top Monitor Interface by Dropped Packets' },
+    { title: 'Top Monitor by Disk IOPS' },
+    { title: 'Top Monitor by Disk Used Percent', unit: '%' },
+    { title: 'Top Monitor by Low Disk Space', unit: '%' },
+  ],
   actionMenuChecks: [
     { title: 'Top Monitor by CPU Utilization', kind: 'grid', fullScreen: true, exportCsv: true },
+    { title: 'Top Monitor Interface by Error Packets', kind: 'grid', exportCsv: true },
   ],
 },
 ]);
