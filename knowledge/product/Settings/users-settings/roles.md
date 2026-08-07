@@ -92,11 +92,15 @@ Settings → User Settings → Role
 ## 9. Business Rules
 - **Used Count** reflects how many users/profiles reference the role; a role in use is expected to be
   **protected from deletion** (delete blocked or a reassign prompt). TODO(source: KG/docs) confirm.
+  See [[RBAC-03]] for the cross-cutting version of this rule (also applies to Profile/Group/Policy).
 - A role with a **missing permission** removes the corresponding capability for every user who has it —
   e.g. without the **Query** grant a user cannot download reports (Known Bugs). This makes role
-  editing high-blast-radius; changes should be audited.
+  editing high-blast-radius; changes should be audited. See [[RBAC-01]] (least-privilege cascade).
 - **User Profiles reference roles** — deleting/altering a role cascades to every profile (and thus
-  user) that consumes it. TODO(source: KG/docs) confirm cascade semantics.
+  user) that consumes it. TODO(source: KG/docs) confirm cascade semantics. Note that Group scope does
+  **not** cascade parent→child the same way — see [[RBAC-02]], don't assume this rule generalizes.
+- Managing roles is itself gated by RBAC and should never rely on a hidden control alone —
+  see [[RBAC-04]] (no self-elevation / hidden-control is not enforcement).
 - TODO(source: KG/docs): built-in system roles, and whether roles are scoped to groups here or only in
   User Profiles (**Scope By** lives on the User Profile screen).
 

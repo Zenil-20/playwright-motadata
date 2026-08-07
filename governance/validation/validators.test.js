@@ -51,6 +51,44 @@ test('business-rules: create-flow needs idempotency; no literal secrets', () => 
   assert.equal(good.pass, true);
 });
 
+test('business-rules: domain rules (delete-guard, cascade, permission, clone, poller, export, session, positional)', () => {
+  // BR-DELETE-GUARD-USED-COUNT
+  assert.equal(validateBusinessRules([{ id: 'D1', title: 'Delete role with Used Count > 0', expected: [{ text: 'role removed' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'D2', title: 'Delete role with Used Count > 0', expected: [{ text: 'delete blocked, role in use' }] }]).pass, true);
+
+  // BR-CASCADE-NOT-IMPLICIT
+  assert.equal(validateBusinessRules([{ id: 'C1', title: 'Parent group visibility vs child group', expected: [{ text: 'child group monitors also visible' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'C2', title: 'Parent group visibility vs child group', expected: [{ text: 'child group is not inherited automatically' }] }]).pass, true);
+
+  // BR-PERMISSION-DENIAL-EXPLICIT
+  assert.equal(validateBusinessRules([{ id: 'P1', title: 'Report download without Query permission missing', expected: [{ text: 'download does nothing' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'P2', title: 'Report download without Query permission missing', expected: [{ text: 'error toast: permission denied' }] }]).pass, true);
+
+  // BR-UI-HIDDEN-NEEDS-BACKEND-403
+  assert.equal(validateBusinessRules([{ id: 'H1', title: 'Viewer role', expected: [{ text: 'Delete button is hidden' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'H2', title: 'Viewer role', expected: [{ text: 'Delete button is hidden; direct API call returns 403 forbidden' }] }]).pass, true);
+
+  // BR-CLONE-INDEPENDENCE
+  assert.equal(validateBusinessRules([{ id: 'CL1', title: 'Clone dashboard and edit', expected: [{ text: 'clone shows new widget' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'CL2', title: 'Clone dashboard and edit', expected: [{ text: 'clone shows new widget; original dashboard is unchanged' }] }]).pass, true);
+
+  // BR-POLLER-WINDOW-MATH
+  assert.equal(validateBusinessRules([{ id: 'AL1', title: 'Policy occurrence and poll interval feasibility' }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'AL2', title: 'Policy occurrence and poll interval feasibility', data: { poll_interval: '5m', occurrence_window: '15m' }, expected: [{ text: 'fires' }] }]).pass, true);
+
+  // BR-EXPORT-VALUE-FIDELITY
+  assert.equal(validateBusinessRules([{ id: 'EX1', title: 'Export report to pdf', expected: [{ text: 'file downloads' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'EX2', title: 'Export report to pdf', expected: [{ text: 'tag value and row order preserved in filename' }] }]).pass, true);
+
+  // BR-CONCURRENT-SESSION-DENIAL
+  assert.equal(validateBusinessRules([{ id: 'S1', title: 'Concurrent session for same user', expected: [{ text: 'both sessions active' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'S2', title: 'Concurrent session for same user', expected: [{ text: 'first session forced logout' }] }]).pass, true);
+
+  // BR-NO-POSITIONAL-TARGET
+  assert.equal(validateBusinessRules([{ id: 'PO1', title: 'x', steps: [{ action: 'click', target: "row.nth(2)" }], expected: [{ text: 'ok' }] }]).pass, false);
+  assert.equal(validateBusinessRules([{ id: 'PO2', title: 'x', steps: [{ action: 'click', target: "row with text 'Cisco'" }], expected: [{ text: 'ok' }] }]).pass, true);
+});
+
 test('locators: rejects missing/unverified/positional/uncited, passes clean', () => {
   assert.equal(validateLocators([{ id: 'A', steps: [{ action: 'click', target: 'Save' }] }]).pass, false); // no locator
   assert.equal(validateLocators([{ id: 'A', steps: [{ action: 'click', target: 'Save', locator: '#save', verified: false, source: 'cookbook' }] }]).pass, false);

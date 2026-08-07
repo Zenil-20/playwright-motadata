@@ -13,7 +13,7 @@ Mechanical templating only. Reason about *structure*, never about the UI.
 /*
  * Copyright (c) 2026 Motadata. All Rights Reserved.
  * ... (full header preserved)
- * Author  : Zenil Kapadia
+ * Author  : <Author Name>
  * Created : <today>
  */
 import { test, expect } from '@playwright/test';
