@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "prod",
+  "ootb",
+  "kubernetes",
+  "container",
+  "memory",
+  "percent",
+  "monitoring",
+  "user",
+  "want",
+  "monitor",
+  "utilization",
+  "percentage",
+  "without",
+  "manually",
+  "creating",
+  "derived",
+  "counter",
+  "summary",
+  "observeops",
+  "currently",
+  "provides",
+  "counters",
+  "bytes",
+  "limit",
+  "provide",
+  "ready",
+  "users",
+  "need",
+  "expressed",
+  "must",
+  "derive",
+  "story",
+  "adds",
+  "computed",
+  "existing",
+  "using",
+  "defined",
+  "formula",
+  "primary",
+  "sres"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\policy-settings\\metric.md  (91 term hits)",
+  "knowledge\\product\\Alerts\\alerts.md  (78 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog-create.md  (77 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog.md  (75 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\overview.md  (74 term hits)",
+  "knowledge\\product\\Reports\\create.md  (72 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\device-monitor-settings.md  (69 term hits)",
+  "knowledge\\product\\Settings\\integration\\service-now.md  (68 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\_index.json  (22 term hits)",
+  "knowledge\\locators\\catalog\\alerts.json  (15 term hits)",
+  "knowledge\\locators\\catalog\\settings_monitoring_snmp_device_catalog_create.json  (13 term hits)",
+  "knowledge\\locators\\catalog\\flow_explorer.json  (12 term hits)",
+  "knowledge\\locators\\catalog\\nccm_explorer.json  (11 term hits)",
+  "knowledge\\locators\\catalog\\settings_monitoring_rediscover_setting.json  (11 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\index.md  (44 term hits)",
+  "knowledge\\business_rules\\RBAC-01-least-privilege-cascade.md  (32 term hits)",
+  "knowledge\\business_rules\\DISCOVERY-02-ifspeed-zero-guard.md  (30 term hits)",
+  "knowledge\\business_rules\\ALERT-01-poller-window-feasibility.md  (28 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (118 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (66 term hits)",
+  "tests\\regression\\Settings\\02-Discovery\\Ipsla_Wanlink_Discovery.spec.js  (59 term hits)",
+  "tests\\regression\\Settings\\08-SLO\\SloProfile.spec.js  (58 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapConfig.spec.js  (57 term hits)",
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (53 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapPolicyTrigger.spec.js  (53 term hits)"
+ ]
+}

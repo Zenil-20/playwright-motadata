@@ -1,0 +1,56 @@
+{
+ "key": "MOTADATA-9631",
+ "title": "ObserveOps-8.2.8 | Enable Bulk Approval Workflow for NCCM Operations with Device-Level Approval and Execution Tracking",
+ "type": "Improvement",
+ "status": "In Review",
+ "priority": "Medium",
+ "components": [
+  "NCM"
+ ],
+ "labels": [
+  "Ansh",
+  "bhaving",
+  "clickhouse"
+ ],
+ "fixVersions": [
+  "8.2.8"
+ ],
+ "reporter": {
+  "name": "bhavin.gorecha",
+  "displayName": "Bhavin Gorecha"
+ },
+ "description": "h3. Description\r\n\r\nIntroduce Bulk Approval Management for NCCM operations to allow a single approval request to represent changes across multiple devices while maintaining device-level approval, execution, audit, reminder, and cancellation capabilities.\r\n\r\nSupported operations:\r\n * Firmware Upgrade\r\n * Configuration Sync\r\n * Backup Restore\r\n * Runbook Execution\r\n\r\nThe system shall support selective approval and rejection at the device level within a bulk request.\r\nh1. Business Cases\r\nh3. 1. Large Scale Change Management\r\n\r\nA network administrator executes a runbook against 100 devices. Instead of generating 100 approval requests, the system generates a single bulk approval request.\r\nh3. 2. Risk-Based Approval\r\n\r\nAn approver reviews the requested changes and approves only 40 devices while keeping 60 devices pending for further verification.\r\nh3. 3. Device-Level Governance\r\n\r\nDifferent devices within the same bulk request may have different approval outcomes while maintaining a single approval workflow.\r\nh3. 4. Audit & Compliance\r\n\r\nEvery device maintains its own approval decision, approver comments, execution status, and audit trail.\r\nh3. 5. Request Follow-Up\r\n\r\nRequesters can send reminders only for devices that remain pending without affecting approved or rejected devices.\r\nh1. Acceptance Criteria\r\nh2. Bulk Request Creation\r\nh3. AC1\r\n\r\nWhen a user executes an NCCM operation against multiple devices, the system shall generate a single Bulk Approval Request.\r\nh3. AC2\r\n\r\nThe bulk request shall display a *Bulk* badge in the approval listing.\r\nh3. AC3\r\n\r\nThe parent request shall display aggregated counters:\r\n * Pending X\r\n * Approved Y\r\n * Rejected Z\r\n\r\nExample:\r\n{{Pending 20 | Approved 50 | Rejected 30}}\r\nh2. Approver Workflow\r\nh3. AC4\r\n\r\nClicking a bulk request shall open a drawer containing all devices associated with the request.\r\nh3. AC5\r\n\r\nApprover shall be able to:\r\n * Select All Pending Devices\r\n * Select Individual Pending Devices\r\n * Select Multiple Pending Devices\r\n\r\nh3. AC6\r\n\r\nAlready approved devices shall be displayed but shall be disabled from selection.\r\nh3. AC7\r\n\r\nAlready rejected devices shall be displayed but shall be disabled from selection.\r\nh3. AC8\r\n\r\nOnly pending devices shall remain selectable.\r\nh2. Change Review\r\nh3. AC9\r\n\r\nApprover shall be able to click any device name.\r\nh3. AC10\r\n\r\nThe system shall display the requested change comparison for the selected device.\r\nh3. AC11\r\n\r\nThe comparison view shall use the same experience available in existing single-device approvals.\r\nh2. Approval Action\r\nh3. AC12\r\n\r\nApprover shall be able to approve selected pending devices.\r\nh3. AC13\r\n\r\nApproval comment shall be mandatory.\r\nh3. AC14\r\n\r\nAfter approval:\r\n * Device status becomes Approved.\r\n * Requested task executes automatically.\r\n * Execution status is recorded.\r\n\r\nh3. AC15\r\n\r\nApproved devices shall no longer be selectable.\r\nh2. Rejection Action\r\nh3. AC16\r\n\r\nApprover shall be able to reject selected pending devices.\r\nh3. AC17\r\n\r\nRejection comment shall be mandatory.\r\nh3. AC18\r\n\r\nRejected devices shall never execute.\r\nh3. AC19\r\n\r\nRejected devices shall no longer be selectable.\r\nh2. Pending Device Handling\r\nh3. AC20\r\n\r\nWhen only a subset of devices is approved or rejected, remaining devices shall continue to stay in Pending state.\r\nh3. AC21\r\n\r\nThe bulk request shall continue to appear in the Pending Approval screen until all devices reach either Approved or Rejected status.\r\nh3. AC22\r\n\r\nApprovers may revisit the same bulk request multiple times to process remaining pending devices.\r\nh2. Requester Workflow\r\nh3. AC23\r\n\r\nRequesters shall only see requests created by them.\r\nh3. AC24\r\n\r\nClicking a bulk request shall display all underlying device requests.\r\nh3. AC25\r\n\r\nRequester shall be able to:\r\n * Select All Pending Devices\r\n * Select Individual Pending Devices\r\n * Select Multiple Pending Devices\r\n\r\nh3. AC26\r\n\r\nRequester shall be able to send reminders only for pending devices.\r\nh3. AC27\r\n\r\nRequester shall be able to cancel only pending devices.\r\nh3. AC28\r\n\r\nApproved devices cannot be cancelled.\r\nh3. AC29\r\n\r\nRejected devices cannot be cancelled.\r\nh3. AC30\r\n\r\nCancelled devices shall not execute.\r\nh2. Audit & Tracking\r\nh3. AC31\r\n\r\nEach device shall maintain:\r\n * Requester\r\n * Approver\r\n * Approval Comment\r\n * Rejection Comment\r\n * Approval Time\r\n * Rejection Time\r\n * Execution Time\r\n * Operation Type\r\n\r\nh3. AC32\r\n\r\nParent bulk request shall maintain aggregated audit history.\r\nh3. AC33\r\n\r\nIndividual device requests shall maintain device-level audit history.\r\nh2. Status Handling\r\nh3. AC34\r\n\r\nParent request status shall be calculated dynamically:\r\n||Condition||Parent Status||\r\n|At least one device pending|Pending|\r\n|No pending devices and all approved|Approved|\r\n|No pending devices and all rejected|Rejected|\r\n|No pending devices and mixed approved/rejected|Completed|\r\nh3. AC35\r\n\r\nStatus counters shall update immediately after every approval or rejection action.\r\nh1. Filter :\r\n\r\nall the screen we show all the possible filter option.\r\nh1. Definition of Done (DoD)\r\nh3. Functional\r\n * Bulk approval request creation completed.\r\n * Device-level selection completed.\r\n * Partial approval completed.\r\n * Partial rejection completed.\r\n * Pending device re-processing completed.\r\n * Reminder functionality completed.\r\n * Cancellation functionality completed.\r\n * Device comparison view integrated.\r\n * Automatic task execution after approval completed.\r\n\r\nh3. Audit\r\n * Device-level audit logs generated.\r\n * Parent request audit logs generated.\r\n * Approval comments captured.\r\n * Rejection comments captured.\r\n\r\nh3. Security\r\n * Only NCCM approvers can approve or reject requests.\r\n * Requesters cannot approve requests.\r\n * Existing RBAC permissions remain intact.\r\n\r\nh3. Performance\r\n * Bulk request supports at least 1,000 devices.\r\n * Device drawer loads within acceptable response time.\r\n * Status counters update without page refresh.\r\n\r\nh3. Regression\r\n * Existing single-device approval workflow remains unchanged.\r\n * Firmware Upgrade approval works.\r\n * Sync approval works.\r\n * Restore approval works.\r\n * Runbook approval works.\r\n\r\nFigma for Approval :\r\n\r\n[https://www.figma.com/proto/BYhl4IcJB4kzf3DTo3s1oC/NCCM?node-id=8640-112388&p=f&viewport=4731%2C-1695%2C0.09&t=R4luHcr7NIjiz7Mw-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=8640%3A112388&page-id=0%3A1]\r\n\r\nFigma for requester:\r\n\r\n[https://www.figma.com/proto/BYhl4IcJB4kzf3DTo3s1oC/NCCM?node-id=8616-84692&p=f&viewport=4731%2C-1695%2C0.09&t=R4luHcr7NIjiz7Mw-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=8616%3A84692&page-id=0%3A1]\r\n\r\n \r\n ",
+ "figma_links": [
+  "https://www.figma.com/proto/BYhl4IcJB4kzf3DTo3s1oC/NCCM?node-id=8640-112388&p=f&viewport=4731%2C-1695%2C0.09&t=R4luHcr7NIjiz7Mw-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=8640%3A112388&page-id=0%3A1",
+  "https://www.figma.com/proto/BYhl4IcJB4kzf3DTo3s1oC/NCCM?node-id=8616-84692&p=f&viewport=4731%2C-1695%2C0.09&t=R4luHcr7NIjiz7Mw-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=8616%3A84692&page-id=0%3A1"
+ ],
+ "attachments": [
+  "nccm-bulk-templates.zip"
+ ],
+ "linked": [
+  {
+   "key": "MOTADATA-9104",
+   "title": "ObserveOps-10.0.1 | Enable Bulk Approval Workflow for NCCM Operations with Device-Level Approval and Execution Tracking"
+  }
+ ],
+ "comments": [
+  {
+   "author": "Vismit Mandlik",
+   "body": "[~bhavin.gorecha]  As per the existing provided mail templates, bulk notifications will trigger individually for each devices.\r\n\r\nCC : [~viram.katudiya] "
+  },
+  {
+   "author": "Bhavin Gorecha",
+   "body": "[~vismit.mandlik] bulk approval email send single."
+  },
+  {
+   "author": "Vismit Mandlik",
+   "body": "[~bhavin.gorecha] Please provide latest notification templates for all bulk actions."
+  }
+ ],
+ "completeness": {
+  "gaps": [
+   "references Figma (2 link(s)) — design-derived expectations cannot be verified from the ticket alone",
+   "has 1 attachment(s) that were NOT fetched (screenshots may carry the real spec)"
+  ]
+ }
+}

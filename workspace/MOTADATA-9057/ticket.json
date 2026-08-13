@@ -1,0 +1,38 @@
+{
+ "key": "MOTADATA-9057",
+ "title": "Show Tags Under Monitor Info",
+ "type": "Improvement",
+ "status": "In QA",
+ "priority": "Medium",
+ "components": [
+  "AIOPS"
+ ],
+ "labels": [
+  "bhaving",
+  "nandini"
+ ],
+ "fixVersions": [
+  "10.0.1"
+ ],
+ "reporter": {
+  "name": "bhavin.gorecha",
+  "displayName": "Bhavin Gorecha"
+ },
+ "description": "*Description*\r\nCurrently, tag information is displayed at the bottom of the monitor Summary drawer. Move the Tags field into the *Monitor Info* section, directly after {*}Group{*}, so engineers and administrators can identify monitor tags without scrolling.\r\nh3. Acceptance Criteria\r\n # Tags must be displayed under {*}Monitor Info{*}, after the *Group* field.\r\n # The standalone *Tag Info* section must be removed.\r\n # When one tag is available, display it as a tag chip.\r\n # When multiple tags are available, display the first tag and an additional count chip such as {{{}+5{}}}.\r\n # Hovering or clicking the count chip must display the complete tag list.\r\n # When no tag is assigned, display {{{}---{}}}.\r\n # Tag styling and interaction must align with the existing Group chip design.\r\n # Long tag values must not break or overflow the side drawer layout.\r\n\r\nh3. Business Test Cases\r\n||Scenario||Expected Result||\r\n|An engineer opens a monitor with one tag|The tag is immediately visible under Monitor Info.|\r\n|An administrator opens a monitor with multiple tags|The first tag and additional tag count are displayed.|\r\n|A user selects or hovers over the additional tag count|The complete list of assigned tags is available.|\r\n|A monitor has no assigned tags|The Tags field displays {{{}---{}}}.|\r\n|A monitor contains long tag values|The drawer layout remains readable and aligned.|\r\n|A user reviews CPU, memory, or disk information|No duplicate Tag Info section is shown at the bottom.|",
+ "figma_links": [],
+ "attachments": [
+  "Monitor Drawer Tags - Standalone.html"
+ ],
+ "linked": [],
+ "comments": [
+  {
+   "author": "Nandini Shah",
+   "body": "[~kunj.kakadiya] , find the attached Test Cases to validate this task.\r\nTC: [https://ad-motadata:8443/Motadata/Motadata/_testPlans/define?planId=79797&suiteId=79809] "
+  }
+ ],
+ "completeness": {
+  "gaps": [
+   "has 1 attachment(s) that were NOT fetched (screenshots may carry the real spec)"
+  ]
+ }
+}

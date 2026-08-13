@@ -1,0 +1,37 @@
+{
+ "key": "MOTADATA-9575",
+ "title": "Reported DOWN from availability/service-check probes silently overwritten with UNKNOWN — tautological || guard in ResponseProcessor & CollectorResponseProcessor",
+ "type": "Bug",
+ "status": "In QA",
+ "priority": "Medium",
+ "components": [
+  "AIOPS",
+  "NMS-EVENTS",
+  "NMS-METRIC"
+ ],
+ "labels": [
+  "Ansh",
+  "NCM",
+  "NMS-METRIC"
+ ],
+ "fixVersions": [
+  "8.2.8"
+ ],
+ "reporter": {
+  "name": "ranjit.sindhav",
+  "displayName": "Ranjit Sindhav"
+ },
+ "description": "Two byte-identical branches that are meant to normalise an _indeterminate_ probe status to {{UNKNOWN}} use {{||}} where {{&&}} was intended. Because a status string can never equal both {{UP}} and {{{}DOWN{}}}, the condition is a *tautology* — it is always true — so the branch fires unconditionally and clobbers a legitimate {{DOWN}} (or {{{}UP{}}}) with {{{}UNKNOWN{}}}.\r\nh3. Affected code\r\n\r\n*{{src/main/java/com/mindarray/nms/ResponseProcessor.java:634}}* (inside {{{}case PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE ->{}}})\r\n\r\n \r\n{noformat}\r\nif (result != null && result.containsKey(STATUS))\r\n{\r\nevent.put(STATUS, result.getString(STATUS));\r\n}\r\nelse if (!event.getString(STATUS).equalsIgnoreCase(STATUS_UP) && !event.getString(STATUS).equalsIgnoreCase(STATUS_DOWN))\r\n{\r\nevent.put(STATUS, STATUS_UNKNOWN);\r\n}\r\n \r\n{noformat}\r\n \r\n\r\n*{{src/main/java/com/mindarray/nms/CollectorResponseProcessor.java:191}}* — identical code, same enclosing {{{}case{}}}.\r\nh3. Why the condition is always true\r\n\r\nFor any value of {{{}event.getString(STATUS){}}}:\r\n||status value||{{!equals(UP)}}||{{!equals(DOWN)}}||{{\\|\\|}} result||\r\n|{{\"UP\"}}|false|true|*true*|\r\n|{{\"DOWN\"}}|true|false|*true*|\r\n|{{\"UNKNOWN\"}}|true|true|*true*|\r\n\r\nThe {{else if}} therefore always executes when reached, so {{STATUS}} is unconditionally set to {{UNKNOWN}} whenever the probe result carries no explicit status body.\r\nh2. Steps to reproduce\r\n # Provision any availability / service-check monitor (PING, PORT, URL, NTP, RADIUS, FTP, DOMAIN, EMAIL, or CERTIFICATE).\r\n # Cause the probe to fail such that the collector returns an event whose top-level {{status}} is {{DOWN}} but whose {{result}} body is null / carries no {{status}} key (e.g. the probe timed out or errored before producing a body).\r\n # Observe the object status recorded in {{ObjectStatusCacheStore}} (line 639 / 196) and the availability history.\r\n\r\nh2. Expected behaviour\r\n\r\nThe reported {{DOWN}} is preserved; the object is marked DOWN, availability history records a DOWN interval, and DOWN-triggered alert policies fire.\r\nh2. Actual behaviour\r\n\r\nThe {{else if}} overwrites {{DOWN}} with {{{}UNKNOWN{}}}. The object is recorded {{{}UNKNOWN{}}}, availability history shows an UNKNOWN gap instead of an outage, and *DOWN-triggered policies never fire for that interval* — a genuine outage produces no alert.\r\nh2. Impact\r\n * *Missed outage alerts* for the entire availability / service-check plugin family.\r\n * Availability and SLO reporting shows UNKNOWN gaps instead of downtime, understating outages.\r\n * Present on both the app-side path ({{{}ResponseProcessor{}}}, Standalone/Primary) and the edge-collector path ({{{}CollectorResponseProcessor{}}}, EdgeCollector) — no deployment topology is unaffected.\r\n\r\nh2. Root cause\r\n\r\nWrong boolean operator. The branch guard should read \"status is neither UP *nor* DOWN\", which is {{{}!isUP && !isDOWN{}}}, not {{{}!isUP || !isDOWN{}}}.\r\nh2. Proposed fix\r\n\r\nChange {{||}} to {{&&}} at both sites:\r\n{code:java}\r\nelse if (!event.getString(STATUS).equalsIgnoreCase(STATUS_UP) && !event.getString(STATUS).equalsIgnoreCase(STATUS_DOWN)) \r\n{ \r\nevent.put(STATUS, STATUS_UNKNOWN); \r\n}{code}\r\n{{}}\r\n\r\nThe two sites are byte-identical and *must be fixed together* to keep the app and edge-collector paths consistent.\r\n\r\n{{}}\r\n\r\n \r\nh2. Acceptance criteria\r\n * {{ResponseProcessor.java:634}} uses {{{}&&{}}}.\r\n * {{CollectorResponseProcessor.java:191}} uses {{{}&&{}}}.\r\n * A \\{{ {status:\"DOWN\", result:null}}} event on a PING/PORT/URL monitor records {{DOWN}} (not {{{}UNKNOWN{}}}) in {{ObjectStatusCacheStore}} and fires the availability DOWN policy.\r\n\r\n * A \\{{ {status:\"UP\", result:null}}} event records {{UP}} (not {{{}UNKNOWN{}}}).\r\n\r\n * An event whose status is genuinely neither UP nor DOWN still normalises to {{{}UNKNOWN{}}}.\r\n * Regression test added covering the DOWN-preserved and UNKNOWN-normalised cases for both processors.\r\n\r\nh2. Test plan\r\n * Unit/integration test asserting the three status inputs above map to the expected stored status, for both {{ResponseProcessor}} and {{{}CollectorResponseProcessor{}}}.\r\n * Constants only ({{{}STATUS_UP{}}}/{{{}STATUS_DOWN{}}}/{{{}STATUS_UNKNOWN{}}}) per project conventions — no raw string literals.\r\n\r\nh2. Risk\r\n\r\nVery low. One-operator change in a self-contained {{{}else if{}}}; behaviour for genuinely indeterminate status is unchanged. The only behavioural change is that a definite UP/DOWN is now preserved instead of being discarded.",
+ "figma_links": [],
+ "attachments": [],
+ "linked": [],
+ "comments": [
+  {
+   "author": "prit thakkar",
+   "body": "Checked and verified working in both Dev and ClickHouse branches"
+  }
+ ],
+ "completeness": {
+  "gaps": []
+ }
+}

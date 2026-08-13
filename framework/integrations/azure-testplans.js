@@ -203,13 +203,25 @@ export async function listSuiteCaseTitles(planId, suiteId) {
 /* ------------------------------------------------------------------ *
  * Mapping — manual-cases.json → the agreed CSV field set.
  *
- * The reference export has exactly nine columns:
+ * The reference export has exactly ten columns:
  *   ID, Work Item Type, Title, Test Step, Step Action, Step Expected,
- *   Area Path, Assigned To, State
+ *   Area Path, Assigned To, State, Tags
  * ID is assigned by ADO on create and Work Item Type is fixed to "Test Case",
- * so a pushed case sets only Title, Steps, Area Path, Assigned To and State.
- * Nothing else is written — no Priority, no Description, no tags.
+ * so a pushed case sets only Title, Steps, Area Path, Assigned To, State and Tags.
+ * Nothing else is written — no Priority, no Description.
+ *
+ * Tags carry the scenario taxonomy (Functional / Impacted / Edge / Regression /
+ * Negative / Security / UI / API / Audit / ...). ADO stores System.Tags as a
+ * semicolon-delimited string, so a case's `tags: []` is joined with "; ".
  * ------------------------------------------------------------------ */
+
+/** ADO wants System.Tags as "A; B; C". Dedups, trims, drops empties. */
+export function tagsToField(tags) {
+  const list = (Array.isArray(tags) ? tags : String(tags ?? '').split(';'))
+    .map((t) => String(t).trim())
+    .filter(Boolean);
+  return [...new Set(list)].join('; ');
+}
 
 /**
  * Map one manual case to ADO field refnames.
@@ -246,6 +258,7 @@ export function caseToFields(mc, opts = {}) {
     'System.AreaPath': areaPath,
     'System.AssignedTo': assignedTo,
     'System.State': state,
+    'System.Tags': tagsToField(opts.tags ?? mc.tags),
   };
 }
 

@@ -18,7 +18,8 @@
     "gen:screens": "node scripts/gen-screen-knowledge.mjs",
     "coverage-gate": "node scripts/coverage-gate.mjs",
     "tfs:import": "node scripts/tfs-import.mjs",
-    "ado:publish": "node scripts/ado-publish.mjs"
+    "ado:publish": "node scripts/ado-publish.mjs",
+    "cases": "node scripts/cases.mjs"
   },
   "keywords": [],
   "author": "",

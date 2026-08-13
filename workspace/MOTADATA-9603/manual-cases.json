@@ -1,0 +1,418 @@
+[
+ {
+  "id": "TC-001",
+  "title": "kubernetes.container.memory.percent is available OOTB with no manual configuration",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin; on a fresh install with Kubernetes container monitoring configured, open Metric Explorer for a container object",
+    "expected": "Counter list loads",
+    "source": "jira"
+   },
+   {
+    "action": "Search the counter list for kubernetes.container.memory.percent",
+    "expected": "The KPI is present without any derived counter having been created by hand",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "KPI value equals bytes divided by limit bytes times 100",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "For one container, read kubernetes.container.memory.bytes and kubernetes.container.memory.limit.bytes for the same collection interval",
+    "expected": "Both source values available",
+    "source": "jira"
+   },
+   {
+    "action": "Read kubernetes.container.memory.percent for that interval and compute (bytes / limit.bytes) * 100",
+    "expected": "The KPI matches the computed value at the documented precision",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "KPI is derived without any new collection",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Compare the collection configuration and poll traffic for the container plugin before and after the KPI is enabled",
+    "expected": "Both captured",
+    "source": "jira"
+   },
+   {
+    "action": "Compare",
+    "expected": "No additional OID/API call or poll is introduced — the KPI is computed from the two counters already collected",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Zero memory limit does not raise a division-by-zero or emit a bad value",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Configure or simulate a container whose kubernetes.container.memory.limit.bytes is 0 for an interval",
+    "expected": "Interval is collected",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect kubernetes.container.memory.percent for that interval",
+    "expected": "No value is emitted for the interval and no error/exception is logged — the KPI must not record 0, infinity or NaN",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "KPI is not computed when one source counter is missing for the interval",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Force an interval where memory.bytes is collected but limit.bytes is absent (or vice versa)",
+    "expected": "Interval is collected partially",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect kubernetes.container.memory.percent",
+    "expected": "No value is emitted for that interval — the KPI computes only when both sources are valid for the same container and the same interval",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Source counters are unchanged in definition and value",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Record the definition, unit and a sample of values for kubernetes.container.memory.bytes and kubernetes.container.memory.limit.bytes before the change",
+    "expected": "Baseline captured",
+    "source": "jira"
+   },
+   {
+    "action": "Compare after the KPI ships",
+    "expected": "Both are byte-identical in definition, collection and values — adding the derived KPI must not alter them",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "limit.bytes is exposed OOTB alongside the new KPI",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Open the counter list for a Kubernetes container object",
+    "expected": "Counter list loads",
+    "source": "jira"
+   },
+   {
+    "action": "Look for kubernetes.container.memory.limit.bytes",
+    "expected": "It is now an OOTB counter rather than internal-only, per the agreement recorded on the ticket",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "KPI is selectable in Metric Explorer",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open Metric Explorer, pick a container object and select kubernetes.container.memory.percent",
+    "expected": "Chart renders",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the chart",
+    "expected": "Values plot as a percentage with a % unit and a sensible 0-100 axis",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "KPI is usable in a dashboard widget",
+  "tags": [
+   "Functional",
+   "Dashboard"
+  ],
+  "steps": [
+   {
+    "action": "Create a dashboard widget on kubernetes.container.memory.percent for a container",
+    "expected": "Widget saves",
+    "source": "jira"
+   },
+   {
+    "action": "View the dashboard",
+    "expected": "The widget renders the same values as Metric Explorer for the same window",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "KPI is usable in a report",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Build a report including kubernetes.container.memory.percent and run it",
+    "expected": "Report generates",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against Metric Explorer for the same window",
+    "expected": "Values and unit agree",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "KPI is usable in an alert policy and breaches correctly",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Create a metric alert policy on kubernetes.container.memory.percent with a threshold of 80% critical, then drive a container above it",
+    "expected": "Policy is active",
+    "source": "jira"
+   },
+   {
+    "action": "Check Active Alerts",
+    "expected": "A critical alert is raised with the converted percentage in the alert, and clears when utilisation drops below the threshold",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "KPI appears for every container in a multi-container pod",
+  "tags": [
+   "Edge",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Monitor a pod running three containers with different memory limits",
+    "expected": "All three are discovered",
+    "source": "inferred"
+   },
+   {
+    "action": "Read kubernetes.container.memory.percent per container",
+    "expected": "Each container has its own value computed from its own limit — values are not shared or aggregated across containers in the pod",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "Container with no memory limit set is handled",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Monitor a container that declares no memory limit in its spec",
+    "expected": "Container is discovered",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect kubernetes.container.memory.percent",
+    "expected": "The KPI is absent or explicitly not-applicable for that container, and no invalid value is stored",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Utilisation above 100% is represented faithfully",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Drive a container to use more than its declared limit if the runtime permits",
+    "expected": "Interval collected",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect kubernetes.container.memory.percent",
+    "expected": "The value is reported as computed rather than silently clamped to 100, or clamping is documented and consistent between UI, reports and alerts",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "Precision matches the UI and Reports convention",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Read the same kubernetes.container.memory.percent interval in Metric Explorer, a report and an alert",
+    "expected": "All three render the value",
+    "source": "jira"
+   },
+   {
+    "action": "Compare the decimal places",
+    "expected": "Identical precision in all three — the ticket requires the conversion precision to match existing UI/Reports behaviour",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "Historical data is not back-filled or corrupted",
+  "tags": [
+   "Regression",
+   "Lifecycle"
+  ],
+  "steps": [
+   {
+    "action": "Note the stored history for the two source counters before enabling the KPI",
+    "expected": "Baseline captured",
+    "source": "inferred"
+   },
+   {
+    "action": "Enable the KPI and re-inspect",
+    "expected": "Source history is untouched; the KPI has data only from the point it became available, with no fabricated retro values",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "KPI survives an upgrade of an install with existing Kubernetes monitors",
+  "tags": [
+   "Regression",
+   "Lifecycle"
+  ],
+  "steps": [
+   {
+    "action": "Upgrade an install already monitoring Kubernetes containers",
+    "expected": "Upgrade completes",
+    "source": "inferred"
+   },
+   {
+    "action": "Check kubernetes.container.memory.percent on a pre-existing container object",
+    "expected": "The KPI is present and collecting without re-onboarding the cluster",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "RBAC: KPI visibility follows existing counter permissions",
+  "tags": [
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Log in as a user whose role can view the container object, then as one who cannot",
+    "expected": "Both sessions established",
+    "source": "doc"
+   },
+   {
+    "action": "Attempt to read kubernetes.container.memory.percent",
+    "expected": "Visibility matches the existing per-object permission model — the new KPI introduces no privilege bypass",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "API exposes the KPI under its documented name",
+  "tags": [
+   "API",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Query the metric API for kubernetes.container.memory.percent on a container object",
+    "expected": "HTTP 200",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the payload",
+    "expected": "The counter is named exactly kubernetes.container.memory.percent with a percent unit — no alternative spelling or alias",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "No duplicate or shadow counter is introduced",
+  "tags": [
+   "Regression",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Search the counter list for names containing kubernetes.container.memory",
+    "expected": "All matches listed",
+    "source": "inferred"
+   },
+   {
+    "action": "Review the list",
+    "expected": "Exactly the expected set — bytes, limit.bytes, limit.percent and the new percent. No duplicate, no leftover manually-derived counter shadowing the OOTB one",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "Existing limit.percent counter is unaffected",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Record values for the pre-existing kubernetes.container.memory.limit.percent counter",
+    "expected": "Baseline captured",
+    "source": "jira"
+   },
+   {
+    "action": "Compare after the new KPI ships",
+    "expected": "Unchanged, and clearly distinguishable from the new percent KPI in every selector so users do not pick the wrong one",
+    "source": "inferred"
+   }
+  ]
+ }
+]

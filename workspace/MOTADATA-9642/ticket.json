@@ -1,0 +1,30 @@
+{
+ "key": "MOTADATA-9642",
+ "title": "PROD | NMS | Unable to add SNMP Catalogue for Linux SNMP and Windows SNMP",
+ "type": "Improvement",
+ "status": "In QA",
+ "priority": "Medium",
+ "components": [
+  "NMS-METRIC"
+ ],
+ "labels": [
+  "Ansh",
+  "PROD",
+  "prod"
+ ],
+ "fixVersions": [
+  "8.2.8"
+ ],
+ "reporter": {
+  "name": "yash.patel",
+  "displayName": "Yash Patel"
+ },
+ "description": "Currently, when a device is onboarded as *Linux (SNMP)* or {*}Windows (SNMP){*}, it is not possible to add or associate new Metric Groups from the {*}Device Catalogue{*}.\r\n\r\nDuring validation, we observed that these device types are not available in the required device type mapping at the code level. As a result, the test environment is unable to identify Linux (SNMP) and Windows (SNMP) devices for test OID while creating or assigning Metric Groups.\r\n\r\n*Current Behavior:*\r\n * Linux (SNMP) and Windows (SNMP) device types are missing from the required mapping.\r\n * Metric Groups cannot be created or associated with these device types.\r\n\r\n*Expected Behavior:*\r\n * Linux (SNMP) and Windows (SNMP) should be available in the supported device type mapping so that Metric Groups can be created and assigned successfully through the Device Catalogue.",
+ "figma_links": [],
+ "attachments": [],
+ "linked": [],
+ "comments": [],
+ "completeness": {
+  "gaps": []
+ }
+}

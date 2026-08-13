@@ -1,0 +1,712 @@
+[
+ {
+  "id": "TC-001",
+  "title": "AC1 One bulk request is created for a multi-device NCCM operation",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); run a Runbook Execution against 100 NCCM devices",
+    "expected": "Operation is submitted for approval",
+    "source": "jira"
+   },
+   {
+    "action": "Login as admin (admin/admin); navigate NCCM > Approval",
+    "expected": "Exactly ONE approval request represents all 100 devices — not 100 individual requests",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "AC2 Bulk badge is shown in the approval listing",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate NCCM > Approval with a bulk request present",
+    "expected": "Listing loads",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the bulk request row",
+    "expected": "A \"Bulk\" badge distinguishes it from single-device requests",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "AC3 Parent request shows aggregated Pending / Approved / Rejected counters",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Create a bulk request over 100 devices, approve 50 and reject 30",
+    "expected": "Actions complete",
+    "source": "jira"
+   },
+   {
+    "action": "Read the parent request row",
+    "expected": "Counters read Pending 20 | Approved 50 | Rejected 30 and total 100",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "AC3 Counters update live as device decisions are made",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request with all devices pending and note the counters",
+    "expected": "Pending equals the device count",
+    "source": "jira"
+   },
+   {
+    "action": "Approve 5 devices and re-read the parent row",
+    "expected": "Pending drops by 5 and Approved rises by 5 without a manual refresh, and the three counters always sum to the device total",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "AC4 Clicking a bulk request opens a drawer listing all its devices",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate NCCM > Approval and click a bulk request",
+    "expected": "A drawer opens",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the drawer",
+    "expected": "Every device in the request is listed with its own status",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "AC5 Approver can select all pending devices at once",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request drawer containing pending, approved and rejected devices",
+    "expected": "Drawer lists all devices",
+    "source": "jira"
+   },
+   {
+    "action": "Use Select All Pending",
+    "expected": "Only the pending devices become selected; approved and rejected devices are not selected",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "AC5 Approver can select an individual pending device",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request drawer",
+    "expected": "Drawer lists devices",
+    "source": "jira"
+   },
+   {
+    "action": "Tick one pending device",
+    "expected": "That device alone is selected and the approve/reject actions become available",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "AC5 Approver can multi-select several pending devices",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request drawer with at least 5 pending devices",
+    "expected": "Drawer lists devices",
+    "source": "jira"
+   },
+   {
+    "action": "Tick three pending devices",
+    "expected": "All three are selected and a single approve action applies to exactly those three",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "AC6 Already approved devices are visible but not selectable",
+  "tags": [
+   "Functional",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request drawer containing previously approved devices",
+    "expected": "Drawer lists them",
+    "source": "jira"
+   },
+   {
+    "action": "Attempt to select an approved device",
+    "expected": "It is displayed with Approved status but its selection control is disabled",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "AC7 Already rejected devices are visible but not selectable",
+  "tags": [
+   "Functional",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request drawer containing previously rejected devices",
+    "expected": "Drawer lists them",
+    "source": "jira"
+   },
+   {
+    "action": "Attempt to select a rejected device",
+    "expected": "It is displayed with Rejected status but its selection control is disabled",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "AC8 Only pending devices remain selectable",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Open a drawer with a mix of pending, approved and rejected devices",
+    "expected": "Drawer lists all",
+    "source": "jira"
+   },
+   {
+    "action": "Use Select All Pending and count the selection",
+    "expected": "The selected count equals the Pending counter exactly",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "AC9/AC10 Clicking a device name shows its requested change comparison",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open a bulk request drawer and click a device name",
+    "expected": "A comparison view opens",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the comparison",
+    "expected": "It shows the requested change for that specific device — running vs proposed configuration",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "AC11 Comparison matches the existing single-device approval experience",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Open the comparison for a device inside a bulk request, then open a single-device approval comparison",
+    "expected": "Both views open",
+    "source": "jira"
+   },
+   {
+    "action": "Compare the two",
+    "expected": "Same layout, same diff rendering and same controls — the bulk drawer reuses the existing experience rather than a divergent one",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "AC12/AC13 Approval requires a mandatory comment",
+  "tags": [
+   "Functional",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Select pending devices in a bulk drawer and trigger Approve, leaving the comment blank",
+    "expected": "Approve dialog opens",
+    "source": "jira"
+   },
+   {
+    "action": "Submit without a comment",
+    "expected": "Validation blocks submission — the approval comment is mandatory and nothing is approved",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "AC14 Approved device status becomes Approved and its task executes automatically",
+  "tags": [
+   "Functional",
+   "Workflow"
+  ],
+  "steps": [
+   {
+    "action": "Approve two selected pending devices with a comment",
+    "expected": "Approval is accepted",
+    "source": "jira"
+   },
+   {
+    "action": "Watch those two devices in the drawer",
+    "expected": "Each becomes Approved and its requested task starts executing automatically without a further trigger",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "AC14 Execution status is recorded per device",
+  "tags": [
+   "Functional",
+   "Workflow"
+  ],
+  "steps": [
+   {
+    "action": "Approve devices so their tasks execute, letting at least one succeed and one fail",
+    "expected": "Executions complete",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect each device row",
+    "expected": "Each carries its own execution status; a failure on one device does not hide or alter another device's status",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "AC15 Approved devices are no longer selectable",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Approve a selection of devices",
+    "expected": "They become Approved",
+    "source": "jira"
+   },
+   {
+    "action": "Attempt to select them again",
+    "expected": "Their selection controls are disabled — an approved device cannot be re-approved or then rejected",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "AC16/AC17 Rejection applies to selected pending devices with a comment",
+  "tags": [
+   "Functional",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Select pending devices, trigger Reject and submit with a comment",
+    "expected": "Rejection is accepted",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect those devices",
+    "expected": "Each becomes Rejected, no task executes for them, and they are no longer selectable",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "Partial approval leaves the remaining devices pending",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "On a 100-device bulk request approve 40 and take no action on the other 60",
+    "expected": "Approval completes",
+    "source": "jira"
+   },
+   {
+    "action": "Read the parent counters",
+    "expected": "Pending 60 | Approved 40 | Rejected 0 — the risk-based partial-approval business case",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "Devices in one bulk request can have different outcomes",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "On one bulk request approve some devices, reject others and leave the rest pending",
+    "expected": "All actions complete",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the drawer",
+    "expected": "Three distinct device states coexist under a single approval workflow",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "Bulk approval works for Firmware Upgrade",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Run Firmware Upgrade against 10 NCCM devices as a single operation",
+    "expected": "One bulk approval request is created",
+    "source": "jira"
+   },
+   {
+    "action": "Approve 5 devices and inspect the result",
+    "expected": "Only the 5 approved devices have their Firmware Upgrade executed; the other 5 stay pending with no execution",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-022",
+  "title": "Bulk approval works for Configuration Sync",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Run Configuration Sync against 10 NCCM devices as a single operation",
+    "expected": "One bulk approval request is created",
+    "source": "jira"
+   },
+   {
+    "action": "Approve 5 devices and inspect the result",
+    "expected": "Only the 5 approved devices have their Configuration Sync executed; the other 5 stay pending with no execution",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-023",
+  "title": "Bulk approval works for Backup Restore",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Run Backup Restore against 10 NCCM devices as a single operation",
+    "expected": "One bulk approval request is created",
+    "source": "jira"
+   },
+   {
+    "action": "Approve 5 devices and inspect the result",
+    "expected": "Only the 5 approved devices have their Backup Restore executed; the other 5 stay pending with no execution",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-024",
+  "title": "Bulk approval works for Runbook Execution",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Run Runbook Execution against 10 NCCM devices as a single operation",
+    "expected": "One bulk approval request is created",
+    "source": "jira"
+   },
+   {
+    "action": "Approve 5 devices and inspect the result",
+    "expected": "Only the 5 approved devices have their Runbook Execution executed; the other 5 stay pending with no execution",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-025",
+  "title": "Reminder can be sent only for devices still pending",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "On a bulk request with pending, approved and rejected devices, send a reminder",
+    "expected": "Reminder is sent",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect who was reminded",
+    "expected": "Only the pending devices are included; approved and rejected devices are unaffected",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-026",
+  "title": "Cancellation is available per device and leaves decided devices alone",
+  "tags": [
+   "Functional",
+   "Lifecycle"
+  ],
+  "steps": [
+   {
+    "action": "Cancel a subset of pending devices in a bulk request",
+    "expected": "Cancellation completes",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the request",
+    "expected": "Only the cancelled devices change state; approved, rejected and other pending devices are untouched, and cancelled devices execute nothing",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-027",
+  "title": "Per-device audit trail records approver, comment and outcome",
+  "tags": [
+   "Audit",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Approve some devices and reject others with distinct comments",
+    "expected": "Actions complete",
+    "source": "jira"
+   },
+   {
+    "action": "Open the audit trail for the request",
+    "expected": "Every device has its own record with approver identity, decision, comment, timestamp and execution status",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-028",
+  "title": "GAP Notification behaviour for bulk actions is not agreed",
+  "tags": [
+   "Negative",
+   "Workflow"
+  ],
+  "steps": [
+   {
+    "action": "Approve devices in a bulk request and collect the resulting notifications",
+    "expected": "Notifications are delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Count the emails",
+    "expected": "The ticket comments CONFLICT — one states bulk notifications trigger individually per device, another states bulk approval sends a single email, and the latest comment asks for templates that have not been supplied. This case cannot pass until the team fixes the expected behaviour",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-029",
+  "title": "Single-device approval flow is unchanged",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Run an NCCM operation against exactly one device",
+    "expected": "An approval request is created",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the listing and approve it",
+    "expected": "It behaves as before with no Bulk badge and no drawer regression — introducing bulk must not alter the single-device path",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-030",
+  "title": "A single-device operation does not create a bulk request",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Run an operation against one device, then against two devices",
+    "expected": "Both are submitted",
+    "source": "inferred"
+   },
+   {
+    "action": "Compare the listings",
+    "expected": "The one-device operation produces a normal request; the two-device operation produces a bulk request. Confirm with the team whether the bulk threshold is 2 or configurable — the ticket says \"multiple\" without defining it",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-031",
+  "title": "Concurrent approvals by two approvers do not double-execute a device",
+  "tags": [
+   "Edge",
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Open the same bulk request as two approvers and approve the same device simultaneously",
+    "expected": "Both submit",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the device",
+    "expected": "It is approved once and its task executes once; the second submission is rejected or ignored as already-decided",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-032",
+  "title": "Bulk request with a large device count stays usable",
+  "tags": [
+   "Non-Functional",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Create a bulk request over 500 devices and open the drawer",
+    "expected": "Drawer opens",
+    "source": "inferred"
+   },
+   {
+    "action": "Scroll, select all pending and approve",
+    "expected": "The drawer paginates or virtualises rather than hanging; counters stay correct and the approve action completes within a reasonable time",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-033",
+  "title": "RBAC: a user without approval rights cannot approve or reject",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Log in as a user whose role lacks NCCM approval rights and open the approval listing",
+    "expected": "Access reflects the role",
+    "source": "doc"
+   },
+   {
+    "action": "Attempt to approve or reject devices in a bulk request",
+    "expected": "The actions are unavailable or rejected; no device state changes",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-034",
+  "title": "RBAC: a requester cannot approve their own bulk request",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "As a requester, raise a bulk NCCM operation and open the resulting request",
+    "expected": "Request is visible",
+    "source": "inferred"
+   },
+   {
+    "action": "Attempt to approve it",
+    "expected": "Self-approval is blocked, or is explicitly permitted by documented policy — confirm the intended separation of duties with the team",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-035",
+  "title": "XSS payload in the approval comment is neutralised",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Approve a device with the comment <script>alert(1)</script>",
+    "expected": "Comment is submitted",
+    "source": "inferred"
+   },
+   {
+    "action": "View the comment in the drawer and the audit trail",
+    "expected": "Rendered escaped as literal text; no script executes",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-036",
+  "title": "Execution failure on an approved device is surfaced, not swallowed",
+  "tags": [
+   "Negative",
+   "Workflow"
+  ],
+  "steps": [
+   {
+    "action": "Approve a device whose task will fail (e.g. make it unreachable first)",
+    "expected": "Approval succeeds and execution is attempted",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the device row",
+    "expected": "Execution status shows the failure with a reason; the device stays Approved and the failure does not block other devices' executions",
+    "source": "jira"
+   }
+  ]
+ }
+]

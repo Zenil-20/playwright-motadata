@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "prod",
+  "nccm",
+  "connectivity",
+  "validation",
+  "should",
+  "performed",
+  "through",
+  "assigned",
+  "collector",
+  "currently",
+  "some",
+  "customers",
+  "their",
+  "head",
+  "office",
+  "branch",
+  "environments",
+  "located",
+  "different",
+  "geographical",
+  "locations",
+  "such",
+  "deployments",
+  "customer",
+  "provides",
+  "dedicated",
+  "each",
+  "while",
+  "contains",
+  "main",
+  "master",
+  "server",
+  "devices",
+  "reachable",
+  "respective",
+  "directly",
+  "current",
+  "scenario",
+  "device",
+  "discovered"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\monitoring\\monitor-templates.md  (28 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\rediscover-setting.md  (28 term hits)",
+  "knowledge\\product\\Settings\\network-discovery\\network-discovery-profiles.md  (27 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog.md  (26 term hits)",
+  "knowledge\\product\\Settings\\network-discovery\\network-discovery-profiles-create.md  (26 term hits)",
+  "knowledge\\product\\Monitors\\inventory.md  (25 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\processes.md  (25 term hits)",
+  "knowledge\\product\\Settings\\nccm-settings\\overview.md  (25 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\_index.json  (13 term hits)",
+  "knowledge\\locators\\catalog\\settings_network_discovery_network_discovery_profiles_create.json  (8 term hits)",
+  "knowledge\\locators\\catalog\\inventory.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\nccm_explorer.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\settings_monitoring_device_monitor_settings.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\settings_monitoring_rediscover_setting.json  (7 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\DISCOVERY-01-distinguishable-credential-errors.md  (14 term hits)",
+  "knowledge\\business_rules\\DISCOVERY-02-ifspeed-zero-guard.md  (12 term hits)",
+  "knowledge\\business_rules\\RBAC-05-concurrent-session-policy.md  (11 term hits)",
+  "knowledge\\business_rules\\HA-01-no-dual-primary.md  (9 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (36 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\02-Discovery\\Ipsla_Wanlink_Discovery.spec.js  (25 term hits)",
+  "tests\\regression\\Settings\\11-rediscovery\\interface_rediscovery.spec.js  (22 term hits)",
+  "tests\\regression\\nccm\\DeviceNccmDiscovery.spec.js  (20 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (20 term hits)",
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (19 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapConfig.spec.js  (19 term hits)"
+ ]
+}

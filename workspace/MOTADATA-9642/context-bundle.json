@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "prod",
+  "unable",
+  "snmp",
+  "catalogue",
+  "linux",
+  "windows",
+  "currently",
+  "device",
+  "onboarded",
+  "possible",
+  "associate",
+  "metric",
+  "groups",
+  "during",
+  "validation",
+  "observed",
+  "these",
+  "types",
+  "available",
+  "required",
+  "type",
+  "mapping",
+  "code",
+  "level",
+  "result",
+  "test",
+  "environment",
+  "identify",
+  "devices",
+  "while",
+  "creating",
+  "assigning",
+  "current",
+  "behavior",
+  "missing",
+  "cannot",
+  "created",
+  "associated",
+  "expected",
+  "should"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\monitoring\\monitor-templates.md  (21 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog.md  (20 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog-create.md  (18 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\metric.md  (17 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\overview.md  (16 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\processes.md  (16 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\services.md  (16 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\topology-scanner.md  (16 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\settings_monitoring_device_monitor_settings.json  (5 term hits)",
+  "knowledge\\locators\\catalog\\settings_monitoring_snmp_device_catalog.json  (5 term hits)",
+  "knowledge\\locators\\catalog\\settings_monitoring_snmp_device_catalog_create.json  (5 term hits)",
+  "knowledge\\locators\\catalog\\inventory.json  (4 term hits)",
+  "knowledge\\locators\\catalog\\nccm.json  (4 term hits)",
+  "knowledge\\locators\\catalog\\nccm_explorer.json  (4 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\DISCOVERY-01-distinguishable-credential-errors.md  (8 term hits)",
+  "knowledge\\business_rules\\RBAC-03-delete-protection-in-use.md  (7 term hits)",
+  "knowledge\\business_rules\\ALERT-01-poller-window-feasibility.md  (6 term hits)",
+  "knowledge\\business_rules\\DISCOVERY-02-ifspeed-zero-guard.md  (6 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (24 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (16 term hits)",
+  "tests\\regression\\Settings\\02-Discovery\\Ipsla_Wanlink_Discovery.spec.js  (16 term hits)",
+  "tests\\regression\\Settings\\02-Discovery\\DiscoverDockerContainer.spec.js  (15 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (14 term hits)",
+  "tests\\regression\\nccm\\DeviceNccmDiscovery.spec.js  (13 term hits)",
+  "tests\\regression\\Reports\\report-creation-matrix.spec.js  (13 term hits)"
+ ]
+}

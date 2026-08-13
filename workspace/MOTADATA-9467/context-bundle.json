@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "prod",
+  "display",
+  "human",
+  "understandable",
+  "metric",
+  "values",
+  "alert",
+  "email",
+  "templates",
+  "currently",
+  "instead",
+  "readable",
+  "converted",
+  "counters",
+  "require",
+  "unit",
+  "conversion",
+  "example",
+  "network",
+  "throughput",
+  "metrics",
+  "displayed",
+  "bits",
+  "second",
+  "numeric",
+  "21890802",
+  "being",
+  "automatically",
+  "most",
+  "appropriate",
+  "such",
+  "kbps",
+  "mbps",
+  "gbps",
+  "higher",
+  "observeops",
+  "reports",
+  "already",
+  "perform",
+  "correctly"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog.md  (43 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog-create.md  (42 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\metric.md  (42 term hits)",
+  "knowledge\\product\\Alerts\\alerts.md  (40 term hits)",
+  "knowledge\\product\\Settings\\integration\\motadata-serviceops.md  (39 term hits)",
+  "knowledge\\product\\Settings\\integration\\service-now.md  (38 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\overview.md  (38 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\trap.md  (38 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\_index.json  (13 term hits)",
+  "knowledge\\locators\\catalog\\alerts.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\apm_explorer.json  (6 term hits)",
+  "knowledge\\locators\\catalog\\health.json  (6 term hits)",
+  "knowledge\\locators\\catalog\\inventory.json  (6 term hits)",
+  "knowledge\\locators\\catalog\\settings_integration_atlassian_jira.json  (6 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\index.md  (21 term hits)",
+  "knowledge\\business_rules\\REPORT-02-export-fidelity.md  (18 term hits)",
+  "knowledge\\business_rules\\UPGRADE-01-policy-config-survival.md  (18 term hits)",
+  "knowledge\\business_rules\\ALERT-01-poller-window-feasibility.md  (17 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (67 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\08-SLO\\SloProfile.spec.js  (37 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (35 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Availability\\Avalibility_Policy_test.spec.js  (31 term hits)",
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (30 term hits)",
+  "tests\\regression\\Settings\\10-Integrations\\motadataServiceOpsIntegration.spec.js  (28 term hits)",
+  "tests\\regression\\Settings\\02-Discovery\\Ping_IpRange_Discovery.spec.js  (27 term hits)"
+ ]
+}

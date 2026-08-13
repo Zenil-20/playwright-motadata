@@ -1,0 +1,381 @@
+[
+ {
+  "id": "TC-001",
+  "title": "NCCM onboarding validates connectivity from the assigned collector",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin; discover a branch device through a branch Collector so it is in Inventory with that Collector assigned, and confirm polling works",
+    "expected": "Device is monitored successfully through its Collector",
+    "source": "jira"
+   },
+   {
+    "action": "Onboard that device for NCCM from the Inventory screen",
+    "expected": "Connectivity validation runs from the assigned Collector and succeeds. Today it runs from the Main/Master server and fails with Ping/Port errors — the reported defect",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "Branch device unreachable from master still onboards for NCCM",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Set up a device reachable from its branch Collector but NOT from the Main/Master server",
+    "expected": "Device polls fine via the Collector",
+    "source": "jira"
+   },
+   {
+    "action": "Onboard it for NCCM",
+    "expected": "Onboarding completes — reachability from the master is not required when a Collector is assigned",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "Ping check is executed by the assigned collector, not the master",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a Collector-assigned device for NCCM while watching where the ping originates",
+    "expected": "Validation runs",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the source of the ping",
+    "expected": "The ping check executes on the assigned Collector. The discovery engine's ping-check routine must be dispatched to the Collector rather than run locally on the master",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Port check is executed by the assigned collector, not the master",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a Collector-assigned device for NCCM whose SSH/Telnet port is reachable only from the Collector",
+    "expected": "Validation runs",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the source of the port check",
+    "expected": "The port check executes on the assigned Collector and reports the port open",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "Device with no collector assigned still validates from the master",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a device that has no specific Collector assigned (master-polled)",
+    "expected": "Validation runs",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the outcome",
+    "expected": "Validation runs from the Main/Master server exactly as before — the change must not break the default topology",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Genuine unreachability from the collector still fails clearly",
+  "tags": [
+   "Negative",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Assign a Collector to a device, then make the device unreachable from that Collector too",
+    "expected": "Device is down from the Collector",
+    "source": "jira"
+   },
+   {
+    "action": "Onboard it for NCCM",
+    "expected": "Onboarding fails with a Ping/Port connectivity error that names the Collector it was attempted from — the fix must not mask real failures",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "Error message identifies which collector performed the check",
+  "tags": [
+   "Negative",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Trigger a failing NCCM connectivity validation on a Collector-assigned device",
+    "expected": "Validation fails",
+    "source": "inferred"
+   },
+   {
+    "action": "Read the error",
+    "expected": "It states the Collector used, so an operator can tell a wrong-collector problem from a genuine unreachability",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "Ping check honours the configured timeout and packet count",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Note the configured ping-check timeout and packet count, then onboard a device that drops ICMP",
+    "expected": "Validation runs",
+    "source": "kg"
+   },
+   {
+    "action": "Measure the failure",
+    "expected": "It fails after the configured timeout using the configured packet count — the same configuration values as the existing discovery ping check, applied on the Collector",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "Validation is skipped when ping check is not required",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a device of a type/profile where ping check is not required",
+    "expected": "Onboarding proceeds",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the flow",
+    "expected": "The ping check is skipped per the existing require-check logic rather than being forced and failing",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "Multiple branches each validate through their own collector",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Assign Collector A to a device in branch A and Collector B to a device in branch B",
+    "expected": "Both poll successfully",
+    "source": "jira"
+   },
+   {
+    "action": "Onboard both for NCCM",
+    "expected": "Each validates from its own Collector; neither is validated from the other branch's Collector or from the master",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "Reassigning a device to another collector changes the validation source",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a device for NCCM via Collector A, then reassign it to Collector B",
+    "expected": "Reassignment saved",
+    "source": "inferred"
+   },
+   {
+    "action": "Re-run NCCM connectivity validation",
+    "expected": "The check now runs from Collector B without needing to re-onboard the device",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "Collector down during onboarding produces a clear error",
+  "tags": [
+   "Negative",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Stop the assigned Collector, then onboard its device for NCCM",
+    "expected": "Validation is attempted",
+    "source": "inferred"
+   },
+   {
+    "action": "Read the error",
+    "expected": "It reports that the assigned Collector is unavailable rather than silently falling back to the master or hanging indefinitely",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "No silent fallback to the master when the collector check fails",
+  "tags": [
+   "Security",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Make a device reachable from the master but not from its assigned Collector, then onboard it",
+    "expected": "Validation runs",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the outcome",
+    "expected": "Validation fails on the Collector result and does not quietly retry from the master — a silent fallback would reintroduce the bug in reverse and mislead the operator",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Subsequent NCCM operations also use the assigned collector",
+  "tags": [
+   "Impacted",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a branch device for NCCM through its Collector, then run a configuration backup on it",
+    "expected": "Operation runs",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the operation",
+    "expected": "Backup connects through the assigned Collector too — onboarding validation and ongoing NCCM operations must agree on the path",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "Monitoring and polling are unaffected by the change",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Record polling health for a Collector-assigned device before the change",
+    "expected": "Baseline captured",
+    "source": "jira"
+   },
+   {
+    "action": "Re-check after onboarding it for NCCM",
+    "expected": "Polling continues through the same Collector with no gap or duplication",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "Bulk NCCM onboarding from Inventory respects per-device collectors",
+  "tags": [
+   "Edge",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Select devices spanning two different Collectors in Inventory and onboard them for NCCM together",
+    "expected": "Bulk onboarding runs",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect each device",
+    "expected": "Each is validated from its own assigned Collector; a single shared path is not used for the whole selection",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "Credential errors remain distinguishable from connectivity errors",
+  "tags": [
+   "Negative",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a Collector-reachable device for NCCM with wrong device credentials",
+    "expected": "Validation runs",
+    "source": "doc"
+   },
+   {
+    "action": "Read the error",
+    "expected": "It reports a credential/authentication failure, not a Ping/Port connectivity failure — distinguishable credential errors are an existing documented requirement",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "Audit records which collector performed the validation",
+  "tags": [
+   "Audit",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a Collector-assigned device for NCCM",
+    "expected": "Onboarding completes",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the audit trail",
+    "expected": "The record names the device, the actor and the Collector used for validation",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "HA/failover: validation follows the surviving collector",
+  "tags": [
+   "Edge",
+   "Non-Functional"
+  ],
+  "steps": [
+   {
+    "action": "In a deployment with redundant Collectors, fail over the Collector assigned to a device",
+    "expected": "Failover completes",
+    "source": "inferred"
+   },
+   {
+    "action": "Onboard or re-validate the device for NCCM",
+    "expected": "Validation runs from the surviving Collector rather than falling back to the master",
+    "source": "inferred"
+   }
+  ]
+ }
+]

@@ -1,0 +1,37 @@
+{
+ "key": "MOTADATA-9593",
+ "title": "Credential Profile UI for Microsoft Graph API Mail Server Does Not Match Figma Design",
+ "type": "Bug",
+ "status": "In QA",
+ "priority": "Medium",
+ "components": [
+  "UI"
+ ],
+ "labels": [
+  "Ansh",
+  "UI"
+ ],
+ "fixVersions": [
+  "10.0.1",
+  "8.2.8"
+ ],
+ "reporter": {
+  "name": "ansh.garg",
+  "displayName": "Ansh Garg"
+ },
+ "description": "In the newly added Mail Server support for the Microsoft Graph API, the Credential Profile UI does not match the provided Figma design.\r\n\r\nIssues Observed:\r\n * UI alignments are inconsistent with the Figma design.\r\n * The Grant Type dropdown options do not match the expected values specified in the design.\r\n\r\nExpected Result:\r\n * The Credential Profile UI should match the provided Figma design in terms of layout, spacing, and alignment.\r\n * The Grant Type dropdown should display the correct options as defined in the Figma design.\r\n\r\nActual Result:\r\n * UI alignment differs from the Figma specification.\r\n * Grant Type dropdown contains incorrect or mismatched options.\r\n\r\nReference:\r\n * Figma: [https://www.figma.com/proto/DPReGBjeIv7nogzeNs9Uel/Settings?type=design&node-id=2610-47977&viewport=18254%2C31001%2C0.5&t=cyc29zVvo6ifgJMp-1&scaling=scale-down-width&starting-point-node-id=632%3A36804&page-id=0%3A1&content-scaling=fixed]\r\n * Screenshot: Attached.",
+ "figma_links": [
+  "https://www.figma.com/proto/DPReGBjeIv7nogzeNs9Uel/Settings?type=design&node-id=2610-47977&viewport=18254%2C31001%2C0.5&t=cyc29zVvo6ifgJMp-1&scaling=scale-down-width&starting-point-node-id=632%3A36804&page-id=0%3A1&content-scaling=fixed"
+ ],
+ "attachments": [
+  "image-2026-08-03-11-38-30-344.png"
+ ],
+ "linked": [],
+ "comments": [],
+ "completeness": {
+  "gaps": [
+   "references Figma (1 link(s)) — design-derived expectations cannot be verified from the ticket alone",
+   "has 1 attachment(s) that were NOT fetched (screenshots may carry the real spec)"
+  ]
+ }
+}

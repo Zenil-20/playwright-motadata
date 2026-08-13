@@ -1,0 +1,495 @@
+[
+ {
+  "id": "TC-001",
+  "title": "Throughput value in an alert email is converted, not raw bps",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin; create a metric alert policy on a network throughput counter with an email notification, then breach it at roughly 21890802 bps",
+    "expected": "Alert fires and the email is delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the metric value in the email",
+    "expected": "It reads as a converted unit (e.g. 20.88 Mbps), not the raw 21890802. This is the reported defect",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "Email value matches what the UI shows for the same alert",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy and open the resulting alert in Active Alerts",
+    "expected": "Alert detail shows the converted value",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against the email for the same alert",
+    "expected": "Value, unit and precision are identical. The ticket requires the email to reuse the UI/Reports conversion logic, not a second implementation",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "Email value matches what a report shows for the same interval",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Run a report covering the breach interval for the same counter",
+    "expected": "Report renders the converted value",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against the email",
+    "expected": "Identical value, unit and precision across UI, report and email",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Throughput converts from bps to Kbps at the boundary",
+  "tags": [
+   "Functional",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy at a value around 1500 bps",
+    "expected": "Alert email is delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value and unit in the email",
+    "expected": "It is expressed in Kbps with the numeric value scaled accordingly, matching the UI for the same input",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "Throughput converts from Kbps to Mbps at the boundary",
+  "tags": [
+   "Functional",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy at a value around 2500 Kbps",
+    "expected": "Alert email is delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value and unit in the email",
+    "expected": "It is expressed in Mbps with the numeric value scaled accordingly, matching the UI for the same input",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Throughput converts from Mbps to Gbps at the boundary",
+  "tags": [
+   "Functional",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy at a value around 4096 Mbps",
+    "expected": "Alert email is delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value and unit in the email",
+    "expected": "It is expressed in Gbps with the numeric value scaled accordingly, matching the UI for the same input",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "Throughput converts from Gbps to Tbps at the boundary",
+  "tags": [
+   "Functional",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy at a value around 2048 Gbps",
+    "expected": "Alert email is delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value and unit in the email",
+    "expected": "It is expressed in Tbps with the numeric value scaled accordingly, matching the UI for the same input",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "Converted value always carries its unit",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Breach policies on several convertible counters and collect the emails",
+    "expected": "Emails delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect each metric value",
+    "expected": "Every converted value shows both the number and its unit — never a bare number whose scale the reader has to guess",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "Byte/storage counters are converted in email",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Breach a policy on a disk or memory counter reported in bytes",
+    "expected": "Alert email delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value",
+    "expected": "Expressed in the appropriate KB/MB/GB/TB unit, matching the UI",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "Time/duration counters are converted in email",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Breach a policy on a counter reported in milliseconds or seconds",
+    "expected": "Alert email delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value",
+    "expected": "Expressed in the unit the UI uses for that counter with matching precision",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "Percentage counters are not double-converted",
+  "tags": [
+   "Regression",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Breach a policy on a CPU or memory percentage counter",
+    "expected": "Alert email delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value",
+    "expected": "Shown as a percentage exactly as the UI shows it — not rescaled or given a throughput unit",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "Unitless counters are unchanged",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Breach a policy on a unitless counter such as a session or error count",
+    "expected": "Alert email delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value",
+    "expected": "Rendered as the plain number with no invented unit",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "Zero and very small values render sensibly",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy at 0 bps, then at 1 bps",
+    "expected": "Both emails delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Read both values",
+    "expected": "Rendered as 0 bps and 1 bps in the base unit — not as 0.000001 Mbps or an empty value",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Very large values scale to the top unit without overflow",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy at a value in the Tbps range",
+    "expected": "Email delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Read the value",
+    "expected": "Scaled to the highest supported unit, readable, with no scientific notation or truncation",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "Negative or invalid metric values do not break the template",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Force an alert whose metric value is negative or null",
+    "expected": "Email delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the email",
+    "expected": "The template renders a safe placeholder and still delivers; it does not fail to send or print a stack trace",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "Decimal precision matches the UI rather than being rounded away",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Breach a policy at a value with meaningful decimals (e.g. 20.88 Mbps)",
+    "expected": "Email delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Compare the decimals against the UI",
+    "expected": "Same number of decimal places; the conversion precision must match existing UI/Reports behaviour",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "Scope is metric notifications only, as implemented",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Trigger an availability/service-check alert email and a metric alert email",
+    "expected": "Both delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Compare the value rendering",
+    "expected": "Conversion applies to metric-related notification data. The dev comment on the ticket limits the delivered scope to metric notifications — confirm any non-metric template is intentionally unchanged rather than silently missed",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "Teams and Slack channels are consistent with email or explicitly out of scope",
+  "tags": [
+   "Impacted",
+   "Workflow"
+  ],
+  "steps": [
+   {
+    "action": "Configure a policy to notify by email, Microsoft Teams and Slack, then breach it",
+    "expected": "All three notifications are delivered",
+    "source": "jira"
+   },
+   {
+    "action": "Compare the metric value across channels",
+    "expected": "Either all three show the converted value, or the ticket's stated backend-conversion intent is not yet met for the other channels — the reviewer comment warns that email-only conversion creates exactly this inconsistency",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "Alert email macros other than the metric value are unaffected",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Breach a policy whose email template uses monitor name, severity, timestamp and policy name macros",
+    "expected": "Email delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect every macro",
+    "expected": "All resolve as before; only the metric value rendering changed",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "A custom email template picks up conversion too",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Customise the alert email template for a policy, keeping the metric value macro, then breach it",
+    "expected": "Email delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Read the value",
+    "expected": "Converted the same way as the default template — conversion lives in the value rendering, not in one hard-coded template",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "Clear/recovery email uses the same conversion",
+  "tags": [
+   "Regression",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Breach a throughput policy then let it recover so a clear email is sent",
+    "expected": "Both emails delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Compare value rendering in the breach and clear emails",
+    "expected": "Both converted identically",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-022",
+  "title": "No conversion is applied twice on a re-notified alert",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Configure repeat notification on a breached policy and let it re-notify several times",
+    "expected": "Multiple emails delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Compare the values",
+    "expected": "Every email shows the same converted value — the number is not rescaled again on each send",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-023",
+  "title": "XSS/injection through a metric or monitor name in email is neutralised",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Name a monitor <script>alert(1)</script> and breach a policy on it so an email is sent",
+    "expected": "Email delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the email in an HTML-rendering client",
+    "expected": "The name is escaped as literal text; no script or remote content executes from the template",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-024",
+  "title": "Existing alerts and history are not rewritten",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Note the stored raw values for alerts raised before the change",
+    "expected": "Baseline captured",
+    "source": "jira"
+   },
+   {
+    "action": "Re-inspect after the change",
+    "expected": "Stored data is untouched — conversion happens at render time only, so historical accuracy and any downstream integration consuming raw values are preserved",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-025",
+  "title": "Email rendering does not measurably slow notification delivery",
+  "tags": [
+   "Non-Functional"
+  ],
+  "steps": [
+   {
+    "action": "Breach 50 policies with email notification simultaneously",
+    "expected": "All emails are delivered",
+    "source": "inferred"
+   },
+   {
+    "action": "Measure the delivery latency against a pre-change baseline",
+    "expected": "No material regression from the added conversion work",
+    "source": "inferred"
+   }
+  ]
+ }
+]

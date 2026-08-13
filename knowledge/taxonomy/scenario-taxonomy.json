@@ -1,0 +1,44 @@
+{
+  "_comment": "The scenario taxonomy every generated case must be tagged against. Source: the user's Availability-policy coverage model (2026-08-12). scripts/cases.mjs validates every tag against this file and refuses unknown tags.",
+  "core": {
+    "Functional": "Happy-path / positive scenarios — feature works as designed (form fields, operators, macros resolving, save+trigger flow)",
+    "Impacted": "Cross-feature impact verification — what happens downstream when this thing happens (active alerts, license counts, tile updates, related entities)",
+    "Edge": "Boundary cases, race conditions, unusual values, empty/null, max-length, zero-match, unicode, decimal precision, locale separators",
+    "Regression": "Watch-list against past bugs + spec invariants (e.g. flap() prevents duplicates, ABOVE_OR_BELOW splits correctly, soft-delete name-reuse, monitor-name in export populated)"
+  },
+  "negative_security": {
+    "Negative": "Explicit failure paths — invalid inputs (blank required, malformed JSON, invalid regex, expired tokens, missing creds, 401/403 responses, validation rejections)",
+    "Security": "XSS payloads in name/macro values, SQL-injection literals, CSRF protection, RBAC (Viewer/Operator scope), CSV-injection sanitization (= + - @ prefix), secret masking in audit, system-policy delete blocked"
+  },
+  "surface": {
+    "Alert Screen": "Active Alerts page UI (columns, sort, filter, search, pagination, bulk ack/clear, detail page with Notification/Runbook/Incident logs, History tab)",
+    "UI": "Form UI elements (placeholders, collapsible sections, info-icons, tile selection, dropdown behavior, sticky bars, mobile breakpoint)",
+    "Reports": "Predefined + scheduled + custom report builder, export formats (PDF/HTML/CSV/XLSX/JSON), data correctness vs Active Alerts",
+    "Audit": "EVENT_AUDIT verification for every CRUD/lifecycle action, retention, immutability, SIEM forwarding, correlation IDs",
+    "Suppression": "Manual suppress, Maintenance Windows, per-stage selective (notify-only/action-only/incident-only), policy-level POLICY_SUPPRESS_WINDOW",
+    "Dashboard": "Tiles (per severity), Recent Alerts widget, NOC View, Top-N widgets, websocket real-time updates, custom dashboards",
+    "Workflow": "Cross-stage resilience: notify-fails-TA-still-runs, runbook-fails-incident-still-created, stage order, RPE restart mid-action, MD031 worker timeout",
+    "Mid-life": "Policy composition while alerts are open: P1 active -> create P2 same counter, edit P1 mid-alert, delete P1 with P2 existing, race conditions",
+    "API": "REST endpoints (POST/PUT/DELETE/PATCH, /references, concurrent PUT, idempotency)",
+    "Lifecycle": "Export/Import JSON, version history, diff, rollback (non-destructive), simulation/dry-run, dependency map"
+  },
+  "quality": {
+    "Non-Functional": "Performance budgets, responsive breakpoints and zoom, accessibility (keyboard, labels, focus order), cross-browser consistency. Counts as a primary tag — a non-functional case does not also need a Functional/Negative tag."
+  },
+  "grounding_sources": {
+    "kg": "read out of shipped source via the motadata-kg / ui-kg MCP servers",
+    "doc": "knowledge/product/** or knowledge/business_rules/** or knowledge/known_issues/**",
+    "catalog": "knowledge/locators/catalog/*.json (a live DOM sweep)",
+    "suite": "an existing spec under tests/**",
+    "jira": "stated verbatim in the ticket",
+    "figma": "MUST be confirmed against the ticket's Figma node before this case can pass",
+    "inferred": "not verified anywhere — goes to the human gate as a review item"
+  },
+  "rules": {
+    "min_steps_per_case": 1,
+    "max_bytes_per_step": 500,
+    "require_source_tag": true,
+    "require_at_least_one_core_tag": true,
+    "csv_columns": ["ID", "Work Item Type", "Title", "Test Step", "Step Action", "Step Expected", "Area Path", "Assigned To", "State", "Tags"]
+  }
+}

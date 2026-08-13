@@ -1,0 +1,414 @@
+[
+ {
+  "id": "TC-001",
+  "title": "Add a Metric Group to a Linux (SNMP) device from the Device Catalogue",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); onboard a device as Linux (SNMP) and open its Device Catalogue",
+    "expected": "Device is in inventory with type Linux (SNMP)",
+    "source": "jira"
+   },
+   {
+    "action": "Add / associate a new Metric Group",
+    "expected": "The Metric Group is created and associated successfully. This is the reported failure — currently the device type is absent from the supported mapping",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "Add a Metric Group to a Windows (SNMP) device from the Device Catalogue",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Onboard a device as Windows (SNMP) and open its Device Catalogue",
+    "expected": "Device is in inventory with type Windows (SNMP)",
+    "source": "jira"
+   },
+   {
+    "action": "Add / associate a new Metric Group",
+    "expected": "The Metric Group is created and associated successfully",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "Linux (SNMP) and Windows (SNMP) appear in the supported device-type list",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Open the device-type selector used when creating or assigning a Metric Group",
+    "expected": "Selector lists supported types",
+    "source": "jira"
+   },
+   {
+    "action": "Look for Linux (SNMP) and Windows (SNMP)",
+    "expected": "Both are present and selectable alongside the previously supported types",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Test OID resolves for a Linux (SNMP) device",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "While creating a Metric Group for a Linux (SNMP) device, use the test-OID facility",
+    "expected": "Test runs against the device",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "The device type is identified and the OID returns a value. The ticket states the test environment currently cannot identify these types for test OID",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "Test OID resolves for a Windows (SNMP) device",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "While creating a Metric Group for a Windows (SNMP) device, use the test-OID facility",
+    "expected": "Test runs against the device",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "The device type is identified and the OID returns a value",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "SNMP device catalogue lookup returns a type for the new device types",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Inspect the SNMP device catalogue entry whose OID matches a Linux (SNMP) device",
+    "expected": "A catalogue row exists in the SNMP device catalog",
+    "source": "kg"
+   },
+   {
+    "action": "Verify the type resolution for that OID",
+    "expected": "getSNMPDeviceType(oid) returns the device type rather than null — the store matches on SNMP_DEVICE_CATALOG_OID case-insensitively and returns null when no row matches, which is the shape of the reported bug",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "Unknown OID still resolves to no type without erroring",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Query the catalogue with an OID that matches no catalogue row",
+    "expected": "Lookup completes",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the outcome",
+    "expected": "No type is returned and the caller degrades gracefully — no exception, no partial Metric Group created",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "OID matching is case-insensitive",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Query the catalogue with the same OID in differing case",
+    "expected": "Both lookups complete",
+    "source": "kg"
+   },
+   {
+    "action": "Compare results",
+    "expected": "Both resolve to the same device type — the store compares with equalsIgnoreCase",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "Metric Group assignment survives a config-template reference",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Associate a Metric Group with a Linux (SNMP) device via a config template",
+    "expected": "Association saved",
+    "source": "kg"
+   },
+   {
+    "action": "Re-open the config template",
+    "expected": "The catalogue id is retained in the template's multi-value catalog-ids reference; the association is not dropped on reload",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "Polling collects the new Metric Group for Linux (SNMP)",
+  "tags": [
+   "Impacted",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Associate a Metric Group with a Linux (SNMP) device and wait for one poll cycle",
+    "expected": "Poll completes",
+    "source": "inferred"
+   },
+   {
+    "action": "Open Metric Explorer for that device and counter",
+    "expected": "Data points are present for the newly associated group",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "Previously supported device types still accept Metric Groups",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Repeat the Metric Group association on a device type that already worked before this change (e.g. a network SNMP device)",
+    "expected": "Association succeeds",
+    "source": "inferred"
+   },
+   {
+    "action": "Confirm behaviour",
+    "expected": "Unchanged — extending the mapping must not disturb existing types",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "Duplicate Metric Group name is rejected for the new device types",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Create a Metric Group for a Linux (SNMP) device reusing an existing group name",
+    "expected": "Submission attempted",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "A duplicate/not-unique validation error is shown and no second group is created",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "Metric Group create is rejected with a blank name or no counters",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Attempt to create a Metric Group for a Windows (SNMP) device with a blank name, then with no counters selected",
+    "expected": "Both submissions attempted",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "Each raises its own required-field validation; nothing is created",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Invalid OID is rejected when adding a counter",
+  "tags": [
+   "Negative",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Add a counter to a Metric Group using a malformed OID (e.g. 1.3.6.1.abc) and test it",
+    "expected": "Test runs",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "A clear invalid-OID error is returned; the counter is not saved with an unusable OID",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "OID that the device does not expose fails clearly",
+  "tags": [
+   "Negative",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Test a well-formed OID that the Linux (SNMP) target does not implement",
+    "expected": "Test runs",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "A no-such-object / no-data error is reported rather than a silent success or a zero value",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "RBAC: a non-admin cannot create or assign Metric Groups",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Log in as a user whose role lacks metric-configuration rights and open a Linux (SNMP) device catalogue",
+    "expected": "Screen opens or is blocked per role",
+    "source": "doc"
+   },
+   {
+    "action": "Attempt to add a Metric Group",
+    "expected": "The action is unavailable or rejected; no group is created",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "XSS payload in a Metric Group name is neutralised",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Create a Metric Group named <script>alert(1)</script> for a Windows (SNMP) device",
+    "expected": "Submission attempted",
+    "source": "inferred"
+   },
+   {
+    "action": "View the group in the catalogue and in Metric Explorer",
+    "expected": "Either validation rejects it or it renders escaped as literal text; no script executes",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "SNMP credential failure during test OID is reported distinguishably",
+  "tags": [
+   "Negative",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Point a Linux (SNMP) device at a wrong SNMP community and run test OID",
+    "expected": "Test runs",
+    "source": "doc"
+   },
+   {
+    "action": "Inspect the error",
+    "expected": "The message identifies a credential/authentication failure rather than a generic timeout — credential errors are a documented top cause of missing data",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "Unicode and long Metric Group names round-trip",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Create Metric Groups for a Linux (SNMP) device with a 255-character name and with a Devanagari name",
+    "expected": "Submissions attempted",
+    "source": "inferred"
+   },
+   {
+    "action": "Reload the catalogue",
+    "expected": "Either both are accepted and display intact, or a clear max-length validation fires — no silent truncation or mojibake",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "Audit records Metric Group create and assignment",
+  "tags": [
+   "Audit",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Create and then assign a Metric Group to a Linux (SNMP) device",
+    "expected": "Both actions complete",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the audit trail",
+    "expected": "Separate records exist for create and assign, naming the actor, the device and the timestamp",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "Upgrade path adds the mapping for existing installs",
+  "tags": [
+   "Regression",
+   "Lifecycle"
+  ],
+  "steps": [
+   {
+    "action": "Upgrade an install that already has Linux (SNMP) and Windows (SNMP) devices onboarded",
+    "expected": "Upgrade completes",
+    "source": "kg"
+   },
+   {
+    "action": "Open the Device Catalogue for one of those pre-existing devices",
+    "expected": "Metric Groups can now be added without re-onboarding — the mapping is applied by patch, consistent with how metric-group attachment patches ship",
+    "source": "kg"
+   }
+  ]
+ }
+]

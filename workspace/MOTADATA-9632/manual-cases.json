@@ -1,0 +1,320 @@
+[
+ {
+  "id": "TC-001",
+  "title": "Approver receives a bell notification when a new NCCM approval request is raised",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as an approver; have another user raise a new NCCM approval request",
+    "expected": "Request is created",
+    "source": "jira"
+   },
+   {
+    "action": "Open Alerts and Notifications (bell icon)",
+    "expected": "A notification for the new approval request is present",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "Notifications appear under a section named \"Approval Notification\"",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Open the bell as a user with approval rights and at least one pending request",
+    "expected": "Panel opens",
+    "source": "jira"
+   },
+   {
+    "action": "Read the section headings",
+    "expected": "A section titled exactly \"Approval Notification\" exists alongside the existing sections",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "Approval Notification section shows the pending count",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Ensure exactly 3 approval requests are pending for the logged-in approver, then open the bell",
+    "expected": "Panel opens",
+    "source": "jira"
+   },
+   {
+    "action": "Read the section header count",
+    "expected": "It reads 3, matching the pending approval requests",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Each entry shows Request Name, Requested By, Timestamp, Description and Status",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Open the Approval Notification section",
+    "expected": "Entries are listed",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect one entry",
+    "expected": "All five fields are present and populated: Request Name, Requested By, Timestamp, Description, Status",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "Section layout matches the Figma reference",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open the Approval Notification section",
+    "expected": "Section renders",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against Figma node-id 8640-112388 in the NCCM file",
+    "expected": "Section placement, count badge, row layout, field order and spacing match the design",
+    "source": "figma"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Only users with approval rights receive the notification",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Raise an NCCM approval request, then open the bell as a user WITHOUT approval rights",
+    "expected": "Panel opens",
+    "source": "jira"
+   },
+   {
+    "action": "Look for an Approval Notification section or entry",
+    "expected": "Neither is shown — the notification targets only users holding approval rights",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "Count decreases once a request is approved or rejected",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Note the Approval Notification count, then approve one of the pending requests",
+    "expected": "Approval completes",
+    "source": "inferred"
+   },
+   {
+    "action": "Re-open the bell",
+    "expected": "The count has decreased by one and the decided request is no longer listed as pending",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "Clicking a notification navigates to the approval request",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Open the Approval Notification section and click an entry",
+    "expected": "Navigation occurs",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the destination",
+    "expected": "The corresponding NCCM approval request opens ready to action — confirm the intended target screen against Figma",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "Section is absent or empty-stated when nothing is pending",
+  "tags": [
+   "Edge",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "As an approver with no pending approval requests, open the bell",
+    "expected": "Panel opens",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the Approval Notification area",
+    "expected": "Either the section is hidden or it shows a zero count with an empty state — not a broken or blank block",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "Existing notification sections are unaffected",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Note the bell contents (alerts and other existing sections) before the change",
+    "expected": "Baseline captured",
+    "source": "jira"
+   },
+   {
+    "action": "Re-open the bell after the change",
+    "expected": "All pre-existing sections and their counts behave as before; only the new section is added",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "Notification arrives in real time without a page reload",
+  "tags": [
+   "Functional",
+   "Non-Functional"
+  ],
+  "steps": [
+   {
+    "action": "Keep the bell panel open as an approver while another user raises a request",
+    "expected": "Request is created",
+    "source": "inferred"
+   },
+   {
+    "action": "Watch the panel",
+    "expected": "The new entry and the incremented count appear without a manual refresh",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "Long request names and descriptions do not break the layout",
+  "tags": [
+   "Edge",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Raise a request with a 255-character name and a long multi-line description",
+    "expected": "Request is created",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the Approval Notification section",
+    "expected": "Text truncates or wraps within the row; the panel does not overflow horizontally and the other fields stay readable",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "Timestamp respects the user timezone and format convention",
+  "tags": [
+   "Edge",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Raise a request, then view its notification as users in two different timezone settings",
+    "expected": "Both see the entry",
+    "source": "inferred"
+   },
+   {
+    "action": "Compare the timestamps",
+    "expected": "Each renders in the viewing user's timezone using the product's standard date-time format",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Many pending approvals paginate or scroll rather than flooding the panel",
+  "tags": [
+   "Edge",
+   "Non-Functional"
+  ],
+  "steps": [
+   {
+    "action": "Create 50 pending approval requests for one approver and open the bell",
+    "expected": "Panel opens",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the section",
+    "expected": "Entries scroll or paginate with the true count shown; the panel opens promptly and stays usable",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "XSS payload in the request name or description is neutralised",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Raise an approval request whose description contains <img src=x onerror=alert(1)>",
+    "expected": "Request is created",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the Approval Notification section",
+    "expected": "The value renders escaped as literal text; no script executes",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "Bulk approval requests are represented sensibly in the section",
+  "tags": [
+   "Impacted",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Raise a bulk NCCM approval request spanning 20 devices (see MOTADATA-9631) and open the bell",
+    "expected": "Notification appears",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the entry",
+    "expected": "One entry represents the bulk request rather than 20 separate entries — confirm the intended behaviour with the team, as the bulk ticket has an unresolved per-device vs single notification dispute",
+    "source": "jira"
+   }
+  ]
+ }
+]

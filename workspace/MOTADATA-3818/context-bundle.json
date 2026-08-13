@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "system",
+  "user",
+  "should",
+  "able",
+  "detailed",
+  "compliance",
+  "reports",
+  "figma",
+  "https",
+  "proto",
+  "bdet4lwqk4didvwmjhxsj3",
+  "node",
+  "4685",
+  "48025",
+  "viewport",
+  "25033",
+  "54159",
+  "scaling",
+  "scale",
+  "down",
+  "width",
+  "starting",
+  "point",
+  "3a22812",
+  "content",
+  "fixed",
+  "mf9gomkvyodr0oxs",
+  "hide",
+  "acceptance",
+  "criteria",
+  "under",
+  "section",
+  "clicking",
+  "category",
+  "called",
+  "executive",
+  "summary",
+  "report",
+  "shown",
+  "audit"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\monitoring\\overview.md  (25 term hits)",
+  "knowledge\\product\\Monitors\\inventory.md  (22 term hits)",
+  "knowledge\\product\\Reports\\reports.md  (22 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\device-monitor-settings.md  (21 term hits)",
+  "knowledge\\product\\Audits\\audit.md  (20 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\processes.md  (20 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\service-check-monitor-settings.md  (20 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\services.md  (20 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\_index.json  (8 term hits)",
+  "knowledge\\locators\\catalog\\reports.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\settings_compliance_settings.json  (5 term hits)",
+  "knowledge\\locators\\catalog\\settings_compliance_settings_audit_policy.json  (5 term hits)",
+  "knowledge\\locators\\catalog\\nccm_compliance.json  (4 term hits)",
+  "knowledge\\locators\\catalog\\nccm_explorer.json  (4 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\RBAC-01-least-privilege-cascade.md  (10 term hits)",
+  "knowledge\\business_rules\\HA-01-no-dual-primary.md  (8 term hits)",
+  "knowledge\\business_rules\\ALERT-02-renotification-idempotence.md  (7 term hits)",
+  "knowledge\\business_rules\\DISCOVERY-01-distinguishable-credential-errors.md  (7 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (22 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\10-Integrations\\motadataServiceOpsIntegration.spec.js  (18 term hits)",
+  "tests\\regression\\Settings\\08-SLO\\SloProfile.spec.js  (15 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapExplorer.spec.js  (15 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapRouting.spec.js  (15 term hits)",
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (14 term hits)",
+  "tests\\regression\\nccm\\PerformNccmActions.spec.js  (14 term hits)"
+ ]
+}

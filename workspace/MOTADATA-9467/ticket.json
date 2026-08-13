@@ -1,0 +1,45 @@
+{
+ "key": "MOTADATA-9467",
+ "title": "PROD | Display Human-Understandable Metric Values in Alert Email Templates",
+ "type": "Improvement",
+ "status": "In Review",
+ "priority": "Medium",
+ "components": [
+  "NMS-METRIC"
+ ],
+ "labels": [
+  "Ansh",
+  "NMS-METRIC",
+  "PROD_PMG",
+  "clickhouse",
+  "email-server"
+ ],
+ "fixVersions": [
+  "8.2.8"
+ ],
+ "reporter": {
+  "name": "shrenik.dalal",
+  "displayName": "Shrenik Dalal"
+ },
+ "description": "Currently, alert email templates display raw metric values instead of human-readable converted values for counters that require unit conversion.\r\n\r\nFor example, network throughput metrics are displayed in *bits per second (bps)* as raw numeric values (e.g., {{{}21890802{}}}) instead of being automatically converted to the most appropriate unit such as *Kbps, Mbps, Gbps,* or higher.\r\n\r\nThe ObserveOps UI and Reports already perform this conversion correctly. Email templates should follow the same conversion logic to provide a consistent user experience.\r\n\r\nAdditionally, all other counters requiring value conversion should be reviewed to ensure the same behavior is implemented across email templates.\r\n----\r\nh2. *Objective*\r\n\r\nImplement the existing metric value conversion logic in alert email templates so that converted, human-readable values are displayed consistently with the UI and Reports.\r\n----\r\nh2. *Business Value*\r\n * Improves readability of alert emails.\r\n * Maintains consistency between UI, Reports, and Email Notifications.\r\n * Reduces manual interpretation of raw metric values.\r\n * Improves customer experience during incident response.\r\n * Establishes a common conversion framework for all supported metrics.\r\n\r\n----\r\nh1. *Scope*\r\n * Alert Email Templates\r\n * Metric Value rendering\r\n * Unit conversion logic\r\n * All supported notification channels using the same email template engine (if applicable)\r\n\r\n----\r\nh1. *Acceptance Criteria*\r\nh2. *A. Metric Value Conversion*\r\n # Metric values displayed in alert email templates shall use the same conversion logic currently implemented in the ObserveOps UI and Reports.\r\n # Counters with supported unit conversions shall automatically display values in the most appropriate unit.\r\n # Raw numeric values shall no longer be displayed when a converted representation is available.\r\n\r\n----\r\nh2. *B. Unit Conversion*\r\n # Network throughput metrics shall be automatically converted as applicable, including but not limited to:\r\n ** bps → Kbps\r\n ** Kbps → Mbps\r\n ** Mbps → Gbps\r\n ** Gbps → Tbps\r\n # Converted values shall include both the numeric value and the corresponding unit.\r\n # The conversion precision shall match the behavior currently implemented in the UI and Reports.\r\n\r\n----\r\nh2. *C. Consistency Across Product*\r\n # The same conversion logic shall be reused across:\r\n ** ObserveOps UI\r\n ** Reports\r\n ** Alert Email Templates\r\n # No separate conversion implementation shall be introduced for email templates.\r\n\r\n----\r\nh2. *D. Review of Other Convertible Counters*\r\n # All counters that support unit conversion in the UI shall be reviewed for email template compatibility.\r\n # Any counter currently displaying raw values in emails but converted values in the UI shall be updated to use the same conversion logic.\r\n # This review shall include all applicable unit-based metrics (for example, bandwidth, bytes, storage, memory, time, rates, or other counters where conversion is supported).\r\n\r\n----\r\nh2. *E. Backward Compatibility*\r\n # Existing email template layouts shall remain unchanged.\r\n # Only the formatting of metric values shall change.\r\n # Existing alert generation and notification workflows shall continue to function without regression.\r\n\r\n----\r\nh1. *Test Cases*\r\n # Trigger an alert for a network throughput metric.\r\n ** *Expected:* The email displays the converted value (e.g., {*}20.89 Mbps{*}) instead of the raw value ({*}21890802 bps{*}).\r\n # Compare the metric value in the UI and the email.\r\n ** *Expected:* Both display the same converted value and unit.\r\n # Generate alerts for other convertible counters (for example, bytes, storage, memory, duration).\r\n ** *Expected:* Values are displayed using the appropriate converted units wherever conversion is supported.\r\n # Trigger alerts for counters that do not require unit conversion.\r\n ** *Expected:* Values continue to be displayed correctly without any change.\r\n # Verify existing email formatting.\r\n ** *Expected:* The email layout remains unchanged; only metric value formatting is updated.\r\n # Verify reports and dashboards.\r\n ** *Expected:* Existing UI and report behavior remains unaffected without regression.\r\n \r\n \r\n ",
+ "figma_links": [],
+ "attachments": [],
+ "linked": [],
+ "comments": [
+  {
+   "author": "Shrenik Dalal",
+   "body": "[~darshan.parmar] Why this task is taken as {*}Dev Only{*}?"
+  },
+  {
+   "author": "Darshan Parmar",
+   "body": "[~shrenik.dalal]  ,The conversion mechanism needs to be implemented on the back-end so that it applies consistently across all channels (email, Teams, and Slack). The templates currently don't support this functionality, and adding it to the email templates alone would create an inconsistency with the other channels and due to bandwidth issue,  We'll take this up in the next sprint.\r\n \r\n \r\n \r\n "
+  },
+  {
+   "author": "Harekrushn Tejani",
+   "body": "[~shrenik.dalal] ,The changes have been implemented for {*}metric-related notifications only{*}. The scope of this implementation is limited to applying human-readable metric value conversion for metric-related notification data.\r\ncc: [~ansh.garg] , [~ranjit.sindhav] "
+  }
+ ],
+ "completeness": {
+  "gaps": []
+ }
+}

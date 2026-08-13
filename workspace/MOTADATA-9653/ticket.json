@@ -1,0 +1,31 @@
+{
+ "key": "MOTADATA-9653",
+ "title": "PROD | NCCM | Connectivity Validation Should Be Performed Through Assigned Collector",
+ "type": "Improvement",
+ "status": "To Do",
+ "priority": "Medium",
+ "components": [
+  "NCCM"
+ ],
+ "labels": [
+  "Ansh",
+  "POC_Hotfix_8.2.6",
+  "PROD",
+  "prod"
+ ],
+ "fixVersions": [
+  "8.2.8"
+ ],
+ "reporter": {
+  "name": "yash.patel",
+  "displayName": "Yash Patel"
+ },
+ "description": "Currently, some customers have their *Head Office (HO)* and *Branch* environments located at different geographical locations. In such deployments, the customer provides a dedicated {*}Collector for each branch{*}, while the {*}HO contains the Main/Master server{*}.\r\n\r\nThe branch devices are reachable from their respective Collector but are {*}not directly reachable from the Main/Master server{*}.\r\n\r\nIn the current scenario:\r\n # The device is discovered using a {*}Discovery Profile{*}.\r\n # The device is added to Inventory and Monitor settings with a {*}specific Collector assigned{*}.\r\n # Monitoring and polling work successfully through the assigned Collector.\r\n # However, when the same device is onboarded for {*}NCCM from the Inventory screen{*}, the connectivity validation is performed from the {*}Main/Master server{*}.\r\n # Since the branch device is not directly reachable from the Master server, the NCCM onboarding fails with {*}Ping/Port connectivity errors{*}, even though the device is accessible through its assigned Collector.\r\n\r\nh3. Expected Behavior / Acceptance Criteria\r\n\r\nIf a device is already discovered through a Collector or has a {*}specific Collector assigned{*}, then during {*}NCCM onboarding and connectivity validation{*}, the application should perform the connectivity checks from the *same assigned Collector* instead of the Main/Master server.",
+ "figma_links": [],
+ "attachments": [],
+ "linked": [],
+ "comments": [],
+ "completeness": {
+  "gaps": []
+ }
+}

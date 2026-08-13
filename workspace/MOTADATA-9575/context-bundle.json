@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "reported",
+  "down",
+  "availability",
+  "service",
+  "check",
+  "probes",
+  "silently",
+  "overwritten",
+  "unknown",
+  "tautological",
+  "guard",
+  "responseprocessor",
+  "collectorresponseprocessor",
+  "byte",
+  "identical",
+  "branches",
+  "meant",
+  "normalise",
+  "indeterminate",
+  "probe",
+  "status",
+  "where",
+  "intended",
+  "because",
+  "string",
+  "never",
+  "equal",
+  "both",
+  "condition",
+  "tautology",
+  "always",
+  "true",
+  "branch",
+  "fires",
+  "unconditionally",
+  "clobbers",
+  "legitimate",
+  "affected",
+  "code",
+  "main"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog.md  (54 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\metric.md  (52 term hits)",
+  "knowledge\\product\\Settings\\integration\\motadata-serviceops.md  (49 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\overview.md  (49 term hits)",
+  "knowledge\\product\\TrapExplorer\\README.md  (49 term hits)",
+  "knowledge\\product\\Alerts\\alerts.md  (47 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\service-check-monitor-settings.md  (47 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\trap.md  (47 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\_index.json  (18 term hits)",
+  "knowledge\\locators\\catalog\\settings_network_discovery_network_discovery_profiles_create.json  (12 term hits)",
+  "knowledge\\locators\\catalog\\inventory.json  (11 term hits)",
+  "knowledge\\locators\\catalog\\settings_integration_atlassian_jira.json  (11 term hits)",
+  "knowledge\\locators\\catalog\\settings_integration_motadata_serviceops.json  (11 term hits)",
+  "knowledge\\locators\\catalog\\settings_integration_service_now.json  (11 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\index.md  (29 term hits)",
+  "knowledge\\business_rules\\DISCOVERY-01-distinguishable-credential-errors.md  (27 term hits)",
+  "knowledge\\business_rules\\RBAC-01-least-privilege-cascade.md  (26 term hits)",
+  "knowledge\\business_rules\\ALERT-01-poller-window-feasibility.md  (25 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (79 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\02-Discovery\\Ipsla_Wanlink_Discovery.spec.js  (50 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (49 term hits)",
+  "tests\\regression\\Settings\\14-RealUserMonitoring\\RumApplicationRegistration.spec.js  (44 term hits)",
+  "tests\\regression\\Settings\\08-SLO\\SloProfile.spec.js  (43 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Availability\\Avalibility_Policy_test.spec.js  (42 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapPolicyTrigger.spec.js  (42 term hits)"
+ ]
+}

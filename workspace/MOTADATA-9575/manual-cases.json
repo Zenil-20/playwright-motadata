@@ -1,0 +1,576 @@
+[
+ {
+  "id": "TC-001",
+  "title": "DOWN from a bodyless probe result is preserved, not overwritten with UNKNOWN",
+  "tags": [
+   "Regression",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Provision an availability/service-check monitor and force the probe to return an event whose top-level status is DOWN with a null result body (probe timed out or errored before producing a body) on a PING monitor",
+    "expected": "The collector emits status=DOWN with result=null",
+    "source": "jira"
+   },
+   {
+    "action": "Read the object status recorded in ObjectStatusCacheStore for that monitor",
+    "expected": "Status is DOWN. The guard at CollectorResponseProcessor.java:191 / ResponseProcessor.java:634 must read !isUP && !isDOWN; with the shipped || it is a tautology and always overwrites to UNKNOWN. Expect a fail until fixed",
+    "source": "kg"
+   },
+   {
+    "action": "Open the monitor availability history for that interval",
+    "expected": "A DOWN interval is recorded — not an UNKNOWN gap",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "UP from a bodyless probe result is preserved, not overwritten with UNKNOWN",
+  "tags": [
+   "Regression",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Force a successful probe whose event carries status=UP with a null result body",
+    "expected": "Event reaches the PING..CERTIFICATE case branch",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is UP. The tautological guard clobbers UP to UNKNOWN just as it does DOWN — both rows of the truth table evaluate true",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "An explicit status in the result body still wins over the event status",
+  "tags": [
+   "Regression",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Force a probe whose result body contains status=DOWN while the event top-level status is UP",
+    "expected": "The first branch fires because result != null && result.containsKey(STATUS)",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN — taken from the result body, and the UNKNOWN normalisation branch is never reached",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "A genuinely indeterminate status is still normalised to UNKNOWN",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Force a probe whose event status is neither UP nor DOWN (e.g. an empty or garbage status) with a null result body",
+    "expected": "The normalisation branch is reached",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is UNKNOWN. Fixing || to && must NOT remove this behaviour — the branch has to still fire for a value that is neither UP nor DOWN",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "DOWN-triggered alert policy fires for a bodyless DOWN probe",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Create an availability alert policy that triggers on DOWN for a PING monitor, then provision an availability/service-check monitor and force the probe to return an event whose top-level status is down with a null result body (probe timed out or errored before producing a body)",
+    "expected": "Policy is active and the probe reports DOWN",
+    "source": "jira"
+   },
+   {
+    "action": "Check Active Alerts",
+    "expected": "A DOWN alert is raised for the monitor. This is the customer-visible symptom of the bug — a real outage currently produces no alert",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Availability report shows downtime, not an UNKNOWN gap",
+  "tags": [
+   "Impacted",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Produce a bodyless DOWN interval on a monitor, then run the availability report for that window",
+    "expected": "Report generates",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the interval",
+    "expected": "It is counted as downtime. Currently it lands as UNKNOWN, which understates the outage",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "SLO/availability percentage accounts for the DOWN interval",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Note the availability percentage for a monitor, force a 10-minute bodyless DOWN interval, then re-read it",
+    "expected": "Percentage is recalculated",
+    "source": "inferred"
+   },
+   {
+    "action": "Compare",
+    "expected": "Availability drops by the outage duration. An UNKNOWN gap must not silently preserve a 100% figure",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "PING monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a PING service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "PORT monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a PORT service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "NTP monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a NTP service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "RADIUS monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a RADIUS service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "FTP monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a FTP service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "URL monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a URL service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "DOMAIN monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a DOMAIN service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "EMAIL monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a EMAIL service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "CERTIFICATE monitor preserves a reported DOWN through the shared normalisation branch",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Provision a CERTIFICATE service-check monitor and force a bodyless DOWN probe result",
+    "expected": "Probe reports DOWN with result=null",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. All of PING, PORT, NTP, RADIUS, FTP, URL, DOMAIN, EMAIL, CERTIFICATE share the one case branch, so every plugin in the family regresses together and must be verified together",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "EdgeCollector topology preserves a reported DOWN",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Deploy with an EdgeCollector and route an availability monitor through it, then force a bodyless DOWN",
+    "expected": "Event flows through CollectorResponseProcessor",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. This is the collector-side copy of the defect at CollectorResponseProcessor.java:191",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "Standalone/Primary topology preserves a reported DOWN",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "On a Standalone or Primary deployment, force a bodyless DOWN on an availability monitor",
+    "expected": "Event flows through ResponseProcessor",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN. This is the app-side copy at ResponseProcessor.java:634 — no deployment topology is unaffected, so both must be fixed and both tested",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "AVAILABILITY plugin ABORT carries forward the previous status",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Drive an AVAILABILITY-plugin monitor to a known UP state, then force an event with status=ABORT (poller over-utilisation)",
+    "expected": "The ABORT branch fires",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "The previously cached status (UP) is carried forward from ObjectStatusCacheStore, not reset. Only an object with no cached entry becomes UNKNOWN",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "AVAILABILITY plugin ABORT on a never-polled object yields UNKNOWN",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Force an ABORT event for an AVAILABILITY monitor that has no entry in ObjectStatusCacheStore yet",
+    "expected": "The ABORT branch fires and existItem() is false",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is UNKNOWN — the documented fallback when nothing was cached",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "AVAILABILITY plugin non-ABORT failure records DOWN",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Force a non-ABORT failure event for an AVAILABILITY-plugin monitor",
+    "expected": "The else branch fires",
+    "source": "kg"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "Status is DOWN — written unconditionally by that branch, independent of the PING..CERTIFICATE guard",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-022",
+  "title": "Status transition UP to DOWN to UP is recorded with correct timestamps",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Drive a monitor UP, then bodyless DOWN, then UP again across three polls",
+    "expected": "Three events processed",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the availability history",
+    "expected": "Exactly one DOWN interval bounded by the two poll timestamps; ObjectStatusCacheStore.updateItem is called with each event timestamp, so no interval is lost or merged",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-023",
+  "title": "Fix does not introduce flapping on repeated identical DOWN polls",
+  "tags": [
+   "Regression",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Force five consecutive bodyless DOWN probes on one monitor",
+    "expected": "All five processed",
+    "source": "inferred"
+   },
+   {
+    "action": "Check Active Alerts and availability history",
+    "expected": "One continuous DOWN interval and one alert — not five alerts and not five intervals",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-024",
+  "title": "Concurrent probe results for many monitors do not cross-contaminate status",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Force bodyless results simultaneously across 50 monitors — half DOWN, half UP",
+    "expected": "All processed",
+    "source": "inferred"
+   },
+   {
+    "action": "Read every recorded status",
+    "expected": "Each monitor holds its own reported status; no monitor picks up another's value and none is UNKNOWN",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-025",
+  "title": "default plugin branch still handles a failed ping check by error code",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Force an event for a non-availability plugin carrying pingCheckStatus=NO and a known error code",
+    "expected": "The default branch fires",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the resulting status and error handling",
+    "expected": "The error-code switch drives the outcome; the UP/DOWN normalisation guard is not involved and its fix must not change this path",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-026",
+  "title": "Monitor status tile and inventory reflect DOWN immediately",
+  "tags": [
+   "Impacted",
+   "Dashboard"
+  ],
+  "steps": [
+   {
+    "action": "Force a bodyless DOWN on a monitored device and watch the Monitors inventory and dashboard severity tiles",
+    "expected": "Status propagates",
+    "source": "inferred"
+   },
+   {
+    "action": "Compare tile counts before and after",
+    "expected": "The device moves into the DOWN count, not into UNKNOWN",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-027",
+  "title": "Existing UNKNOWN behaviour for an unreachable collector is unchanged",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Stop the collector polling a monitor so no probe result arrives at all",
+    "expected": "No event is produced",
+    "source": "inferred"
+   },
+   {
+    "action": "Read the recorded object status",
+    "expected": "The pre-existing no-data handling applies unchanged; the || to && fix must not alter the genuinely-unknown case",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-028",
+  "title": "Unit test coverage exists for all three truth-table rows",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Review the automated tests covering the normalisation branch after the fix",
+    "expected": "Tests exist",
+    "source": "inferred"
+   },
+   {
+    "action": "Confirm the cases asserted",
+    "expected": "UP stays UP, DOWN stays DOWN, and a neither-UP-nor-DOWN value becomes UNKNOWN — the three rows the ticket tabulates. A fix without all three is under-tested",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-029",
+  "title": "Both call sites are fixed, not just one",
+  "tags": [
+   "Regression",
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Review ResponseProcessor.java around line 634 and CollectorResponseProcessor.java around line 191",
+    "expected": "Both sites visible",
+    "source": "kg"
+   },
+   {
+    "action": "Compare the guards",
+    "expected": "Both read && — the code is byte-identical in the two files, so fixing one and shipping leaves half the deployments broken",
+    "source": "jira"
+   }
+  ]
+ }
+]

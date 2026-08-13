@@ -1,0 +1,1560 @@
+[
+ {
+  "id": "TC-001",
+  "title": "Mail Server Settings screen opens with heading and docs link",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads at /settings/system-settings/mail-server-settings; heading 'Mail Server Settings' in primary colour",
+    "source": "kg"
+   },
+   {
+    "action": "Read the sub-text under the heading",
+    "expected": "Reads 'Configure mail servers for seamless email notifications from Motadata ObserveOps. For more information:' followed by a 'Mail Server Settings' link with an external-link icon",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "Docs link 'Mail Server Settings' opens vendor docs in a new tab",
+  "tags": [
+   "Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Click the 'Mail Server Settings' link in the sub-text",
+    "expected": "New browser tab opens https://docs.motadata.com/motadata-aiops-docs/system-settings-module/mail-server-settings; the settings tab is unchanged",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "Field order on the Mail Server form matches Figma",
+  "tags": [
+   "UI",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Read the visible form fields top to bottom in the Basic state",
+    "expected": "Order is exactly: SMTP Server, Use Proxy Server, Security Type, SMTP Server Port, Authentication Type, From Email, Authentication Requires",
+    "source": "kg"
+   },
+   {
+    "action": "Compare that order against Figma node-id 2610-47977",
+    "expected": "Order and grouping match the design; no field is transposed",
+    "source": "figma"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Label / field alignment and spacing match Figma (the reported misalignment)",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "OAuth-specific fields render",
+    "source": "kg"
+   },
+   {
+    "action": "Overlay the rendered form on Figma node-id 2610-47977 at 100% zoom, 1920x1080",
+    "expected": "Label column width, field width, vertical gaps and left indent match the design within tolerance; no label wraps or clips. THIS IS THE DEFECT REPORTED IN MOTADATA-9593 - expect a fail until fixed",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "Grant Type dropdown options match Figma (the reported mismatch)",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Open the credential create form and expand the Grant Type dropdown",
+    "expected": "Dropdown lists exactly the Grant Type values defined in Figma node-id 2610-47977, in the design's order, with no extra/renamed/missing option. THIS IS THE DEFECT REPORTED IN MOTADATA-9593 - expect a fail until fixed",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Grant Type dropdown has no duplicate or blank option",
+  "tags": [
+   "UI",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Open the credential create form and expand Grant Type",
+    "expected": "No duplicate entries, no empty option, no raw enum key (e.g. CLIENT_CREDENTIALS) leaking as a label instead of its display text",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "Security Type offers exactly None / SSL / TLS as buttons",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the Security Type control",
+    "expected": "Renders as a button-style radio group with exactly three options in order: None, SSL, TLS; one is always selected",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "Authentication Type offers exactly two button options",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the Authentication Type control",
+    "expected": "Renders as a button-style radio group with exactly two mutually exclusive options (Basic and the OAuth/Graph API option); total radios on the screen is 5 (3 Security Type + 2 Authentication Type)",
+    "source": "kg"
+   },
+   {
+    "action": "Compare the two option labels against Figma",
+    "expected": "Labels read exactly as designed (e.g. 'Basic' / 'OAuth') - not a raw key",
+    "source": "figma"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "Placeholders and info tooltips render as designed",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect SMTP Server, SMTP Server Port and From Email placeholders",
+    "expected": "SMTP Server shows 'e.g. smtp.google.com'; From Email shows 'Valid email address'",
+    "source": "kg"
+   },
+   {
+    "action": "Hover the info icons on Use Proxy Server and From Email",
+    "expected": "Both show their tooltip text; the icons are vertically aligned with their labels",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "DUPLICATE DOM ID: Security Type and Authentication Type both render id=\"security-type-id\"",
+  "tags": [
+   "UI",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "In devtools run document.querySelectorAll('#security-type-id').length",
+    "expected": "Must return 1. Source review of mail-server-settings.vue shows the id on BOTH the Security Type and the Authentication Type radio group - a duplicate-id defect that breaks automation and accessibility. Expect a fail until fixed",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "DUPLICATE DOM ID: Use Proxy Server and SMTP Server Port both render id=\"smtp-server-port-id\"",
+  "tags": [
+   "UI",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "In devtools run document.querySelectorAll('#smtp-server-port-id').length",
+    "expected": "Must return 1. Source review shows the id on BOTH the Use Proxy Server form item and the SMTP Server Port field - a duplicate-id defect. Expect a fail until fixed",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "Buttons Test / Save / Reset render in the designed order and style",
+  "tags": [
+   "UI",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the action bar",
+    "expected": "Shows 'Test', 'Save Mail Server Settings' (primary) and 'Reset'; Save is the visually primary action",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "Selecting OAuth hides the Authentication Requires toggle",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Basic is selected; the 'Authentication Requires' toggle is visible",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "The 'Authentication Requires' toggle is removed from the form (it is Basic-only)",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Selecting OAuth hides the Password field",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; set Authentication Type = Basic and Authentication Requires = ON",
+    "expected": "User Name and Password fields are visible",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Password field is removed; the secret now comes from the Credential Profile, not this form",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "User Name is shown for OAuth and for Basic-with-auth, hidden for Basic-without-auth",
+  "tags": [
+   "Functional",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Authentication Type = Basic, Authentication Requires = OFF",
+    "expected": "User Name is hidden",
+    "source": "kg"
+   },
+   {
+    "action": "Turn Authentication Requires ON",
+    "expected": "User Name appears and is mandatory",
+    "source": "kg"
+   },
+   {
+    "action": "Turn Authentication Requires OFF, then switch Authentication Type to OAuth",
+    "expected": "User Name appears again and is mandatory (OAuth always needs it)",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "Credential Profiles picker appears only for OAuth",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Authentication Type = Basic; no Credential Profiles field",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "'Credential Profiles' field appears, is mandatory, and offers a create-new affordance",
+    "source": "kg"
+   },
+   {
+    "action": "Switch back to Basic",
+    "expected": "Credential Profiles field is removed again",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "Credential Profiles picker lists only HTTP(S)-protocol profiles",
+  "tags": [
+   "Functional",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Open the picker with SNMP, SSH and HTTP(S) profiles all existing in the system",
+    "expected": "Only HTTP(S) profiles are listed; SNMP/SSH/WinRM profiles are filtered out (picker is scoped to available-protocols HTTP_HTTPS)",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "Create a credential profile inline from the Mail Server screen",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Use the create affordance in the picker, fill the Graph API fields (Grant Type, Tenant/Client ID, Client Secret) and save",
+    "expected": "Profile is created, the picker auto-selects it, and the drawer closes without losing the rest of the mail-server form state",
+    "source": "inferred"
+   },
+   {
+    "action": "Navigate to Settings > Discovery > Credential Profiles",
+    "expected": "The new profile is listed with protocol HTTP(S) and Used Count reflecting the mail-server reference",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "Mail server form state survives the inline credential-create drawer",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Fill SMTP Server, Port, From Email and Security Type = TLS, then switch to OAuth and open the inline credential-create drawer",
+    "expected": "Drawer opens over the form",
+    "source": "kg"
+   },
+   {
+    "action": "Cancel the drawer",
+    "expected": "All previously entered mail-server values are still populated; nothing is reset",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "Save a Graph API (OAuth) mail server configuration end to end",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Enter SMTP Server = smtp.office365.com, SMTP Server Port = 587, Security Type = TLS, From Email = alerts@example.com",
+    "expected": "Fields accept the values with no validation error",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option), enter User Name and select a Graph API credential profile",
+    "expected": "OAuth fields populate; Password field is absent",
+    "source": "kg"
+   },
+   {
+    "action": "Click 'Save Mail Server Settings'",
+    "expected": "Success toast; settings persist",
+    "source": "doc"
+   },
+   {
+    "action": "Reload the page",
+    "expected": "OAuth is still selected, the same credential profile is selected, and all values round-trip unchanged",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "Test succeeds for a valid Graph API configuration",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; configure a valid OAuth Graph API mail server",
+    "expected": "Form is complete",
+    "source": "kg"
+   },
+   {
+    "action": "Click 'Test'",
+    "expected": "Test-message area shows a green success message with a check-circle icon",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-022",
+  "title": "Test fails clearly for an invalid Graph API credential",
+  "tags": [
+   "Negative",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option), select a credential profile holding a wrong Client Secret",
+    "expected": "Form is complete",
+    "source": "kg"
+   },
+   {
+    "action": "Click 'Test'",
+    "expected": "Test-message area shows a red failure message with a times-circle icon and an expandable error detail; nothing is saved",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-023",
+  "title": "Reset reverts the form to the last saved values",
+  "tags": [
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; note the saved configuration",
+    "expected": "Saved values shown",
+    "source": "kg"
+   },
+   {
+    "action": "Change SMTP Server, Port and Authentication Type, then click 'Reset'",
+    "expected": "All fields revert to the last saved values; no save request is sent",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-024",
+  "title": "Switch an existing Basic configuration to OAuth",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings on a system already saved with Basic auth",
+    "expected": "Basic is selected with User Name/Password populated",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option), enter User Name, select a Graph API credential profile and Save",
+    "expected": "Save succeeds; on reload the configuration is OAuth with the chosen credential profile",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-025",
+  "title": "Switch an existing OAuth configuration back to Basic",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings on a system already saved with OAuth",
+    "expected": "OAuth is selected with a credential profile",
+    "source": "kg"
+   },
+   {
+    "action": "Switch to Basic, turn Authentication Requires ON, enter User Name + Password and Save",
+    "expected": "Save succeeds; on reload the configuration is Basic and no credential profile is bound",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-026",
+  "title": "Save is rejected when SMTP Server is blank",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Clear SMTP Server and click 'Save Mail Server Settings'",
+    "expected": "Required-field validation fires on SMTP Server; no PUT request is sent",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-027",
+  "title": "Save is rejected when SMTP Server Port is blank or non-numeric",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Clear SMTP Server Port and Save",
+    "expected": "Required validation fires on SMTP Server Port",
+    "source": "kg"
+   },
+   {
+    "action": "Enter 'abcd' in SMTP Server Port and Save",
+    "expected": "Port-format validation fires; the value is rejected",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-028",
+  "title": "SMTP Server Port rejects out-of-range values",
+  "tags": [
+   "Negative",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Enter 0, then 65536, then -1 in SMTP Server Port and attempt Save each time",
+    "expected": "Each is rejected by port validation; only 1-65535 is accepted",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-029",
+  "title": "From Email rejects a malformed address",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Enter 'alerts@@example', then 'alerts example.com', then 'alerts@' in From Email and Save",
+    "expected": "Email-format validation fires each time; no save occurs",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-030",
+  "title": "From Email required-ness matches Figma (source has format-only validation)",
+  "tags": [
+   "Negative",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Clear From Email completely and click 'Save Mail Server Settings'",
+    "expected": "Source review shows From Email carries an email-format rule but NOT a required rule, while the product doc marks it mandatory. Confirm against Figma which is correct - if mandatory, a blank value must block Save. Expect a discrepancy",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-031",
+  "title": "Save is rejected when OAuth is selected with no credential profile",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles field appears",
+    "source": "kg"
+   },
+   {
+    "action": "Leave Credential Profiles empty and Save",
+    "expected": "Required-field validation fires on Credential Profiles; no PUT is sent",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-032",
+  "title": "Save is rejected when OAuth is selected with a blank User Name",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "User Name is visible and mandatory",
+    "source": "kg"
+   },
+   {
+    "action": "Clear User Name and Save",
+    "expected": "Required validation fires on User Name",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-033",
+  "title": "Credential create is rejected when Grant Type is not chosen",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Open the inline credential-create form, leave Grant Type unselected, fill everything else and submit",
+    "expected": "Grant Type required validation fires; the profile is not created",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-034",
+  "title": "Credential create is rejected when Client Secret / Tenant ID are blank",
+  "tags": [
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Open the inline credential-create form, select a Grant Type, leave the Graph API secret fields blank and submit",
+    "expected": "Each required Graph API field raises its own validation message; nothing is created",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-035",
+  "title": "Duplicate credential profile name is rejected",
+  "tags": [
+   "Negative",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Create a credential profile reusing the name of an existing profile",
+    "expected": "A not-unique / duplicate-name error is shown; no second profile is created",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-036",
+  "title": "RBAC: a non-admin role cannot open Mail Server Settings",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Create a role without system-settings permission and a user bound to it (Settings > User Settings > Role, then User Profile)",
+    "expected": "Role and user exist",
+    "source": "doc"
+   },
+   {
+    "action": "Log in as that user and navigate to /settings/system-settings/mail-server-settings directly by URL",
+    "expected": "Access is denied or the screen is not reachable from the nav; the mail server configuration is never rendered",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-037",
+  "title": "RBAC: a read-only role cannot save or test the mail server",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Log in as a user whose role grants view-only access to System Settings",
+    "expected": "Mail Server Settings opens read-only",
+    "source": "inferred"
+   },
+   {
+    "action": "Attempt to edit a field, then Test, then Save",
+    "expected": "Controls are disabled or the requests are rejected with 403; the saved configuration is unchanged",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-038",
+  "title": "RBAC: a non-admin cannot create a credential profile from the picker",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Log in as a non-admin user that can reach a screen with a credential picker",
+    "expected": "Screen opens",
+    "source": "doc"
+   },
+   {
+    "action": "Attempt to use the create-credential affordance",
+    "expected": "Creation is blocked - credential profiles manage secrets and are admin-level",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-039",
+  "title": "Client Secret is masked in the UI and never echoed back",
+  "tags": [
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Create a Graph API credential with a known Client Secret, save, then reopen it for edit",
+    "expected": "The secret renders masked (dots), is not selectable as plain text, and the GET response does not return the secret value in clear text",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-040",
+  "title": "Mail server GET response does not leak the credential secret",
+  "tags": [
+   "Security",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings with an OAuth configuration saved",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Inspect the GET /settings/mail-server-configuration response in devtools",
+    "expected": "It returns mail.server.credential.profile as an ID reference only; no client secret or password value appears in the payload",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-041",
+  "title": "XSS payload in the credential profile name is neutralised",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Create a credential profile named <script>alert('xss')</script> and select it",
+    "expected": "The value is either rejected by validation or rendered escaped as literal text in the picker, the grid and the mail-server form; no dialog executes",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-042",
+  "title": "XSS payload in SMTP Server / From Email is neutralised",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Enter <img src=x onerror=alert(1)> in SMTP Server and \"><svg onload=alert(1)> in From Email, then Save",
+    "expected": "Validation rejects the values, or they are stored and rendered escaped; no script executes on save or on reload",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-043",
+  "title": "SQL-injection literal in SMTP Server is handled safely",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Enter smtp.test.com'; DROP TABLE settings;-- in SMTP Server and Save",
+    "expected": "The value is rejected or stored verbatim as data; the application stays functional and no database error is surfaced",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-044",
+  "title": "Credential profile export/grid does not expose secrets (CSV injection safe)",
+  "tags": [
+   "Security",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Create a credential profile whose name begins with =cmd|' /C calc'!A0",
+    "expected": "Profile is created or rejected by validation",
+    "source": "inferred"
+   },
+   {
+    "action": "Export the Credential Profiles grid to CSV and open it in Excel",
+    "expected": "The leading =/+/-/@ is neutralised so no formula executes, and no secret column is present in the export",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-045",
+  "title": "REGRESSION: Basic auth writes the 10000000000002 credential sentinel",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Set Authentication Type = Basic, complete the form and Save while watching the network tab",
+    "expected": "The PUT payload contains mail.server.credential.profile = 10000000000002 - the sentinel that marks 'not OAuth'",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-046",
+  "title": "REGRESSION: OAuth writes the selected credential profile id, not the sentinel",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles field appears",
+    "source": "kg"
+   },
+   {
+    "action": "Select a Graph API credential profile and Save while watching the network tab",
+    "expected": "The PUT payload sets mail.server.credential.profile to the selected profile's id and NOT 10000000000002",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-047",
+  "title": "REGRESSION: switching OAuth to Basic clears the stored credential profile",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings on a system saved with OAuth and a credential profile",
+    "expected": "OAuth configuration loaded",
+    "source": "kg"
+   },
+   {
+    "action": "Switch to Basic and Save",
+    "expected": "PUT sends the 10000000000002 sentinel; on reload the screen shows Basic and the previously bound credential profile is no longer referenced",
+    "source": "kg"
+   },
+   {
+    "action": "Open Settings > Discovery > Credential Profiles",
+    "expected": "That profile's Used Count has decreased by one",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-048",
+  "title": "REGRESSION: authentication flag is yes/no, port is an integer",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Save with Authentication Requires ON, then again with it OFF, inspecting each PUT payload",
+    "expected": "mail.server.authentication is the string 'yes' then 'no' (never boolean); proxy.enabled follows the same yes/no form; mail.server.port is sent as an integer, not a quoted string",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-049",
+  "title": "REGRESSION: OAuth sends username/password keys even with the auth toggle hidden",
+  "tags": [
+   "Regression",
+   "API"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "The Authentication Requires toggle is hidden and Password is absent",
+    "source": "kg"
+   },
+   {
+    "action": "Complete the OAuth form and Save, inspecting the PUT payload",
+    "expected": "Per the transform, username and password keys are still included when type is oauth. Confirm the intended contract - a hidden Password field means the password key carries a stale or empty value, which is a regression risk worth an explicit product decision",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-050",
+  "title": "REGRESSION: reload after save re-derives the auth type from the credential id",
+  "tags": [
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Save a Basic configuration, then hard-reload the screen",
+    "expected": "Authentication Type shows Basic (derived from credential id == 10000000000002)",
+    "source": "kg"
+   },
+   {
+    "action": "Save an OAuth configuration, then hard-reload",
+    "expected": "Authentication Type shows OAuth (derived from a credential id != 10000000000002); the correct profile is preselected",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-051",
+  "title": "IMPACTED: Single Sign-On credential picker is unaffected by the mail-server change",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Navigate Settings > User Settings > Single Sign-On",
+    "expected": "SSO screen loads with its own credential-profile picker",
+    "source": "kg"
+   },
+   {
+    "action": "Select a Graph API / HTTP(S) credential profile there",
+    "expected": "The picker lists and selects profiles correctly and its credential-profile-mismatch guard still fires when the profile does not match the configured SSO provider",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-052",
+  "title": "IMPACTED: a credential profile used by Mail Server cannot be silently deleted",
+  "tags": [
+   "Impacted",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Bind a Graph API credential profile to the mail server and save",
+    "expected": "Configuration saved",
+    "source": "kg"
+   },
+   {
+    "action": "Go to Settings > Discovery > Credential Profiles and attempt to delete that profile",
+    "expected": "Deletion is blocked or warned because Used Count > 0, and the mail server configuration keeps working",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-053",
+  "title": "IMPACTED: editing the bound credential profile takes effect on the next Test",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Bind a working Graph API credential and confirm Test succeeds",
+    "expected": "Test is green",
+    "source": "kg"
+   },
+   {
+    "action": "Edit that credential profile to hold an invalid Client Secret, return to Mail Server Settings and click Test",
+    "expected": "Test now fails with a clear error - the change is picked up without re-selecting the profile. (Editing a live credential profile is a known regression trigger.)",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-054",
+  "title": "IMPACTED: alert notification email is delivered via the Graph API configuration",
+  "tags": [
+   "Impacted",
+   "Workflow"
+  ],
+  "steps": [
+   {
+    "action": "Configure and save a working Graph API mail server",
+    "expected": "Configuration saved and Test green",
+    "source": "kg"
+   },
+   {
+    "action": "Trigger an alert whose policy has an email notification to a mailbox you can read",
+    "expected": "The email is delivered through Graph API, arrives from the configured From Email, and the alert's Notification log records success",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-055",
+  "title": "IMPACTED: scheduled report email is delivered via the Graph API configuration",
+  "tags": [
+   "Impacted",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "With the Graph API mail server saved, schedule a report to a reachable mailbox with the nearest run time",
+    "expected": "Schedule created",
+    "source": "doc"
+   },
+   {
+    "action": "Wait for the scheduled run",
+    "expected": "The report email is delivered with its attachment and the From Email matches the configuration",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-056",
+  "title": "IMPACTED: other credential pickers still filter by their own protocol",
+  "tags": [
+   "Impacted",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Open Settings > Discovery > Network Discovery Profiles create, and Settings > Utility > SNMP Walk",
+    "expected": "Both screens load with credential pickers",
+    "source": "kg"
+   },
+   {
+    "action": "Open each credential picker with a Graph API HTTP(S) profile existing in the system",
+    "expected": "SNMP/SSH-scoped pickers do NOT offer the HTTP(S) Graph API profile; each picker still lists only its own protocols",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-057",
+  "title": "AUDIT: mail server update is recorded with the secret masked",
+  "tags": [
+   "Audit",
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Save a change to the mail server configuration",
+    "expected": "Save succeeds",
+    "source": "doc"
+   },
+   {
+    "action": "Open the audit trail and locate the mail-server update entry",
+    "expected": "An audit record exists naming the actor, timestamp and the changed setting; no client secret or password value appears in clear text in the audit entry",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-058",
+  "title": "AUDIT: credential profile create/update/delete is recorded",
+  "tags": [
+   "Audit",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Create, then edit, then delete a Graph API credential profile",
+    "expected": "All three actions complete",
+    "source": "doc"
+   },
+   {
+    "action": "Open the audit trail",
+    "expected": "Three separate records exist with actor and timestamp; secret values are masked",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-059",
+  "title": "API: GET returns the mail server configuration",
+  "tags": [
+   "API",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Call GET /settings/mail-server-configuration with a valid admin session",
+    "expected": "HTTP 200; result[0] carries mail.server.host, mail.server.port, mail.server.sender, mail.server.protocol, mail.server.authentication, mail.server.credential.profile and proxy.enabled",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-060",
+  "title": "API: PUT persists an OAuth configuration",
+  "tags": [
+   "API",
+   "Functional"
+  ],
+  "steps": [
+   {
+    "action": "Call PUT /settings/mail-server-configuration/{id} with mail.server.credential.profile set to a valid HTTP(S) profile id",
+    "expected": "HTTP 200; a subsequent GET returns the new values and the UI reflects OAuth on reload",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-061",
+  "title": "API: PUT rejects an invalid credential profile id",
+  "tags": [
+   "API",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Call PUT /settings/mail-server-configuration/{id} with mail.server.credential.profile = 999999999999 (non-existent)",
+    "expected": "The request is rejected with a validation error; the stored configuration is unchanged",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-062",
+  "title": "API: PUT rejects a credential profile of the wrong protocol",
+  "tags": [
+   "API",
+   "Negative",
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Call PUT with mail.server.credential.profile set to an SNMP profile id, bypassing the UI filter",
+    "expected": "The server rejects the mismatch rather than storing an unusable configuration",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-063",
+  "title": "API: unauthenticated and non-admin calls are rejected",
+  "tags": [
+   "API",
+   "Security"
+  ],
+  "steps": [
+   {
+    "action": "Call GET and PUT /settings/mail-server-configuration with no session, then with a non-admin token",
+    "expected": "No session returns 401; non-admin returns 403; neither reads nor writes the configuration",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-064",
+  "title": "API: concurrent PUTs do not corrupt the configuration",
+  "tags": [
+   "API",
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Fire two PUTs simultaneously with different SMTP hosts",
+    "expected": "One wins deterministically, the other is rejected or safely overwritten; a following GET returns one internally consistent configuration, never a mix",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-065",
+  "title": "EDGE: maximum-length values are accepted or cleanly rejected",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Enter a 255-character hostname in SMTP Server and a 255-character local part in From Email, then Save",
+    "expected": "Either both are accepted and round-trip intact after reload, or a clear max-length validation fires; no silent truncation",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-066",
+  "title": "EDGE: unicode and trailing whitespace in the credential profile name",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "Credential Profiles picker appears",
+    "source": "kg"
+   },
+   {
+    "action": "Create profiles named 'Grafico Correo' with accents, one in Devanagari, and one with a trailing space",
+    "expected": "All render correctly in the picker and grid; the trailing space is trimmed or preserved consistently between create, list and select",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-067",
+  "title": "EDGE: Use Proxy Server ON with no proxy configured",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Ensure Settings > System Settings > Proxy Server is unconfigured, then open Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "doc"
+   },
+   {
+    "action": "Turn Use Proxy Server ON, complete the OAuth form and click Test",
+    "expected": "A clear error states the proxy is not configured; the failure is not silent",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-068",
+  "title": "EDGE: Security Type mismatched with the port",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Set Security Type = TLS with port 25, and Security Type = None with port 465, testing each",
+    "expected": "Test fails with a clear transport error for the mismatched pair rather than hanging or reporting success",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-069",
+  "title": "EDGE: Test on an unreachable SMTP host fails within a bounded time",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Set SMTP Server to an unroutable address (e.g. 10.255.255.1) and click Test",
+    "expected": "Test fails with a reachability error inside a sensible timeout; the UI is not left spinning indefinitely",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-070",
+  "title": "EDGE: rapid Authentication Type toggling leaves consistent state",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings",
+    "expected": "Screen loads",
+    "source": "kg"
+   },
+   {
+    "action": "Toggle Authentication Type between Basic and OAuth ten times quickly, then Save",
+    "expected": "The form matches the finally selected type - no orphaned Password or Credential Profiles field, no stale validation error, and the payload matches the visible state",
+    "source": "kg"
+   }
+  ]
+ },
+ {
+  "id": "TC-071",
+  "title": "EDGE: concurrent edit from two admin sessions",
+  "tags": [
+   "Edge",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Open Mail Server Settings as admin in two browsers",
+    "expected": "Both show the same saved configuration",
+    "source": "kg"
+   },
+   {
+    "action": "Save a different SMTP host in each, second shortly after the first, then reload both",
+    "expected": "The last write wins or a conflict is reported; both sessions converge on the same configuration with no partial merge",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-072",
+  "title": "EDGE: double-clicking Save does not double-submit",
+  "tags": [
+   "Edge",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; complete a valid OAuth configuration",
+    "expected": "Form is valid",
+    "source": "kg"
+   },
+   {
+    "action": "Double-click 'Save Mail Server Settings' rapidly",
+    "expected": "Exactly one PUT is issued (button disables while in flight); no duplicate audit entry",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-073",
+  "title": "EDGE: unsaved changes are handled on navigate-away",
+  "tags": [
+   "Edge"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; change SMTP Server without saving",
+    "expected": "Field is dirty",
+    "source": "kg"
+   },
+   {
+    "action": "Navigate to another Settings screen",
+    "expected": "Either an unsaved-changes prompt appears or the change is discarded predictably; the saved configuration is untouched",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-074",
+  "title": "NON-FUNCTIONAL: screen and Grant Type dropdown render within budget",
+  "tags": [
+   "Non-Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings on a system with 200+ credential profiles",
+    "expected": "Screen becomes interactive within 3 seconds",
+    "source": "inferred"
+   },
+   {
+    "action": "Set Authentication Type = OAuth (the non-Basic option) and open the Credential Profiles picker, then the Grant Type dropdown",
+    "expected": "Each opens within 1 second with no visible layout shift",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-075",
+  "title": "NON-FUNCTIONAL: layout holds at 1366x768 and at 125% browser zoom",
+  "tags": [
+   "Non-Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "OAuth fields render",
+    "source": "kg"
+   },
+   {
+    "action": "View at 1920x1080, then 1366x768, then at 125% and 150% zoom",
+    "expected": "No horizontal scrollbar, no overlapping labels, no clipped dropdown; the form stays usable at each size",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-076",
+  "title": "NON-FUNCTIONAL: form is keyboard navigable and screen-reader labelled",
+  "tags": [
+   "Non-Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Settings > System Settings > Mail Server Settings; Set Authentication Type = OAuth (the non-Basic option)",
+    "expected": "OAuth fields render",
+    "source": "kg"
+   },
+   {
+    "action": "Tab through every control and operate the radio groups, switches and dropdowns with the keyboard only",
+    "expected": "Focus order follows the visual order, focus is always visible, every field has a programmatic label, and the duplicate DOM ids noted separately do not break label association",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-077",
+  "title": "NON-FUNCTIONAL: behaviour is consistent across supported browsers",
+  "tags": [
+   "Non-Functional",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Repeat the OAuth save-and-test happy path in Chrome, Edge and Firefox",
+    "expected": "Layout, Grant Type options, validation and save behaviour are identical in all three",
+    "source": "inferred"
+   }
+  ]
+ }
+]

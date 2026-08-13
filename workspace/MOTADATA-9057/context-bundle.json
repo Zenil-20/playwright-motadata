@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "show",
+  "tags",
+  "under",
+  "monitor",
+  "info",
+  "description",
+  "currently",
+  "information",
+  "displayed",
+  "bottom",
+  "summary",
+  "drawer",
+  "move",
+  "field",
+  "section",
+  "directly",
+  "after",
+  "group",
+  "engineers",
+  "administrators",
+  "identify",
+  "without",
+  "scrolling",
+  "acceptance",
+  "criteria",
+  "must",
+  "standalone",
+  "removed",
+  "available",
+  "display",
+  "chip",
+  "multiple",
+  "first",
+  "additional",
+  "count",
+  "such",
+  "hovering",
+  "clicking",
+  "complete",
+  "list"
+ ],
+ "product": [
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog.md  (37 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\metric.md  (31 term hits)",
+  "knowledge\\product\\Alerts\\alerts.md  (30 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\snmp-device-catalog-create.md  (30 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\cloud-monitor-settings.md  (28 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\topology-scanner.md  (28 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\log.md  (28 term hits)",
+  "knowledge\\product\\Settings\\flow-settings\\application-mapping.md  (27 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\settings_monitoring_snmp_device_catalog_create.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\settings_network_discovery_network_discovery_profiles_create.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\settings_system_settings_rule_based_tags_list.json  (7 term hits)",
+  "knowledge\\locators\\catalog\\alerts.json  (6 term hits)",
+  "knowledge\\locators\\catalog\\inventory.json  (6 term hits)",
+  "knowledge\\locators\\catalog\\settings_integration_integration_profile.json  (6 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\RBAC-01-least-privilege-cascade.md  (13 term hits)",
+  "knowledge\\business_rules\\RBAC-02-group-scope-non-transitive.md  (12 term hits)",
+  "knowledge\\business_rules\\REPORT-02-export-fidelity.md  (12 term hits)",
+  "knowledge\\business_rules\\AGENT-01-lifecycle-cleanup.md  (10 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (33 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\08-SLO\\SloProfile.spec.js  (28 term hits)",
+  "tests\\regression\\Settings\\10-Integrations\\motadataServiceOpsIntegration.spec.js  (26 term hits)",
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (25 term hits)",
+  "tests\\regression\\Settings\\14-RealUserMonitoring\\RumApplicationRegistration.spec.js  (24 term hits)",
+  "tests\\regression\\Settings\\02-Discovery\\Ipsla_Wanlink_Discovery.spec.js  (21 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (21 term hits)"
+ ]
+}

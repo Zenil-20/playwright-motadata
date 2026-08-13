@@ -1,0 +1,524 @@
+[
+ {
+  "id": "TC-001",
+  "title": "Compliance reports are listed under the NCM tab",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Reports",
+    "expected": "Reports section loads",
+    "source": "jira"
+   },
+   {
+    "action": "Open the NCM tab",
+    "expected": "Compliance reports are listed there",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-002",
+  "title": "A new \"Compliance\" category lists all compliance reports",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Reports > NCM",
+    "expected": "Categories are listed",
+    "source": "jira"
+   },
+   {
+    "action": "Click the \"Compliance\" category",
+    "expected": "All compliance reports are shown under it",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-003",
+  "title": "Executive Summary report renders as designed",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Reports > NCM > Compliance and run the Executive Summary report",
+    "expected": "Report generates",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against Figma node-id 4685-48025 in the Reports file and the attached sample PDF",
+    "expected": "Sections, tables and figures match the design",
+    "source": "figma"
+   }
+  ]
+ },
+ {
+  "id": "TC-004",
+  "title": "Audit Policy report renders as designed",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Reports > NCM > Compliance and run the Audit Policy report",
+    "expected": "Report generates",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against Figma node-id 4685-48025 and the attached sample",
+    "expected": "Layout and content match. QA recorded that only the Executive Summary existed at one point — confirm this report is now actually present",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-005",
+  "title": "GAP All three designed reports exist",
+  "tags": [
+   "Negative",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Login as admin (admin/admin); navigate Reports > NCM > Compliance and list the available reports",
+    "expected": "List loads",
+    "source": "jira"
+   },
+   {
+    "action": "Compare against the wireframe",
+    "expected": "The wireframe calls for three reports — Executive Summary, Audit Policy (CIS Cisco) and a per-device CIS report. QA logged that only Executive Summary was available. This case fails until all three ship",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-006",
+  "title": "Per-device compliance summary downloads from the PDF icon on the per-device screen",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Open NCM compliance and drill into a single device's compliance screen",
+    "expected": "Per-device compliance screen loads",
+    "source": "jira"
+   },
+   {
+    "action": "Click the PDF icon",
+    "expected": "The per-device compliance summary PDF downloads. This is the only entry point specified for it",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-007",
+  "title": "The same per-device report downloads from Export PDF on the NCM compliance tab",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Open the NCM compliance tab",
+    "expected": "Tab loads with an Export PDF button",
+    "source": "jira"
+   },
+   {
+    "action": "Click Export PDF",
+    "expected": "The same report content downloads as from the per-device PDF icon — identical data, not a different report",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-008",
+  "title": "GAP Device rule-level report exists",
+  "tags": [
+   "Negative",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Look for a device rule-level compliance report",
+    "expected": "Report list is inspected",
+    "source": "jira"
+   },
+   {
+    "action": "Confirm availability",
+    "expected": "PMG reopened this ticket specifically because the device rule-level report is missing; the developer states it was agreed for a future sprint. This case fails until the scope disagreement is settled by the team",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-009",
+  "title": "REOPENED Exported PDF matches the expected PDF format",
+  "tags": [
+   "Negative",
+   "Reports",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Export the Executive Summary PDF",
+    "expected": "PDF downloads",
+    "source": "jira"
+   },
+   {
+    "action": "Compare page by page against the attached expected PDF",
+    "expected": "Layout, sections and tables match. PMG reopened the ticket stating the report PDF does not match the expected PDF. Expect a fail until fixed",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-010",
+  "title": "REOPENED Large numbers render readably in the compliance UI",
+  "tags": [
+   "Negative",
+   "UI"
+  ],
+  "steps": [
+   {
+    "action": "Open the NCM compliance screens on a dataset producing large counts",
+    "expected": "Screens load",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the numeric fields and tiles",
+    "expected": "Values are formatted/abbreviated and fit their containers. PMG reopened the ticket stating some numbers are very huge in the UI. Expect a fail until fixed",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-011",
+  "title": "Long reports paginate rather than overflowing",
+  "tags": [
+   "Edge",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Run a compliance report over enough devices and policies to exceed one page",
+    "expected": "Report generates",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the PDF",
+    "expected": "Content paginates with repeated headers and no clipped rows — the ticket requires pagination when length exceeds the sample",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-012",
+  "title": "Last scan time is present in each report",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Run each compliance report",
+    "expected": "Reports generate",
+    "source": "jira"
+   },
+   {
+    "action": "Look for the last scan time",
+    "expected": "Each report shows the last scan time for the data it presents, as requested in the ticket comments",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-013",
+  "title": "Report data matches the compliance screen for the same policy",
+  "tags": [
+   "Functional",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Note pass/fail counts for a compliance policy on the NCM compliance screen",
+    "expected": "Counts recorded",
+    "source": "inferred"
+   },
+   {
+    "action": "Run the report for the same policy and window",
+    "expected": "Report figures match the screen exactly — no double counting and no stale cached figures",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-014",
+  "title": "Custom compliance category report can be built and run",
+  "tags": [
+   "Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Create a custom report against a custom compliance category",
+    "expected": "Report is saved",
+    "source": "jira"
+   },
+   {
+    "action": "Run it",
+    "expected": "It generates with the expected compliance data, as QA verified for custom compliance category reports",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-015",
+  "title": "Scheduled compliance report is delivered by email",
+  "tags": [
+   "Functional",
+   "Reports",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Schedule a compliance report to a reachable mailbox at the nearest run time",
+    "expected": "Schedule is created",
+    "source": "jira"
+   },
+   {
+    "action": "Wait for the run",
+    "expected": "The email arrives with the report attached and its content matches an on-demand run of the same report",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-016",
+  "title": "GAP CSV and XLSX export support",
+  "tags": [
+   "Negative",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Attempt to export a compliance report as CSV and as XLSX",
+    "expected": "Export is attempted",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect the result",
+    "expected": "QA logged that CSV and XLSX are not supported and raised MOTADATA-8430 separately. Confirm whether these formats are in scope here; if not, the option should not be offered",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-017",
+  "title": "Compliance policy run completes without a hanging loader",
+  "tags": [
+   "Negative",
+   "Regression"
+  ],
+  "steps": [
+   {
+    "action": "Run a compliance policy against a device set including one with no matching rule data",
+    "expected": "Policy run starts",
+    "source": "jira"
+   },
+   {
+    "action": "Watch the screen",
+    "expected": "The run completes or fails with a message. QA hit a permanent loader caused by an ArrayIndexOutOfBounds in the compliance rule engine, tracked as MOTADATA-8440 — verify it does not reproduce through the report path",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-018",
+  "title": "Report generation works in an HA deployment",
+  "tags": [
+   "Non-Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Run and schedule a compliance report on an HA deployment, then fail over",
+    "expected": "Failover completes",
+    "source": "jira"
+   },
+   {
+    "action": "Re-run and check the schedule",
+    "expected": "Reports generate on the surviving node and schedules still fire — the developer flagged HA as needing verification",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-019",
+  "title": "Report reflects the necessary backend config data",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Run a compliance report after a fresh compliance scan",
+    "expected": "Report generates",
+    "source": "jira"
+   },
+   {
+    "action": "Compare its figures with the scan results",
+    "expected": "Values come from the populated compliance config data and are current — the backend was changed to write the data the report needs",
+    "source": "jira"
+   }
+  ]
+ },
+ {
+  "id": "TC-020",
+  "title": "Empty state: report over a policy with no scanned devices",
+  "tags": [
+   "Edge",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Run a compliance report for a policy that has never been scanned",
+    "expected": "Report generates",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the output",
+    "expected": "A clear empty/no-data state rather than a blank page, a zero-filled table implying compliance, or an error",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-021",
+  "title": "RBAC: a user without compliance rights cannot run or download the reports",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Log in as a user whose role lacks NCM compliance access and open Reports",
+    "expected": "Reports section loads per role",
+    "source": "doc"
+   },
+   {
+    "action": "Attempt to run and to download a compliance report",
+    "expected": "The Compliance category and its exports are unavailable or rejected; no report data is disclosed",
+    "source": "doc"
+   }
+  ]
+ },
+ {
+  "id": "TC-022",
+  "title": "RBAC: scheduled report recipients cannot be used to leak restricted data",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "As a restricted user, attempt to schedule a compliance report to an external address",
+    "expected": "Attempt is made",
+    "source": "inferred"
+   },
+   {
+    "action": "Inspect the outcome",
+    "expected": "Either scheduling is blocked for that role or the report content is scoped to what the user may see — a schedule must not widen data access",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-023",
+  "title": "CSV-injection safety in any tabular compliance export",
+  "tags": [
+   "Security",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Create a compliance policy or device name beginning with =cmd|' /C calc'!A0 and include it in an export",
+    "expected": "Export is produced",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the export in Excel",
+    "expected": "The leading =/+/-/@ is neutralised and no formula executes",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-024",
+  "title": "XSS payload in a policy or device name is escaped in the report",
+  "tags": [
+   "Security",
+   "Negative"
+  ],
+  "steps": [
+   {
+    "action": "Name a compliance policy <script>alert(1)</script> and run a report including it",
+    "expected": "Report generates",
+    "source": "inferred"
+   },
+   {
+    "action": "Open the HTML report and the PDF",
+    "expected": "The name renders as literal escaped text in both; no script executes and the PDF is not corrupted",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-025",
+  "title": "Report generation time is acceptable at scale",
+  "tags": [
+   "Non-Functional",
+   "Reports"
+  ],
+  "steps": [
+   {
+    "action": "Run the Executive Summary over the largest available device and policy set",
+    "expected": "Report generates",
+    "source": "inferred"
+   },
+   {
+    "action": "Measure the duration",
+    "expected": "It completes within an acceptable window without timing out or blocking other report runs",
+    "source": "inferred"
+   }
+  ]
+ },
+ {
+  "id": "TC-026",
+  "title": "Report template changes do not break other report categories",
+  "tags": [
+   "Regression",
+   "Impacted"
+  ],
+  "steps": [
+   {
+    "action": "Run reports from other categories (NCM non-compliance, availability, metric) after the compliance templates ship",
+    "expected": "Reports generate",
+    "source": "jira"
+   },
+   {
+    "action": "Inspect each",
+    "expected": "All unaffected. The team chose separate per-report HTML templates for compliance, so no shared generic template should have regressed",
+    "source": "jira"
+   }
+  ]
+ }
+]

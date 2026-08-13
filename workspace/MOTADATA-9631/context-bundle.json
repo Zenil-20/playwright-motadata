@@ -1,0 +1,79 @@
+{
+ "terms": [
+  "observeops",
+  "enable",
+  "bulk",
+  "approval",
+  "workflow",
+  "nccm",
+  "operations",
+  "device",
+  "level",
+  "execution",
+  "tracking",
+  "description",
+  "introduce",
+  "management",
+  "allow",
+  "single",
+  "request",
+  "represent",
+  "changes",
+  "multiple",
+  "devices",
+  "while",
+  "maintaining",
+  "audit",
+  "reminder",
+  "cancellation",
+  "capabilities",
+  "supported",
+  "firmware",
+  "upgrade",
+  "configuration",
+  "sync",
+  "backup",
+  "restore",
+  "runbook",
+  "system",
+  "shall",
+  "selective",
+  "rejection",
+  "within"
+ ],
+ "product": [
+  "knowledge\\product\\NCCM\\ncm-approval.md  (78 term hits)",
+  "knowledge\\product\\NCCM\\explorer.md  (60 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\overview.md  (58 term hits)",
+  "knowledge\\product\\Settings\\monitoring\\topology-scanner.md  (57 term hits)",
+  "knowledge\\product\\Settings\\nccm-settings\\overview.md  (57 term hits)",
+  "knowledge\\product\\Settings\\policy-settings\\metric.md  (56 term hits)",
+  "knowledge\\product\\Settings\\snmp-trap\\snmp-trap-profiles.md  (56 term hits)",
+  "knowledge\\product\\NCCM\\overview.md  (55 term hits)"
+ ],
+ "catalogs": [
+  "knowledge\\locators\\catalog\\nccm_explorer.json  (15 term hits)",
+  "knowledge\\locators\\catalog\\ncm_approval.json  (15 term hits)",
+  "knowledge\\locators\\catalog\\_index.json  (14 term hits)",
+  "knowledge\\locators\\catalog\\nccm.json  (12 term hits)",
+  "knowledge\\locators\\catalog\\nccm_overview.json  (12 term hits)",
+  "knowledge\\locators\\catalog\\settings_compliance_settings.json  (12 term hits)"
+ ],
+ "rules": [
+  "knowledge\\business_rules\\ALERT-01-poller-window-feasibility.md  (25 term hits)",
+  "knowledge\\business_rules\\DISCOVERY-01-distinguishable-credential-errors.md  (23 term hits)",
+  "knowledge\\business_rules\\index.md  (22 term hits)",
+  "knowledge\\business_rules\\AGENT-01-lifecycle-cleanup.md  (21 term hits)"
+ ],
+ "known": [
+  "knowledge\\known_issues\\customer-issue-kb.md  (89 term hits)"
+ ],
+ "suites": [
+  "tests\\regression\\Settings\\02-Discovery\\Ipsla_Wanlink_Discovery.spec.js  (60 term hits)",
+  "tests\\regression\\Settings\\08-SLO\\SloProfile.spec.js  (54 term hits)",
+  "tests\\regression\\APM_Explorer\\Services\\APM_Explorer_Services_Playwright.spec.js  (50 term hits)",
+  "tests\\regression\\Settings\\04-PolicySettings\\Metric\\Metric_Policy_test.spec.js  (47 term hits)",
+  "tests\\regression\\Settings\\10-Integrations\\motadataServiceOpsIntegration.spec.js  (46 term hits)",
+  "tests\\regression\\Settings\\15-SNMPTrap\\TrapConfig.spec.js  (43 term hits)"
+ ]
+}

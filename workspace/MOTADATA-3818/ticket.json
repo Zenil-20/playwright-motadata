@@ -1,0 +1,147 @@
+{
+ "key": "MOTADATA-3818",
+ "title": "As a system user, I should be able to get the detailed NCM compliance reports",
+ "type": "Story",
+ "status": "In Progress",
+ "priority": "Medium",
+ "components": [
+  "COMPLIANCE",
+  "UI"
+ ],
+ "labels": [
+  "Ansh",
+  "Compliance",
+  "NCM",
+  "Report",
+  "arnav",
+  "sahil"
+ ],
+ "fixVersions": [
+  "10.0.1"
+ ],
+ "reporter": {
+  "name": "bhavin.gorecha",
+  "displayName": "Bhavin Gorecha"
+ },
+ "description": "Figma:\r\n \r\n[https://www.figma.com/proto/bdEt4lwQK4DidvwMJHxsJ3/Reports?page-id=0%3A1&node-id=4685-48025&viewport=-25033%2C-54159%2C1.38&scaling=scale-down-width&starting-point-node-id=619%3A22812&content-scaling=fixed&t=mf9gomkvYodr0oXS-1&hide-ui=1] \r\n \r\n \r\nAcceptance Criteria:  \r\n \r\n \r\n- I should be able to see the reports under the NCM tab in the Reports section. \r\n- I should be able to see all the reports by clicking on the new category called \"Compliance\". \r\n- I should be able to see the executive summary report as shown in Figma. \r\n- I should be able to see the audit policy report as shown in Figma. \r\n- I should have a per-device compliance summary report which should only be downloaded from the pdf icon given in the per-device compliance screen. \r\n- I should be able to download the same report from the export pdf button given in the NCM compliance tab.\r\n\r\n \r\n\r\nNote:\r\n\r\n- PFA PDF format for the respective reports. These PDFs are for representation purposes. If the length exceeds, pagination should be added to these PDFs.",
+ "figma_links": [
+  "https://www.figma.com/proto/bdEt4lwQK4DidvwMJHxsJ3/Reports?page-id=0%3A1&node-id=4685-48025&viewport=-25033%2C-54159%2C1.38&scaling=scale-down-width&starting-point-node-id=619%3A22812&content-scaling=fixed&t=mf9gomkvYodr0oXS-1&hide-ui=1"
+ ],
+ "attachments": [
+  "Category_Compliance.png",
+  "CIS Cisco - bgp1.bgp1.com.pdf",
+  "Compliance_Overview.png",
+  "Compliance_Summary_Check.png",
+  "Continuous_Loader_In_Compliance_Policy .png",
+  "Custom_Report_For_Compliance_With_Schedule.png",
+  "Custom_Report_Verified.png",
+  "image-2026-08-12-13-45-15-126.png",
+  "image-2026-08-12-13-45-24-446.png",
+  "image-2026-08-12-13-45-32-109.png",
+  "image-2026-08-12-13-45-38-321.png",
+  "Mail_Verified_For_Report.png",
+  "nccm_compliance_policy_device_1_1786014671.pdf",
+  "NCM Compliance Audit Policies Performance Report.pdf",
+  "NCM Compliance Audit Policy Report.pdf",
+  "reports_Executive_Summary_Report_1771589079.pdf",
+  "reports_Executive_Summary_Report_1771589097.xlsx"
+ ],
+ "linked": [
+  {
+   "key": "MOTADATA-7978",
+   "title": "UI - As a system user, I should be able to get the detailed NCM compliance reports"
+  },
+  {
+   "key": "MOTADATA-7824",
+   "title": "UI - As a system user, I should be able to get the detailed NCM compliance reports"
+  },
+  {
+   "key": "MOTADATA-8430",
+   "title": "NCCM | XLSX Report download generates unsupported version"
+  },
+  {
+   "key": "MOTADATA-8457",
+   "title": "Validate Test Scenarios for Upgrade Patch – Release 8.2.1"
+  }
+ ],
+ "comments": [
+  {
+   "author": "Arnav Desai",
+   "body": "[~bharat.chaudhari] make sure that in each report we should fetch the Last scan time. We will update you on how to visualize it once you start working on this task."
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "[~arnav.desai] , please create a separate improvement item for this."
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "As the approach has been finalized, we will maintain {*}separate HTML templates for each fix and for complex reports like this{*}. Initially, we attempted a generic approach and completed a POC, but it proved to be too complex for the compliance report. This is mainly because it requires extensive manual calculations on raw data, and there is no direct support for the exact data representation we need. Due to these constraints, a more *static and tightly coupled approach* is more suitable for this implementation.\r\n\r\nGoing forward, we will have {*}three different plugins{*}, one for each type of NCCM compliance report. Each plugin will have its *own dedicated HTML template* and its {*}own set of required widgets{*}. Based on the data received from these widgets, the necessary logic will be implemented within the respective plugin.\r\n\r\nGiven the scope and changes involved, this implementation will be {*}moved to the next sprint{*}.\r\n\r\ncc : [~chaitas.shah] [~jenil.kajavadara] [~keertan.zala] "
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "Completed the overview report export now working on single policy report"
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "Update backend compliance to put data which is needed in neccerary config table."
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "We need to check this with HA also.\r\n\r\n[~nilesh.kidiya] "
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "Branches for the test ...\r\n\r\nbackend : MOTADATA-3818\r\nreport engine : nccm-compliance-report "
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "for each device report we will do it in next sprint.\r\ncc : [~keertan.zala] "
+  },
+  {
+   "author": "Nilesh Kidiya",
+   "body": "I have verified the Compliance Summary Report. \r\nPFA documents and reports for your reference.\r\nSchedule scenarios and other scenarios are pending, so I will conclude all and make this close.\r\n!Compliance_Summary_Check.png|thumbnail!!Compliance_Overview.png|thumbnail!\r\n[^reports_Executive_Summary_Report_1771589079.pdf]\r\n[^reports_Executive_Summary_Report_1771589097.xlsx]"
+  },
+  {
+   "author": "Nilesh Kidiya",
+   "body": "[~bharat.chaudhari] \r\n\r\nI noticed that CSV and XLSX file formats are not supported. Kindly look into this issue : MOTADATA-8430 .\r\n\r\nAs per the wireframe, there should be three reports available:\r\n # Executive Summary Report\r\n # Audit Policy CIS Cisco Report\r\n # CIS Cisco - bgp1.com.ggp1.com\r\n\r\nHowever, currently only 1 report — Executive Summary Report — is available. Confirm this"
+  },
+  {
+   "author": "Nilesh Kidiya",
+   "body": "I have verified the scheduled scenarios and the custom compliance category reports. \r\nPFA the relevant attachments here.\r\n!Custom_Report_For_Compliance_With_Schedule.png|thumbnail!!Category_Compliance.png|thumbnail!!Mail_Verified_For_Report.png|thumbnail!!Custom_Report_Verified.png|thumbnail!"
+  },
+  {
+   "author": "Nilesh Kidiya",
+   "body": "[~bharat.chaudhari] \r\nAs discussed, we are facing an issue while running the Compliance Policy, and the loader continues to display without completing.\r\nAttachment : \r\n!Continuous_Loader_In_Compliance_Policy .png|thumbnail!\r\nlog : \r\n{noformat}\r\n23-February-2026 19 07:02:40.659 PM ERROR [com.mindarray.compliance.ComplianceRuleEngine]: java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0\r\n        at com.mindarray.compliance.ComplianceRuleEngine.lambda$start$5(ComplianceRuleEngine.java:194)\r\n        at io.vertx.core.impl.ContextImpl.emit(ContextImpl.java:342)\r\n        at io.vertx.core.impl.DuplicatedContext.emit(DuplicatedContext.java:163)\r\n        at io.vertx.core.eventbus.impl.MessageConsumerImpl.dispatch(MessageConsumerImpl.java:174)\r\n        at io.vertx.core.eventbus.impl.HandlerRegistration$InboundDeliveryContext.execute(HandlerRegistration.java:137)\r\n        at io.vertx.core.eventbus.impl.DeliveryContextBase.next(DeliveryContextBase.java:80)\r\n        at io.vertx.core.eventbus.impl.DeliveryContextBase.dispatch(DeliveryContextBase.java:43)\r\n        at io.vertx.core.eventbus.impl.HandlerRegistration.dispatch(HandlerRegistration.java:98)\r\n        at io.vertx.core.eventbus.impl.MessageConsumerImpl.deliver(MessageConsumerImpl.java:180)\r\n        at io.vertx.core.eventbus.impl.MessageConsumerImpl.doReceive(MessageConsumerImpl.java:165)\r\n        at io.vertx.core.eventbus.impl.HandlerRegistration.lambda$receive$0(HandlerRegistration.java:49)\r\n        at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:173)\r\n        at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:166)\r\n        at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:472)\r\n        at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:569)\r\n        at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)\r\n        at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)\r\n        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)\r\n        at java.base/java.lang.Thread.run(Unknown Source)\r\n{noformat}\r\nCC [~umang.sharma] [~chaitas.shah] [~manish.bhangale] "
+  },
+  {
+   "author": "Nilesh Kidiya",
+   "body": "We are tracking this bug : MOTADATA-8440 separately.\r\n\r\nAll testing related to this task has been completed, so I am closing this Jira ticket."
+  },
+  {
+   "author": "Arnav Desai",
+   "body": "[~bhavin.gorecha] This task has not been done properly as there are still somethings which needs enhancements.\r\n * UI is not proper as some numbers are very huge.\r\n * The report pdf does not match the expected pdf.\r\n * The device level rule level report is still missing.\r\n\r\nSo kindly re-open this task and plan it in the sprint."
+  },
+  {
+   "author": "Bhavin Gorecha",
+   "body": "As per PMG, This task is not delivered as per expectation of PMG. "
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "[~bhavin.gorecha] , please give detailed report and what needs to be changed and what is expected. Also For the device rule level report has be delivered in future sprint was the agreement we had so it was not missed. Please add details for that as well. What kind of data format and what should be display please mention all criteria. "
+  },
+  {
+   "author": "Bharat Chaudhari",
+   "body": "sample report for device \r\n\r\nattached. \r\n\r\nnccm_compliance_policy_device_1_1786014671.pdf\r\n\r\nplease check [~bhavin.gorecha] "
+  },
+  {
+   "author": "Bhavin Gorecha",
+   "body": "!image-2026-08-12-13-45-15-126.png!\r\n\r\n!image-2026-08-12-13-45-24-446.png!\r\n\r\n!image-2026-08-12-13-45-32-109.png!\r\n\r\n!image-2026-08-12-13-45-38-321.png!"
+  }
+ ],
+ "completeness": {
+  "gaps": [
+   "references Figma (1 link(s)) — design-derived expectations cannot be verified from the ticket alone",
+   "has 17 attachment(s) that were NOT fetched (screenshots may carry the real spec)"
+  ]
+ }
+}
