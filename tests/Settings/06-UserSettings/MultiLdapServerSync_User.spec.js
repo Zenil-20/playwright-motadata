@@ -181,19 +181,45 @@ const ldapServers = [
   },
 ];
 
+/*
+ * Kept SERIAL because both tests reconfigure LDAP on the same shared AIOps server, so they must not
+ * interleave. But each test gets its OWN context (below) — serial ordering and session isolation are
+ * separate concerns, and conflating them is what broke this spec.
+ */
 test.describe.serial('Motadata AIOps Multi LDAP Server Sync for User Settings', () => {
+  let context;
   let page;
 
-  test.beforeAll(async ({ browser }) => {
-    const context = await browser.newContext();
+  /*
+   * FRESH CONTEXT PER TEST — this is the fix for the 120s hang on the second LDAP server.
+   *
+   * Previously a single page was created in beforeAll and SHARED by both tests, with each test calling
+   * login() at the start and logout() at the end. That only works while every test reaches its logout:
+   * if the first test fails at any point before it (a credential test that never returns, a missing
+   * row, an unverified toast), the session stays authenticated. The next test then calls login(), which
+   * is NOT idempotent — it navigates to the base URL and waits to fill the username field, and on an
+   * already-authenticated page the app renders the dashboard instead, so that field never appears. The
+   * fill auto-waits until the 120s test timeout, and the teardown then reports the misleading secondary
+   * error "Target page, context or browser has been closed".
+   *
+   * Isolating the context makes each test start from a guaranteed clean session, so login() always has
+   * a login form to fill and a failure in one test can no longer cascade into the next.
+   */
+  test.beforeEach(async ({ browser }) => {
+    context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    /*
+     * 60s, not 500s. The suite's per-test timeout is 120s (playwright.config.js), so a 500s default
+     * could never be reached — every stalled locator surfaced as a bare "Test timeout exceeded" with no
+     * indication of WHICH locator hung, which is exactly how the original failure presented. A default
+     * below the test timeout makes Playwright name the offending locator instead. The genuinely slow
+     * steps here (credential test, row lookup, toast) already carry their own explicit timeouts.
+     */
+    page.setDefaultTimeout(60000);
   });
 
-  test.afterAll(async () => {
-    if (page && !page.isClosed()) {
-      await page.close();
-    }
+  test.afterEach(async () => {
+    if (context) await context.close();
   });
 
   ldapServers.forEach((server) => {

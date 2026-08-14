@@ -8,6 +8,8 @@
     "test:monitors:list": "playwright test tests/Monitors --list",
     "test:dashboard": "playwright test tests/Dashboard",
     "test:dashboard:list": "playwright test tests/Dashboard --list",
+    "test:dashboard:baseline": "cross-env DASHBOARD_BASELINE=write playwright test tests/Dashboard",
+    "test:dashboard:strict": "cross-env DASHBOARD_STRICT_EMPTY=1 playwright test tests/Dashboard",
     "reports:validate": "cross-env TRAP_FIRE=0 playwright test --project=reports tests/Reports/report-validation.spec.js --reporter=html,line,./tests/Reports/_core/html-reporter.js",
     "reports:validate:list": "playwright test --project=reports tests/Reports/report-validation.spec.js --list",
     "reports:create": "cross-env TRAP_FIRE=0 playwright test --project=reports tests/Reports/report-creation.spec.js --reporter=html,line,./tests/Reports/_core/html-reporter.js",

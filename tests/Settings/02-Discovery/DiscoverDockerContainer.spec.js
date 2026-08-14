@@ -151,10 +151,28 @@ test.describe.serial('Motadata AIOps Discovery Flow For Linux Server 172.16.15.2
       .catch(() => false);
 
     if (hasContainers) {
-      // Select ALL discovered containers via the header select-all checkbox, then
-      // Provision (the button appears only once a selection exists). The grid then
-      // clears to "No data found".
-      await drawer.locator(".k-grid-header input[type='checkbox']").first().check({ force: true });
+      // Select ALL discovered containers via the header select-all, then Provision (the
+      // button appears only once a selection exists). The grid then clears to "No data found".
+      //
+      // Click the VISIBLE Ant checkbox box — never the raw input, and never with force:
+      //   - ".k-grid-header input[type='checkbox']" resolves to Ant's HIDDEN proxy input
+      //     (opacity:0, sized 100% of its parent .ant-checkbox), so its clickable area is
+      //     only ever as big as the header cell it sits in. Kendo applies its column widths
+      //     a frame or two AFTER the first row turns visible, so that input can still be
+      //     zero-area at this exact point — and Playwright reports a zero-area quad as
+      //     "Element is outside of the viewport".
+      //   - check({ force: true }) made that transient state FATAL: under force,
+      //     notinviewport is a non-recoverable error thrown on the FIRST attempt, skipping
+      //     the retry loop that would otherwise absorb the layout race. Without force the
+      //     same wait also covers Kendo's stability check for free.
+      // ':visible' additionally keeps .first() off an unmeasured/hidden grid header should
+      // the drawer ever render more than one.
+      const selectAll = drawer.locator('.k-grid-header:visible .ant-checkbox').first();
+      await expect(selectAll).toBeVisible({ timeout: 30000 });
+      await selectAll.click({ timeout: 30000 });
+      // Confirm the selection actually registered rather than inferring it from Provision.
+      await expect(selectAll.locator("input[type='checkbox']")).toBeChecked({ timeout: 15000 });
+
       const provisionBtn = drawer.getByRole('button', { name: 'Provision' });
       await expect(provisionBtn).toBeEnabled();
       await provisionBtn.click();

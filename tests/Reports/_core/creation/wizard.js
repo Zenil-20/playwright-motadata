@@ -17,6 +17,7 @@
  * reference derived from ../UI/src/modules/report/components/*).
  */
 const { baseUrl } = require('../env.js');
+const { gotoBooted, APP_SHELL_SEL } = require('../report.helpers.js');
 
 const OPTION_SEL = '.scroll-dropdown-menu-item:visible, .ant-select-item-option:visible, [role="option"]:visible';
 
@@ -25,6 +26,21 @@ class TileMissingError extends Error {
   constructor(label) {
     super(`Category tile "${label}" not found on /reports/create — not available on this instance.`);
     this.name = 'TileMissingError';
+  }
+}
+
+/**
+ * The SPA never mounted, or mounted but rendered NO tiles at all.
+ *
+ * Kept strictly separate from TileMissingError. Both used to collapse into "not
+ * available on this instance", which silently SKIPPED whole categories when the
+ * real cause was a blank page — the single biggest source of false results in this
+ * suite. An empty page is a failure to report, not a category to skip.
+ */
+class AppShellError extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = 'AppShellError';
   }
 }
 
@@ -39,8 +55,20 @@ class SkipScenarioError extends Error {
 // ------------------------------ navigation ----------------------------------
 
 async function gotoCreate(page) {
-  await page.goto(`${baseUrl()}/reports/create`, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(2500);
+  // Boot-aware navigation: a fresh context means a cold SPA boot (~15s), and roughly
+  // 1 in 4 concurrent boots doesn't complete — leaving a blank page with zero tiles.
+  // gotoBooted re-navigates until the shell is up (a ~3s recovery, chunks cached),
+  // so "no tiles" downstream can only mean the grid itself was empty.
+  const boot = await gotoBooted(page, `${baseUrl()}/reports/create`);
+  if (!boot.booted) {
+    throw new AppShellError(
+      `App shell never mounted on /reports/create (${APP_SHELL_SEL} not visible) after ` +
+        `${boot.attempts} navigation attempt(s) — the SPA bundle failed to load. ` +
+        `Last error: ${boot.error ? boot.error.message.split('\n')[0] : 'unknown'}`,
+    );
+  }
+  // Small settle so the tile grid's own async render can start.
+  await page.waitForTimeout(1000);
 }
 
 /**
@@ -107,17 +135,45 @@ async function selectCategoryTile(page, label) {
   // as "not on this instance".
   await cards.first().waitFor({ state: 'visible', timeout: 20_000 }).catch(() => {});
   const n = await cards.count();
-  // Pick the SHORTEST-text card containing the label so "Availability" doesn't
-  // match "Availability Flap Summary".
-  let bestIdx = -1;
-  let bestLen = Infinity;
-  for (let i = 0; i < n; i++) {
-    const txt = norm(await cards.nth(i).innerText().catch(() => ''));
-    if (!txt.includes(key)) continue;
-    if (txt.length < bestLen) {
-      bestLen = txt.length;
-      bestIdx = i;
-    }
+  // ZERO tiles with a booted shell is a broken page, NOT a missing category. Measured
+  // on this instance a healthy create page renders 18 tiles, so 0 can never be a real
+  // "this category isn't installed" answer — raise it instead of skipping the category.
+  if (n === 0) {
+    throw new AppShellError(
+      'The /reports/create tile grid rendered 0 tiles even though the app shell mounted — ' +
+        'the create page failed to load its report types (expected ~18 tiles).',
+    );
+  }
+  /*
+   * Match on WHOLE WORDS, preferring an exact label match.
+   *
+   * A bare `txt.includes(key)` silently selects the WRONG tile whenever one label is a
+   * substring of another word: the `ai` category (label "AI") matched "Av-AI-lability",
+   * so it clicked the Availability tile and then failed with the baffling "AI requirement
+   * input not found" — five scenarios blamed on a missing input when the wizard was simply
+   * on the wrong report type. (Measured: this instance exposes 18 tiles and has no AI tile,
+   * so the honest answer is "not available here".)
+   *
+   * Order: exact normalised equality first, then whole-word containment (so "Trap" still
+   * finds "Trap Events" and "Availability" still prefers itself over "Availability Flap
+   * Summary" via the shortest-text tie-break). Never a bare substring.
+   */
+  const labels = [];
+  for (let i = 0; i < n; i++) labels.push(norm(await cards.nth(i).innerText().catch(() => '')));
+
+  const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const wordRe = new RegExp(`(^|\\W)${escapeRe(key)}(\\W|$)`);
+
+  let bestIdx = labels.findIndex((t) => t === key);
+  if (bestIdx < 0) {
+    let bestLen = Infinity;
+    labels.forEach((txt, i) => {
+      if (!wordRe.test(txt)) return;
+      if (txt.length < bestLen) {
+        bestLen = txt.length;
+        bestIdx = i;
+      }
+    });
   }
   if (bestIdx < 0) return false;
   const card = cards.nth(bestIdx);
@@ -159,17 +215,26 @@ async function waitNoLoader(page, timeoutMs = 10_000) {
   }
 }
 
-/** Wait for the step-2 preview to paint (chart svg/canvas or grid rows). */
+/**
+ * Wait for the step-2 preview to paint (chart svg/canvas or grid rows).
+ *
+ * The previous selector list (.widget-preview / .preview-rendered / .chart-container)
+ * matched NOTHING on this build — measured 0 elements for all three while a chart was
+ * plainly on screen. Every scenario therefore reported preview=timeout, including all
+ * the ones that passed, and each burned the full 45s budget: ~107 minutes of dead
+ * wall-clock across the 143-scenario matrix.
+ *
+ * The real containers, verified live on step 2 (each count()===1): the widget wrapper
+ * `.widget-view`, holding a Highcharts SVG (`.highcharts-container`) for chart widget
+ * types, or a Kendo/ant grid for Grid and Top-N types.
+ */
+const PREVIEW_SEL =
+  '.widget-view .highcharts-container, .widget-view svg, .widget-view canvas, ' +
+  '.widget-view .k-grid-content tr, .widget-view .ant-table-tbody tr';
+
 async function waitPreviewRendered(page, timeoutMs = 45_000) {
   try {
-    await page
-      .locator(
-        '.widget-preview svg, .widget-preview canvas, .widget-preview .k-grid-content tr, ' +
-          '.widget-preview .ant-table-tbody tr, .preview-rendered svg, .preview-rendered canvas, ' +
-          '.chart-container svg, .chart-container canvas',
-      )
-      .first()
-      .waitFor({ state: 'visible', timeout: timeoutMs });
+    await page.locator(PREVIEW_SEL).first().waitFor({ state: 'visible', timeout: timeoutMs });
     return 'rendered';
   } catch {
     return 'timeout';
@@ -367,6 +432,24 @@ async function setSourceFilter(page, optionText) {
   return false;
 }
 
+/**
+ * True when the step-2 form renders a visible field label matching any of `names`.
+ * Used to tell "this category HAS a Source Filter and we failed to set it" (a real error)
+ * apart from "this category has no Source Filter at all" (nothing to set).
+ */
+async function hasFieldLabel(page, names) {
+  const wanted = names.map((s) => s.toLowerCase());
+  return page
+    .evaluate((keys) => {
+      const norm = (t) => (t || '').replace(/\*/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+      return Array.from(document.querySelectorAll('label')).some((l) => {
+        const r = l.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && keys.includes(norm(l.textContent));
+      });
+    }, wanted)
+    .catch(() => false);
+}
+
 /** Open the Source picker (exact "Source" label — NOT "Source Filter") popover. */
 async function openSourceTable(page) {
   const clicked = await page.evaluate(() => {
@@ -399,49 +482,114 @@ async function openSourceTable(page) {
  * number, or 'all' for the header Select All checkbox. Returns a description.
  */
 async function selectMonitors(page, monitors = 1) {
-  const rowSel =
-    '.k-grid-content tr, .k-grid-table tr, .k-grid .k-table tbody tr, .k-grid tbody tr, .ant-table-tbody tr:visible';
-  let rowTotal = 0;
-  for (let left = 15_000; left > 0; left -= 300) {
-    rowTotal = await page.locator(rowSel).count();
-    if (rowTotal > 0) break;
+  /*
+   * SCOPE EVERYTHING TO THE OPEN POPOVER.
+   *
+   * The step-2 form renders its own preview grid behind the picker, so the old
+   * page-wide selectors counted the BACKGROUND grid's rows. Measured: with the
+   * popover shut, `.k-grid-content tr` still matches 24 rows. So when the Source
+   * list came up empty, the helper found "rows" (the preview's) but no checkboxes
+   * and reported "Source table has rows but 0 checkboxes" — describing a table it
+   * was never supposed to be looking at. This is the project's documented
+   * source-picker gotcha: scope to the visible popover or the background wins.
+   *
+   * `.picker-overlay` nests (an inner wrapper repeats the same box), so filtering on
+   * "has row checkboxes" and taking .last() is what pins this to exactly ONE element
+   * — verified count()===1 with 28 row checkboxes + 1 header checkbox.
+   */
+  /*
+   * The Source picker has TWO shapes, and which one you get depends on Source Filter:
+   *
+   *   GRID  (Monitor, Source Host, …) — a Kendo/ant table: rows in `tbody`, select-all in `thead`.
+   *   LIST  (Group, Tag)             — a flat <li> checkbox list with its own "Select All"
+   *                                    checkbox that sits OUTSIDE the <li>s.
+   *
+   * Only the grid shape used to be handled, so every Group/Tag scenario found 0 rows and was
+   * reported as "no sources available on this instance". That was FALSE: measured live, Group
+   * offers 38 selectable groups (Server, Network, Database, …) and Tag offers its own list
+   * (kpi:high cpu, os:ubuntu linux, …). Verified counts: 38 <li> items + exactly 1 select-all,
+   * and clicking select-all checks all 38.
+   */
+  const overlays = page.locator('.picker-overlay:visible');
+  const gridPop = overlays.filter({ has: page.locator('tbody .ant-checkbox-input') }).last();
+  const listPop = overlays.filter({ has: page.locator('li .ant-checkbox-input') }).last();
+
+  /** @type {'grid'|'list'|null} */
+  let shape = null;
+  let itemCbs = null;
+  let selAll = null;
+  let cbTotal = 0;
+
+  for (let left = 20_000; left > 0; left -= 300) {
+    const gridN = await gridPop.locator('tbody .ant-checkbox-input').count().catch(() => 0);
+    if (gridN > 0) {
+      shape = 'grid';
+      cbTotal = gridN;
+      itemCbs = gridPop.locator('tbody .ant-checkbox-input');
+      selAll = gridPop.locator('thead .ant-checkbox-input, thead input[type="checkbox"]').first();
+      break;
+    }
+    const listN = await listPop.locator('li .ant-checkbox-input').count().catch(() => 0);
+    if (listN > 0) {
+      shape = 'list';
+      cbTotal = listN;
+      itemCbs = listPop.locator('li .ant-checkbox-input');
+      // The select-all is the one checkbox in the overlay that is NOT inside an <li>.
+      selAll = listPop.locator('.ant-checkbox-input:not(li .ant-checkbox-input)').first();
+      break;
+    }
     await page.waitForTimeout(300);
   }
-  if (rowTotal === 0) throw new Error('Source table rendered 0 rows after 15s.');
-  await waitNoLoader(page, 5000);
 
-  let rowCbs = page.locator(
-    '.k-grid-content .ant-checkbox-input, .k-grid-table .ant-checkbox-input, .k-grid tbody .ant-checkbox-input, ' +
-      '.ant-table-tbody input[type="checkbox"]:visible',
-  );
-  let cbTotal = await rowCbs.count();
-  if (cbTotal === 0) {
-    rowCbs = page.locator(
-      '.k-grid-content input[type="checkbox"], .k-grid-table input[type="checkbox"], .k-grid tbody input[type="checkbox"], tbody input[type="checkbox"]:visible',
+  if (!shape) {
+    // Report the picker's ACTUAL contents so an unrecognised shape is diagnosable and can
+    // never again be silently mislabelled "no sources on this instance".
+    const seen = await page
+      .locator('.picker-overlay:visible')
+      .last()
+      .innerText()
+      .catch(() => '');
+    const text = seen.replace(/\s+/g, ' ').trim();
+    if ((await overlays.count().catch(() => 0)) === 0) {
+      throw new Error('Source picker popover did not open (no visible .picker-overlay).');
+    }
+    const anyCb = await overlays.locator('.ant-checkbox-input').count().catch(() => 0);
+    if (anyCb > 0) {
+      // It HAS selectable things, just not in a shape we know — that is our bug, so fail loudly.
+      throw new Error(
+        `Source picker opened with ${anyCb} checkbox(es) but in an unrecognised layout ` +
+          `(neither "tbody" rows nor "li" items). Overlay text: "${text.slice(0, 200)}"`,
+      );
+    }
+    if (!text || /no data|no record|no results|nothing to show/i.test(text)) {
+      throw new SkipScenarioError(
+        `Source picker opened and is genuinely empty for this counter/filter (overlay text: "${text.slice(0, 120)}").`,
+      );
+    }
+    throw new Error(
+      `Source picker opened but exposed no selectable control. Overlay text: "${text.slice(0, 200)}"`,
     );
-    cbTotal = await rowCbs.count();
   }
-  if (cbTotal === 0) throw new Error('Source table has rows but 0 checkboxes.');
 
-  const selAll = page
-    .locator(
-      '.k-grid-header .ant-checkbox-input, .k-grid thead .ant-checkbox-input, .k-grid-header input[type="checkbox"], ' +
-        '.k-grid thead input[type="checkbox"], .ant-table-thead input[type="checkbox"]:visible, thead input[type="checkbox"]:visible',
-    )
-    .first();
+  await waitNoLoader(page, 5000);
+  const rowCbs = itemCbs;
 
+  // Label the shape in the recorded value — a Group/Tag scenario picking "3 item(s)" from a
+  // list is a different thing from a Monitor scenario picking "3 row(s)" from a grid, and the
+  // creation report is much easier to audit when it says which.
+  const unit = shape === 'list' ? 'item' : 'row';
   let picked;
   if (monitors === 'all' || monitors >= cbTotal) {
     if ((await selAll.count()) > 0) {
       await selAll.click({ force: true });
       await page.waitForTimeout(500);
-      picked = `all (${cbTotal}+ visible)`;
+      picked = `all (${cbTotal}+ ${unit}s visible, ${shape})`;
     } else {
       for (let i = 0; i < cbTotal; i++) {
         await rowCbs.nth(i).click({ force: true }).catch(() => {});
         await page.waitForTimeout(80);
       }
-      picked = `${cbTotal} row(s)`;
+      picked = `${cbTotal} ${unit}(s)`;
     }
   } else {
     const want = Math.min(monitors, cbTotal);
@@ -449,7 +597,7 @@ async function selectMonitors(page, monitors = 1) {
       await rowCbs.nth(i).click({ force: true }).catch(() => {});
       await page.waitForTimeout(150);
     }
-    picked = `${want} row(s)`;
+    picked = `${want} ${unit}(s)`;
   }
   await page.keyboard.press('Escape');
   await page.waitForTimeout(600);
@@ -475,16 +623,35 @@ async function clickNextWhenEnabled(page, timeoutMs = 60_000) {
     left -= 500;
   }
   if (left <= 0) throw new Error(`Next button still disabled after ${timeoutMs / 1000}s — a required step-2 field is missing or the preview never validated.`);
-  await next.click();
-  // Step 3 shows the Name input.
+
+  /*
+   * Click Next until step 3 actually appears.
+   *
+   * The old code clicked once, waited 10s, then clicked once more. That still lost the
+   * save-first categories (availability.flap.summary, historical.trend,
+   * nccm.compliance.policy): their Next is NEVER disabled, so the enable-wait above returns
+   * instantly and the click can land while the source popover is still closing — the app
+   * swallows it and step 3 never arrives. Observed on flap-summary scenario "1m" (the other
+   * 5 scenarios passed), i.e. a first-click timing flake, not a missing field.
+   *
+   * Settling the loader before each attempt and confirming advancement by the step-3 Name
+   * input makes a swallowed click a retry instead of a failed scenario.
+   */
   const name = page.locator('input[placeholder*="Name" i], input[name="name"]').first();
-  try {
-    await name.waitFor({ state: 'visible', timeout: 10_000 });
-  } catch {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    await waitNoLoader(page, 5000);
     await next.click().catch(() => {});
-    await name.waitFor({ state: 'visible', timeout: 10_000 });
+    try {
+      await name.waitFor({ state: 'visible', timeout: 10_000 });
+      await page.waitForTimeout(500);
+      return;
+    } catch {
+      /* click was swallowed (or the step is still transitioning) — try again */
+    }
   }
-  await page.waitForTimeout(500);
+  throw new Error(
+    'Clicked Next 3 times but step 3 never rendered (no Report Name input) — the wizard did not advance.',
+  );
 }
 
 async function fillNameAndSave(page, reportName) {
@@ -567,6 +734,7 @@ async function createOne(page, catCfg, scenario, reportName, ctx = {}) {
 module.exports = {
   TileMissingError,
   SkipScenarioError,
+  AppShellError,
   gotoCreate,
   selectCategoryTile,
   waitNoLoader,
@@ -579,6 +747,7 @@ module.exports = {
   pickCounter,
   setSourceFilter,
   openSourceTable,
+  hasFieldLabel,
   selectMonitors,
   isNextEnabled,
   clickNextWhenEnabled,

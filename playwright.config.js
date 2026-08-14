@@ -95,6 +95,14 @@ const settingsProjects = [
   // Live-server suite: auto-retry transient network blips (ERR_NETWORK_CHANGED / connection
   // timeouts to 151) so an infra hiccup during a long run doesn't fail an otherwise-green test.
   retries: 2,
+},
+{
+  name: 'settings_16_flow',
+  testMatch: ['tests/Settings/16-Flow/*.spec.js'],
+  // Live-server suite driving a real UDP flow pipeline: the same transient-blip retry rationale as
+  // the trap project. Note the retries interact with the ingest window — a retried propagation test
+  // re-polls rather than re-waiting, because the traffic was already generated at globalSetup.
+  retries: 2,
 }
 ];
 
@@ -122,7 +130,24 @@ const monitorsProjects = [
   },
 ];
 
-// Default/system feature dashboards (createDashboardCategorySuite framework).
+/*
+ * Default/system feature dashboards (createDashboardCategorySuite framework).
+ *
+ * NO RETRIES on the dashboard projects — deliberate, unlike settings_15_snmp_trap,
+ * settings_16_flow and reports above. A retry makes a red result ambiguous: you can no longer
+ * tell "this passed" from "this failed once and got a second go", and a dashboard result is
+ * meant to be a straight statement about what the product did.
+ *
+ * The consequence is real and must be managed rather than ignored: a transient blip on the AIOps
+ * host now fails a dashboard outright. Measured on 172.16.15.86, 2026-08-14, at --workers=3:
+ * seven infra-caused failures in one run (three 0ms `beforeAll` crashes, one worker OOM
+ * `code=134`, one 5-minute page hang, two 60s load timeouts) — every one of which recovered on
+ * its retry, i.e. none was a product problem.
+ *
+ * Without retries the mitigation is CONCURRENCY, not tolerance. Those failures were host
+ * resource exhaustion (the same OOM that killed a plain `--list` on this machine). Run the
+ * dashboard suite at --workers=1 or 2; see tests/Dashboard/README.md.
+ */
 const dashboardProjects = [
   {
     name: 'dashboard_01_overview',
@@ -213,13 +238,19 @@ const nccmProjects = [
 export default defineConfig({
   testDir: './tests',
   /*
-   * Fire the SNMP-trap propagation batch at the VERY START of the run, and clean it up at the end.
-   * The AIOps datastore flush is a fixed ~5-min floor before traps show in Trap Explorer; firing
-   * here means that wait overlaps the whole suite, so TrapPropagation just VERIFIES later (no block).
-   * Disable with TRAP_FIRE=0. (Harmless no-op if the trap env isn't configured.)
+   * Start every latency-bound ingest at the VERY START of the run, and clean it all up at the end.
+   * Playwright allows only ONE globalSetup, so these aggregate the per-suite steps:
+   *
+   *   - SNMP trap : fires the trap batch (fixed ~5-min datastore flush before Trap Explorer shows it).
+   *                 Disable with TRAP_FIRE=0.
+   *   - Flow      : starts the flow batch (~5-min aggregation window before Flow Explorer shows it —
+   *                 measured 294s with the window set to 3 min). Disable with FLOW_FIRE=0.
+   *
+   * Firing here means each wait overlaps the whole suite, so the propagation specs just VERIFY later
+   * instead of blocking. Both steps are guarded and are harmless no-ops when their env isn't wired.
    */
-  globalSetup: './tests/Settings/15-SNMPTrap/_helpers/global-trap-setup.js',
-  globalTeardown: './tests/Settings/15-SNMPTrap/_helpers/global-trap-teardown.js',
+  globalSetup: './tests/fixtures/global-setup.js',
+  globalTeardown: './tests/fixtures/global-teardown.js',
   /*
    * Temporarily excluded from every `npx playwright test` run. The files and their
    * code are kept intact — they are just never collected/executed. Remove an entry
@@ -235,18 +266,27 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /*
-   * Workers scale DYNAMICALLY with the machine instead of a fixed 4: '75%' uses a
-   * fraction of the CPU cores, so a bigger box runs more spec FILES in parallel and a
-   * smaller box stays safe — without ever pinning the CPU (25% headroom for the OS +
-   * Chromium). This changes ONLY how many files run concurrently; each file is still
-   * serial internally, so test logic is unaffected (0 impact on the test cases).
+   * SINGLE USER (1 worker) is the default EVERYWHERE — local and pipeline alike.
+   * The whole suite drives ONE shared Motadata server through ONE login (admin), so a
+   * single worker means exactly one concurrent session: no competing admin logins, no
+   * cross-file data races on shared entities (monitors, policies, discoveries), and each
+   * spec sees the server in the state the previous spec left it. That is the reproducible
+   * baseline we publish results from.
    *
-   * The real ceiling for this suite is the SHARED Motadata server + per-file data
-   * isolation, not local cores — so override per run with PW_WORKERS when needed:
-   *   PW_WORKERS=8 npx playwright test   (server has spare capacity / push throughput)
-   *   PW_WORKERS=4 npx playwright test   (pin back to the old behaviour)
+   * Deliberately NOT branched on process.env.CI. If the pipeline ran a different worker
+   * count than a developer's machine, a green local run would tell you nothing about CI —
+   * the concurrency is the single biggest source of behaviour difference in this suite.
+   *
+   * Override per run when the box AND the server genuinely have spare capacity:
+   *   PW_WORKERS=4 npx playwright test   (previous parallel behaviour)
+   *   PW_WORKERS=8 npx playwright test   (aggressive — watch server push throughput)
+   *
+   * Note: specs that opt into `mode: 'parallel'` (report-validation, report-creation-matrix,
+   * RestApi_ServiceCheck_Discovery) collapse to serial at 1 worker. Parallel mode only grants
+   * permission to spread across workers; it cannot create them. The REPORT_CONCURRENCY /
+   * REPORT_EXPORT_CONCURRENCY slot gates likewise cap out at 1 in flight, so they need no change.
    */
-  workers: process.env.CI ? 5 : (process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : '55%'),
+  workers: process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : 1,
   /* Test timeout - increase for slow networks, decrease for production */
   timeout: 120000,
   /* Reporters:
@@ -292,7 +332,43 @@ export default defineConfig({
       name: 'reports',
       testMatch: ['tests/Reports/*.spec.js'],
       dependencies: ['setup'],
-      use: { ...devices['Desktop Chrome'], storageState: 'tests/.auth/user.json' },
+      /*
+       * Auto-retry transient INFRA failures, same rationale as settings_15_snmp_trap /
+       * settings_16_flow above.
+       *
+       * Every report test drives a fresh browser context through a cold SPA boot, and the
+       * long creation tests (polling runs ~5 min) occasionally lose the browser outright —
+       * observed "Target page, context or browser has been closed" mid-navigation, i.e. a
+       * Chromium crash under host memory pressure, not a product or locator problem. That
+       * cost an otherwise-green 142-test run its only failure.
+       *
+       * Retries only rescue genuinely transient failures: a real defect (empty PDF, UI/export
+       * disagreement, a report that never renders) reproduces on every attempt and still fails.
+       *
+       * ONE retry, not two. A reproducible failure pays the retry cost in full, and the long
+       * creation tests are expensive: 2 retries turned a 5-min polling failure into a 44-min
+       * one. One retry absorbs a genuine one-off crash without tripling the worst case.
+       */
+      retries: 1,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'tests/.auth/user.json',
+        /*
+         * Bound EVERY action in the report suite.
+         *
+         * With no actionTimeout, Playwright's auto-wait has no upper limit, so any element that
+         * is present-but-not-clickable (a spinner or Ant toast covering it fails the
+         * "receives events" check) makes the action wait until the TEST timeout. Measured: a
+         * single "Export As PDF" click consumed 11 of a test's 12 minutes and then surfaced as
+         * "locator.click: Test timeout exceeded", which reads like an export defect rather than
+         * a stuck click.
+         *
+         * 60s is far above any legitimate action here (the slow parts — SPA boot, report render,
+         * async PDF export — are explicit waits with their own budgets, not actions), so this
+         * only ever truncates a genuine hang. Scoped to this project so no other suite changes.
+         */
+        actionTimeout: 60_000,
+      },
     },
   ],
 

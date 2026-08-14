@@ -47,7 +47,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
     await page.getByRole('link', { name: 'Storage Profile' }).click();
     await page.getByRole('button', { name: 'Create Storage Profile' }).click();
     await page.locator("input#storage-profile-name").fill('SCPplugin By Playwright');
-    await page.locator("//input[@id='ip/host']").fill('172.16.13.50');
+    await page.locator("//input[@id='ip/host']").fill('172.16.15.214');
     await page.locator("input#port-id").fill('22');
     await page.locator("//input[@placeholder='Select']").click();
     await page.locator("//span[@title='SCP/SFTP']").click();
@@ -83,7 +83,7 @@ test.describe.serial('Motadata AIOps Storage and Backup Profile Settings', () =>
     await page.locator("input#storage-profile-name").fill('ftp-8.57plugin By Playwright');
     await page.locator("//input[@id='ip/host']").fill('172.16.8.57');
     await page.locator("//input[@name='user-name']").fill('administrator');
-    await page.locator("//input[@id='password-id']").fill('Motadata@8');
+    await page.locator("//input[@id='password-id']").fill('Mind@123');
     await page.locator("input#port-id").fill('21');
     await page.locator("//input[@placeholder='Select']").click();
     await page.locator("//span[@title='FTP']").click();

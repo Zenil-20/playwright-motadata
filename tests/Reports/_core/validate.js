@@ -23,6 +23,8 @@ const { pdfTextAndTables } = require('./pdf.js');
 const {
   READY_TIMEOUT_MS,
   EXPORT_WAIT_MS,
+  APP_SHELL_SEL,
+  gotoBooted,
   reportUrl,
   safeName,
   waitForReportReady,
@@ -99,21 +101,27 @@ async function attemptCheck(page, testInfo, rid, name, opts = {}) {
   };
 
   try {
-    // Navigation retry: a transient app hiccup (ERR_CONNECTION_REFUSED on a
-    // momentary restart) must not fail an otherwise-healthy report. Re-goto a few
-    // times with a bounded timeout before giving up.
-    let navErr = null;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
-        navErr = null;
-        break;
-      } catch (e) {
-        navErr = e;
-        await page.waitForTimeout(1500);
-      }
+    // Navigate AND wait for the SPA to mount before anything else. The old loop
+    // retried only when goto() itself threw, which never happened for the failure
+    // that actually bites here: the document loads, its JS chunks are dropped, and
+    // the page sits blank. That was being reported as the REPORT timing out ("no
+    // Export button") instead of the app never booting. gotoBooted re-navigates
+    // until the shell is up, so what follows measures the report, not the bundle.
+    const boot = await gotoBooted(page, url);
+    if (!boot.booted) {
+      // Honest, self-describing verdict: this is an environment/transport failure,
+      // NOT a report defect — and it is kept distinct from `timeout` so the HTML
+      // report never blames a report for an app that never loaded.
+      verdict.status = 'error';
+      verdict.reason =
+        `App shell never mounted (${APP_SHELL_SEL} not visible) after ${boot.attempts} navigation attempt(s) ` +
+        `in ${secs(boot.waitedMs)} — the SPA bundle failed to load, so the report was never reachable. ` +
+        `Last error: ${boot.error ? boot.error.message.split('\n')[0] : 'unknown'}`;
+      await capture(testInfo, page, verdict, stem, false).catch(() => {});
+      return verdict;
     }
-    if (navErr) throw navErr;
+    verdict.shellBootMs = boot.waitedMs;
+    verdict.shellAttempts = boot.attempts;
 
     if (opts.timeline) {
       try {
@@ -171,7 +179,9 @@ async function attemptCheck(page, testInfo, rid, name, opts = {}) {
         verdict.reason =
           pdf.status === 'async_pending'
             ? `Preview has data (${previewRows.length || 'chart'}); PDF export is an async server job that did not deliver within ${secs(EXPORT_WAIT_MS)} — not a report defect.`
-            : `Preview has data (${previewRows.length || 'chart'}); the PDF export produced no download — verify export manually.`;
+            : pdf.status === 'click_failed'
+              ? `Preview has data (${previewRows.length || 'chart'}); the Export button was present but not clickable (${pdf.detail || 'click timed out'}) — export not exercised, verify manually.`
+              : `Preview has data (${previewRows.length || 'chart'}); the PDF export produced no download — verify export manually.`;
         await capture(testInfo, page, verdict, stem, true);
         return verdict;
       }
@@ -181,7 +191,9 @@ async function attemptCheck(page, testInfo, rid, name, opts = {}) {
       verdict.reason =
         pdf.status === 'no_button'
           ? 'Report view never fully loaded (no Export button), and the preview is empty.'
-          : `No data in the preview and the async PDF export did not deliver within ${secs(EXPORT_WAIT_MS)} — likely genuinely empty, or the export stalled server-side.`;
+          : pdf.status === 'click_failed'
+            ? `The preview is empty and the Export button was present but not clickable (${pdf.detail || 'click timed out'}) — export could not corroborate.`
+            : `No data in the preview and the async PDF export did not deliver within ${secs(EXPORT_WAIT_MS)} — likely genuinely empty, or the export stalled server-side.`;
       await capture(testInfo, page, verdict, stem, false);
       return verdict;
     }

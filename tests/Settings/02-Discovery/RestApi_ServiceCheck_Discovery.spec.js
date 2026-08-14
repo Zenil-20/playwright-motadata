@@ -54,6 +54,19 @@ function istStamp() {
   return `${p.hour}:${p.minute}:${p.second}`;
 }
 
+/*
+ * Every row discovers a target that is UNIQUE per row AND per run — see the same guard in
+ * Url_ServiceCheck_Discovery.spec.js. Re-discovering a target that is ALREADY PROVISIONED as a
+ * monitor is REJECTED server-side (discovery.status = "Last ran failed at ...", empty result, and
+ * the SPA abandons the run view for the profile list). The 12 REST endpoints are distinct within a
+ * run, so this is cross-RUN insurance: without the token, the second run of this spec would try to
+ * re-discover the targets the first run provisioned. The test API serves every route identically
+ * with a query string appended — verified for GET /get, POST /post, PUT /put, DELETE /delete,
+ * /basic-auth, /digest-auth, /apikey, /bearer, /ntlm, /clientcert, /xml, /text (2026-08-12).
+ */
+const RUN = Date.now().toString(36);
+const uniqueTarget = (endpoint, key) => `${endpoint}${endpoint.includes('?') ? '&' : '?'}row=${key}&run=${RUN}`;
+
 // One row per REST API discovery case from the coverage matrix.
 const ROWS = [
   { key: 'get-noauth', title: 'GET (no credential)', endpoint: `${R}/get`, protocol: 'HTTP', method: 'GET' },
@@ -107,7 +120,7 @@ test.describe('REST API Service-Check discovery — full credential/method matri
       await openCreateServiceCheck(page);
       await setProfileName(page, `rest-${row.key}-${stamp}`);
       await selectServiceType(page, 'REST', 'REST-API');
-      await page.locator('input#api-endpoint-id').first().fill(row.endpoint);
+      await page.locator('input#api-endpoint-id').first().fill(uniqueTarget(row.endpoint, row.key));
 
       // credential profile (only for authed rows) — creation AUTO-SELECTS it in the form.
       if (row.cred) {
@@ -137,7 +150,7 @@ test.describe('REST API Service-Check discovery — full credential/method matri
     const stamp = istStamp();
     await setProfileName(page, `rest-oauth-${stamp}`);
     await selectServiceType(page, 'REST', 'REST-API');
-    await page.locator('input#api-endpoint-id').first().fill(`${R}/oauth/protected`);
+    await page.locator('input#api-endpoint-id').first().fill(uniqueTarget(`${R}/oauth/protected`, 'oauth'));
     const credName = `rest-oauth-cred-${stamp}`;
     await createCredentialProfile(page, {
       name: credName, authType: 'oauth', grantType: 'Password',

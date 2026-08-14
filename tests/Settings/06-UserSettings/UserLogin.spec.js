@@ -230,18 +230,32 @@ async function changePasswordOnFirstLogin(page, newPassword) {
 }
 
 test.describe.serial('Motadata AIOps local authentication user creation and login', () => {
+  let context;
   let page;
 
   test.beforeAll(async ({ browser }) => {
-    const context = await browser.newContext();
+    context = await browser.newContext();
     page = await context.newPage();
-    page.setDefaultTimeout(500000);
+    /*
+     * 60s, not 500s. The per-test budget here is 300s (test.setTimeout below) and the suite default is
+     * 120s, so a 500s action timeout can never be reached — a stalled locator just runs out the test
+     * clock and reports "Test timeout exceeded" without naming what hung. A default below the test
+     * budget makes Playwright name the offending locator instead.
+     */
+    page.setDefaultTimeout(60000);
   });
 
   test.afterAll(async () => {
-    if (page && !page.isClosed()) {
-      await page.close();
-    }
+    /*
+     * Close the CONTEXT, not just the page.
+     *
+     * The previous version closed only the page, leaving the browser context open for the rest of the
+     * run. With `trace: 'on'` that context still owns an active trace recording, and its artifacts under
+     * test-results/.playwright-artifacts-* are only finalised on context close — which is the shape of
+     * the ENOENT failures seen here ("...recording3.network" / "....zip: no such file or directory").
+     * Closing the context releases the page and flushes the trace deterministically.
+     */
+    if (context) await context.close().catch(() => {});
   });
 
   test('Create a local-auth user from Settings and verify login with the new user', async () => {

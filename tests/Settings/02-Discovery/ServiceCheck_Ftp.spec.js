@@ -70,7 +70,7 @@ test.describe.serial('Motadata AIOps Discovery Flow For Service check FTP', () =
     await page.locator("//span[normalize-space()='IP/Host']").click();
     await page.locator("//input[@id='ip-address-id']").fill("172.16.8.57");
     await page.locator("//input[@id='username-id']").fill("Administrator");
-    await page.locator("//input[@id='password-id']").fill("Motadata@8");
+    await page.locator("//input[@id='password-id']").fill("Mind@123");
     await page.locator('#save-run-btn-id').click();
 
     const discoveryRow = page.locator('tr').filter({ hasText: '172.16.8.57' }).first();

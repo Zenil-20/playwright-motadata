@@ -42,6 +42,25 @@ dotenv.config({ path: '.env', quiet: true });
 const U = TARGETS.urlHttp.replace(/^https?:\/\//, ''); // 172.16.15.160:9090
 const UT = TARGETS.urlTls.replace(/^https?:\/\//, ''); // 172.16.15.160:9443
 
+/*
+ * Every row discovers a target that is UNIQUE per row AND per run.
+ *
+ * Re-discovering a target that is ALREADY PROVISIONED as a monitor is REJECTED by the server:
+ * discovery.status becomes "Last ran failed at ...", the result set is empty, and the SPA gives up
+ * on the run view and returns to the profile list. Three rows used to point at /html and three at
+ * /echo, so as soon as an earlier row provisioned its target the next row on the same URL failed —
+ * exactly how "URL Content match → UP" died (row 2 provisioned .../html at 14:37:05, row 3 ran
+ * .../html at 14:37:20 and was rejected). The `run` token keeps a RE-run from colliding with the
+ * monitors the previous run provisioned.
+ *
+ * The test server serves every route identically with a query string appended — verified for /get,
+ * /html, /status/200, /status/500, /echo, /basic-auth, /digest-auth, /apikey, /bearer, /ntlm,
+ * /clientcert and TLS /html (2026-08-12) — so no row's semantics change: /status/500 still answers
+ * 500 for the negative row, the auth routes still challenge, and /html still contains "UP".
+ */
+const RUN = Date.now().toString(36);
+const uniqueTarget = (endpoint, key) => `${endpoint}${endpoint.includes('?') ? '&' : '?'}row=${key}&run=${RUN}`;
+
 const ROWS = [
   { key: 'json-yes', title: 'Up — JSON URL = YES', endpoint: `${U}/get`, type: 'HTTP', method: 'GET', json: 'YES' },
   { key: 'json-no', title: 'Up — HTML, JSON URL = NO', endpoint: `${U}/html`, type: 'HTTP', method: 'GET', json: 'NO' },
@@ -95,7 +114,7 @@ test.describe.serial('URL Service-Check discovery — full form coverage', () =>
       await setProfileName(page, `url-${row.key}-${Date.now()}`);
       await selectServiceType(page, 'URL', 'URL');
       await setTargetTypeUrl(page); // default is "Monitor"; switch to URL so #url-id is the target
-      await page.locator('input#url-id').first().fill(row.endpoint);
+      await page.locator('input#url-id').first().fill(uniqueTarget(row.endpoint, row.key));
 
       // creating a credential profile AUTO-SELECTS it in the form.
       if (row.cred) {
@@ -122,7 +141,7 @@ test.describe.serial('URL Service-Check discovery — full form coverage', () =>
     await setProfileName(page, `url-oauth-${Date.now()}`);
     await selectServiceType(page, 'URL', 'URL');
     await setTargetTypeUrl(page);
-    await page.locator('input#url-id').first().fill(`${U}/oauth/protected`);
+    await page.locator('input#url-id').first().fill(uniqueTarget(`${U}/oauth/protected`, 'oauth'));
     const credName = `url-oauth-cred-${Date.now()}`;
     await createCredentialProfile(page, {
       name: credName, authType: 'oauth', grantType: 'Password',

@@ -39,6 +39,7 @@ const {
   openSourceTable,
   selectMonitors,
   isNextEnabled,
+  hasFieldLabel,
 } = require('./wizard.js');
 
 const sc = (name, over = {}) => ({ name, counters: 1, counterIndex: 0, monitors: 1, ...over });
@@ -57,8 +58,21 @@ async function fillCounters(page, s, picked) {
 async function fillSource(page, s, picked, { filter = 'Monitor', required = true } = {}) {
   const wanted = s.sourceFilter || filter;
   const ok = await setSourceFilter(page, wanted);
-  if (ok) picked.source_filter = wanted;
-  else if (required) throw new Error(`Could not set Source Filter to "${wanted}".`);
+  if (ok) {
+    picked.source_filter = wanted;
+  } else {
+    /*
+     * Not every category HAS a Source Filter. Measured on this instance, Polling Data's
+     * step 2 renders only [Counter, Source] — no Source Filter, no #entity trigger — so
+     * demanding one failed all 5 polling scenarios with "Could not set Source Filter to
+     * Monitor" when there was simply nothing to set.
+     *
+     * Only treat a failure as fatal when the field actually EXISTS and we couldn't drive it.
+     */
+    const hasFilterField = await hasFieldLabel(page, ['source filter', 'entity']);
+    if (hasFilterField && required) throw new Error(`Could not set Source Filter to "${wanted}" (the field is present but could not be set).`);
+    picked.source_filter = hasFilterField ? `not set (${wanted})` : 'n/a (category has no Source Filter field)';
+  }
   const opened = await openSourceTable(page);
   if (!opened) {
     if (required) throw new Error('Could not open the Source picker.');
@@ -87,6 +101,76 @@ function counterSourceHandler({ sourceFilter = 'Monitor', waitPreview = true, co
     await maybeResultBy(page, s, picked);
     await fillSource(page, s, picked, { filter: sourceFilter });
     if (waitPreview) await previewWait(page, picked);
+  };
+}
+
+/**
+ * Polling Data — the one category whose widget validates ONLY on real data.
+ *
+ * Measured on this instance: with Counter and Source both correctly filled
+ * (clickhouse.session.client.address + xen71master), NO preview renders and Next stays
+ * disabled forever, so all 5 scenarios died on "Next button still disabled after 60s".
+ * Polling Data reports RAW POLLED VALUES, so isWidgetValid only flips when the chosen
+ * counter is actually polled FOR the chosen monitor — and the counter dropdown is a global,
+ * alphabetically-sorted list whose first entries (clickhouse.*) are polled for nothing here.
+ *
+ * Blind positional picking therefore cannot satisfy this category. Instead of pretending
+ * otherwise, walk a bounded window of counters looking for one that validates, and if none
+ * does, skip with a precise reason rather than reporting a phantom "missing field".
+ */
+function pollingHandler({ tries = 6 } = {}) {
+  return async (page, s, picked) => {
+    const startIdx = s.counterIndex || 0;
+    const tried = [];
+
+    /*
+     * PROBE WITH ONE MONITOR, then scale up.
+     *
+     * Searching counters with the scenario's full monitor set re-queried RAW polling data for
+     * all 28 monitors once per counter, and the renderer ran out of memory: the `c0_all`
+     * scenario killed the browser tab on 3 of 3 attempts ("Target page, context or browser has
+     * been closed"), which retries could never fix because it reproduces every time.
+     *
+     * One monitor is enough to answer the only question the search asks — "is this counter
+     * polled at all?" — and costs a fraction of the query. The scenario's real monitor count is
+     * applied ONLY after a workable counter is found, so the expensive render happens at most
+     * once instead of `tries` times.
+     */
+    let sourceDone = false;
+    for (let attempt = 0; attempt < tries; attempt++) {
+      picked.counter = await pickCounter(page, { slot: 0, index: startIdx + attempt });
+      tried.push(picked.counter || `#${startIdx + attempt}`);
+
+      // Source selection persists across counter changes — pick the cheap probe set once.
+      if (!sourceDone) {
+        await fillSource(page, { ...s, monitors: 1 }, picked, { filter: s.sourceFilter || 'Monitor' });
+        sourceDone = true;
+      }
+      await waitNoLoader(page, 10_000);
+
+      // Give the widget a bounded chance to validate on this counter.
+      for (let w = 0; w < 12; w++) {
+        if (await isNextEnabled(page)) break;
+        await page.waitForTimeout(1000);
+      }
+      if (!(await isNextEnabled(page))) continue;
+
+      // Workable counter found — now apply the scenario's actual monitor selection.
+      picked.counter_attempts = `${attempt + 1} (tried: ${tried.join(', ')})`;
+      const wanted = s.monitors ?? 1;
+      if (wanted !== 1) {
+        if (await openSourceTable(page)) picked.monitors = await selectMonitors(page, wanted);
+        await waitNoLoader(page, 15_000);
+      }
+      picked.preview = await waitPreviewRendered(page, 20_000);
+      return;
+    }
+
+    throw new SkipScenarioError(
+      `Polling Data: none of ${tries} counters produced a valid widget for a probe monitor ` +
+        `(tried: ${tried.join(', ')}). This report type needs a counter that is actually POLLED for ` +
+        `that monitor, and no such combination exists among them on this instance.`,
+    );
   };
 }
 
@@ -556,7 +640,7 @@ const CATEGORIES = {
 
   polling: {
     label: 'Polling Data',
-    handler: counterSourceHandler(),
+    handler: pollingHandler(),
     scenarios: [
       sc('c0_1m'),
       sc('c1_1m', { counterIndex: 1 }),

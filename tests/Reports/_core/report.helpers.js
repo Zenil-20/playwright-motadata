@@ -88,11 +88,34 @@ const PDF_DOWNLOAD_TIMEOUT_MS = 300_000;
 // with reason `timeout`. The PDF export is NOT under this clock — it is a
 // server-side queue and has its own PDF_DOWNLOAD_TIMEOUT_MS.
 const READY_TIMEOUT_MS = Math.max(1, Number(process.env.REPORT_READY_TIMEOUT || 20)) * 1000;
+
+/*
+ * Hard ceiling for a report that is STILL VISIBLY WORKING past READY_TIMEOUT_MS.
+ *
+ * A fixed budget cannot tell "this report is broken" from "this report is heavy". On a
+ * shared server a legitimately slow report was being failed as a timeout — the single
+ * largest source of false failures in this suite. The budget is now progress-aware:
+ * a report whose spinner is still up keeps its slot up to this ceiling, while one that
+ * has gone idle with nothing on screen fails immediately at READY_TIMEOUT_MS instead of
+ * sitting out the rest of the clock.
+ *
+ * This is NOT a retry — nothing is re-run. It only stops the stopwatch from firing while
+ * the server is demonstrably still producing the report.
+ */
+const READY_MAX_MS = Math.max(1, Number(process.env.REPORT_READY_MAX || 90)) * 1000;
+
+/** "12.5s" — for readable timeout diagnostics. */
+function secsOf(ms) {
+  return `${(ms / 1000).toFixed(1)}s`;
+}
 // How long to wait for the ASYNC PDF export to deliver a browser download before
 // the caller falls back to the preview-based verdict. Generous by default so slow
 // server-side export jobs still get validated, but bounded so a stalled export
 // cannot hang a worker. Tune with REPORT_EXPORT_WAIT (seconds).
 const EXPORT_WAIT_MS = Math.max(5, Number(process.env.REPORT_EXPORT_WAIT || 45)) * 1000;
+// Upper bound for the "Export As PDF" CLICK itself (not the export job). Without this the
+// click inherits Playwright's unbounded auto-wait — see the note in exportPdf().
+const EXPORT_CLICK_TIMEOUT_MS = Math.max(5, Number(process.env.REPORT_EXPORT_CLICK_TIMEOUT || 30)) * 1000;
 const READY_POLL_MS = 200;
 // Tiny paint settle once data is detected, so charts are on the canvas for the
 // screenshot. Not part of the timeout budget.
@@ -100,6 +123,72 @@ const READY_SETTLE_MS = Number(process.env.REPORT_READY_SETTLE || 300);
 
 function reportUrl(rid) {
   return `${baseUrl()}/reports/view/${rid}`;
+}
+
+/*
+ * ---- app-shell boot ----------------------------------------------------------
+ *
+ * Every report test gets a FRESH browser context, so every navigation is a COLD
+ * SPA boot: Chromium re-fetches ~62 JS chunks over one HTTP/2 connection. Measured
+ * on this instance, that boot alone costs ~15-16s when it works, and roughly 1 in 4
+ * concurrent boots does not finish at all (either chunks come back
+ * ERR_CONNECTION_CLOSED and the page stays blank, or the boot simply overruns).
+ *
+ * Two bugs came out of that, both fixed by booting EXPLICITLY before any report
+ * logic runs:
+ *
+ *   1. A blank shell was mis-diagnosed. page.goto() does NOT throw here — the HTML
+ *      document loads fine, only its sub-resources are dropped — so the old
+ *      goto-retry never fired. Validation then blamed the REPORT ("no Export
+ *      button") and creation blamed the INSTANCE ("category not available"), when
+ *      the truth was that the app never mounted. A reload fixes it in ~3s.
+ *   2. The ready budget was being spent on the wrong thing. READY_TIMEOUT_MS is
+ *      documented as the budget for the report's DATA, but the shell's ~15s boot
+ *      was inside it, leaving ~5s for the data itself and timing out healthy
+ *      reports. Waiting for the shell here means that budget now measures only
+ *      what it claims to.
+ *
+ * #user-avatar is the repo's canonical "app shell is up" hook (see
+ * fixtures/auth.js) — it renders once the SPA has mounted its header.
+ * Deliberately NOT a report-specific element: this proves the APP booted, and
+ * leaves "did the report render" to waitForReportReady.
+ */
+const APP_SHELL_SEL = '#user-avatar';
+const SHELL_BOOT_MS = Math.max(5, Number(process.env.REPORT_SHELL_BOOT || 60)) * 1000;
+const SHELL_BOOT_TRIES = Math.max(1, Number(process.env.REPORT_SHELL_BOOT_TRIES || 3));
+
+/**
+ * Navigate to `url` and return only once the SPA has actually mounted. Re-navigates
+ * (up to `tries`) when the shell doesn't come up — the retry is cheap because the
+ * chunks that DID arrive are cached, so a recovery costs ~3s rather than a lost test.
+ *
+ * This is a transport-level retry, NOT a report-level one: it re-runs nothing except
+ * the page load, so it cannot mask a report defect. A report that renders no data
+ * still fails afterwards on its own budget.
+ *
+ * @returns {Promise<{booted:boolean, attempts:number, waitedMs:number, error:Error|null}>}
+ */
+async function gotoBooted(page, url, { tries = SHELL_BOOT_TRIES, bootMs = SHELL_BOOT_MS } = {}) {
+  const started = Date.now();
+  let lastErr = null;
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    try {
+      // waitUntil:'commit', NOT 'domcontentloaded'. Measured on this instance: /reports/create
+      // intermittently never fires DOMContentLoaded at all — even at concurrency 1 — because a
+      // stalled blocking script in <head> holds the parser open, so goto() sat out its full
+      // timeout while curl fetched the same URL in 0.07s. 'commit' resolves as soon as the
+      // response starts, and the shell wait below is the real readiness gate, so a stalled
+      // sub-resource can no longer make navigation itself the bottleneck.
+      await page.goto(url, { waitUntil: 'commit', timeout: 45_000 });
+      await page.locator(APP_SHELL_SEL).first().waitFor({ state: 'visible', timeout: bootMs });
+      return { booted: true, attempts: attempt, waitedMs: Date.now() - started, error: null };
+    } catch (e) {
+      lastErr = e instanceof Error ? e : new Error(String(e));
+      // Give the server a beat before re-requesting the bundle.
+      await page.waitForTimeout(1500).catch(() => {});
+    }
+  }
+  return { booted: false, attempts: tries, waitedMs: Date.now() - started, error: lastErr };
 }
 
 function safeName(s) {
@@ -121,11 +210,16 @@ function safeName(s) {
 async function waitForReportReady(page, timeoutMs = READY_TIMEOUT_MS) {
   const started = Date.now();
   const deadline = started + timeoutMs;
+  const hardDeadline = started + Math.max(timeoutMs, READY_MAX_MS);
 
   let lastText = '';
   let lastState = 'no response from page';
   let ready = false;
   let emptyMarker = false;
+  // Is the app still visibly producing the report (spinner up / "Loading...")? Drives
+  // the progress-aware extension below.
+  let lastBusy = false;
+  let extended = false;
 
   while (Date.now() < deadline) {
     const state = await page
@@ -181,6 +275,11 @@ async function waitForReportReady(page, timeoutMs = READY_TIMEOUT_MS) {
         emptyMarker = state.emptyMarker;
         break;
       }
+      // "Busy" means the app is demonstrably still working. A missing Export button is
+      // deliberately NOT busy: that is equally the signature of a view that is simply
+      // stuck, and treating it as busy would hold every broken report to the ceiling.
+      lastBusy = state.spinnerVisible || state.onlyLoading;
+
       lastState = !state.hasExportBtn
         ? 'report view not loaded yet (no Export button)'
         : state.spinnerVisible
@@ -190,7 +289,29 @@ async function waitForReportReady(page, timeoutMs = READY_TIMEOUT_MS) {
             : 'no widget/table/chart rendered yet';
     }
 
-    const left = deadline - Date.now();
+    // Progress-aware budget. Past the soft deadline we branch on whether the app is
+    // still demonstrably WORKING:
+    //   - spinner up / "Loading..."  -> the server is still building the report. Failing
+    //     here is a false negative: the report is healthy, just slower than the budget.
+    //     Keep waiting, up to the hard ceiling.
+    //   - idle, no content, no empty-state -> it is genuinely stuck. Fail NOW rather
+    //     than burning the rest of the budget; this also frees the shared export slot
+    //     sooner, which speeds up the whole suite.
+    // Net effect: slow-but-healthy reports stop failing, and broken ones fail faster.
+    if (Date.now() >= deadline) {
+      const stillWorking = !!lastBusy;
+      if (!stillWorking) break;
+      if (Date.now() >= hardDeadline) {
+        lastState += ` (still working at the ${secsOf(READY_MAX_MS)} ceiling)`;
+        break;
+      }
+      if (!extended) {
+        extended = true;
+        lastState += ` (past ${secsOf(timeoutMs)}, still working — extending)`;
+      }
+    }
+
+    const left = hardDeadline - Date.now();
     if (left <= 0) break;
     await page.waitForTimeout(Math.min(READY_POLL_MS, left));
   }
@@ -412,7 +533,24 @@ async function exportPdf(page, { timeoutMs = EXPORT_WAIT_MS } = {}) {
     if (page.isClosed?.()) return { status: 'no_download' };
     // Arm the download listener BEFORE clicking so a fast delivery can't race us.
     const downloadP = page.waitForEvent('download', { timeout: timeoutMs }).catch(() => null);
-    await btn.click().catch(() => {});
+    /*
+     * BOUNDED click. This used to be a bare btn.click(), and no actionTimeout is configured,
+     * so Playwright's auto-wait had NO upper bound: whenever the Export button was present but
+     * not clickable (a spinner or an Ant toast covering it fails the "receives events" check),
+     * the click waited until the TEST timeout killed the worker. Measured: one create+validate
+     * burned 11 of its 12 minutes inside this single click, and the `.catch(() => {})` below
+     * never ran because the promise never settled — the failure surfaced instead as
+     * "locator.click: Test timeout exceeded", which reads like an export defect.
+     * Bounding it means an unclickable button costs seconds and falls back to the preview verdict.
+     */
+    const clickErr = await btn
+      .click({ timeout: EXPORT_CLICK_TIMEOUT_MS })
+      .then(() => null)
+      .catch((e) => e);
+    if (clickErr) {
+      // Don't leave the armed listener dangling — it is already .catch()'d, so just report.
+      return { status: 'click_failed', detail: String(clickErr.message || clickErr).split('\n')[0] };
+    }
     const started = await exportStarted(page, 8000);
     const download = await downloadP;
     if (download) return { status: 'downloaded', download };
@@ -424,6 +562,9 @@ module.exports = {
   EXPORT_WAIT_MS,
   PDF_DOWNLOAD_TIMEOUT_MS,
   READY_TIMEOUT_MS,
+  APP_SHELL_SEL,
+  SHELL_BOOT_MS,
+  gotoBooted,
   reportUrl,
   safeName,
   waitForReportReady,

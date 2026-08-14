@@ -9,6 +9,7 @@
  * Auth comes from storageState (setup project), so the Python `login()` is gone.
  */
 const { baseUrl } = require('./env.js');
+const { gotoBooted, APP_SHELL_SEL } = require('./report.helpers.js');
 
 function combo(name, over = {}) {
   return { name, counters: 1, monitors: 1, counterIndex: 0, rangeIndex: 0, ...over };
@@ -73,8 +74,19 @@ const CATEGORY_DISPLAY = {
 // ------------------------------ shared helpers ------------------------------
 
 async function gotoCreate(page) {
-  await page.goto(`${baseUrl()}/reports/create`, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(2500);
+  // Boot-aware navigation — same reasoning as creation/wizard.js gotoCreate: a fresh
+  // context means a cold SPA boot (~15s), roughly 1 in 4 concurrent boots doesn't finish,
+  // and /reports/create sometimes never fires DOMContentLoaded at all. gotoBooted waits on
+  // the app shell and re-navigates, so "no tiles" downstream can't be a boot artefact.
+  const boot = await gotoBooted(page, `${baseUrl()}/reports/create`);
+  if (!boot.booted) {
+    throw new Error(
+      `App shell never mounted on /reports/create (${APP_SHELL_SEL} not visible) after ` +
+        `${boot.attempts} navigation attempt(s) — the SPA bundle failed to load. ` +
+        `Last error: ${boot.error ? boot.error.message.split('\n')[0] : 'unknown'}`,
+    );
+  }
+  await page.waitForTimeout(1000);
 }
 
 async function clickNext(page) {
@@ -286,27 +298,47 @@ async function metricHandler(page, c, picked) {
   if (!sourceClicked) throw new Error('Could not find Source field dropdown trigger.');
   await page.waitForTimeout(1500);
 
-  const rowSel = '.k-grid-content tr, .k-grid-table tr, .k-grid .k-table tbody tr, .k-grid tbody tr';
-  let rowTotal = 0;
-  for (let left = 15_000; left > 0; left -= 300) {
-    rowTotal = await page.locator(rowSel).count();
-    if (rowTotal > 0) break;
+  /*
+   * SCOPE TO THE OPEN POPOVER, and support BOTH picker shapes — identical reasoning to
+   * creation/wizard.js selectMonitors():
+   *   - the page-wide selectors below used to read the step-2 preview grid BEHIND the picker
+   *     (measured: 24 matches with the popover CLOSED), producing a bogus "has rows but 0
+   *     checkboxes";
+   *   - GRID shape (Monitor/Source Host) puts rows in tbody; LIST shape (Group/Tag) uses <li>
+   *     checkboxes with a select-all outside the <li>s.
+   */
+  const overlays = page.locator('.picker-overlay:visible');
+  const gridPop = overlays.filter({ has: page.locator('tbody .ant-checkbox-input') }).last();
+  const listPop = overlays.filter({ has: page.locator('li .ant-checkbox-input') }).last();
+
+  let rowCbs = null;
+  let selAll = null;
+  let cbTotal = 0;
+  for (let left = 20_000; left > 0; left -= 300) {
+    const gridN = await gridPop.locator('tbody .ant-checkbox-input').count().catch(() => 0);
+    if (gridN > 0) {
+      cbTotal = gridN;
+      rowCbs = gridPop.locator('tbody .ant-checkbox-input');
+      selAll = gridPop.locator('thead .ant-checkbox-input, thead input[type="checkbox"]').first();
+      break;
+    }
+    const listN = await listPop.locator('li .ant-checkbox-input').count().catch(() => 0);
+    if (listN > 0) {
+      cbTotal = listN;
+      rowCbs = listPop.locator('li .ant-checkbox-input');
+      selAll = listPop.locator('.ant-checkbox-input:not(li .ant-checkbox-input)').first();
+      break;
+    }
     await page.waitForTimeout(300);
   }
-  if (rowTotal === 0) throw new Error('Source monitor table rendered 0 rows after 15s.');
-  await waitNoLoader(page, 5000);
-
-  let rowCbs = page.locator('.k-grid-content .ant-checkbox-input, .k-grid-table .ant-checkbox-input, .k-grid tbody .ant-checkbox-input');
-  let cbTotal = await rowCbs.count();
-  if (cbTotal === 0) {
-    rowCbs = page.locator('.k-grid-content input[type="checkbox"], .k-grid-table input[type="checkbox"], .k-grid tbody input[type="checkbox"]');
-    cbTotal = await rowCbs.count();
+  if (!cbTotal) {
+    const text = (await overlays.last().innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+    throw new Error(
+      `Source picker exposed no selectable rows/items within 20s (neither tbody rows nor li items). ` +
+        `Overlay text: "${text.slice(0, 200)}"`,
+    );
   }
-  if (cbTotal === 0) throw new Error('Source monitor table has rows but 0 checkboxes.');
-
-  const selAll = page
-    .locator('.k-grid-header .ant-checkbox-input, .k-grid thead .ant-checkbox-input, .k-grid-header input[type="checkbox"], .k-grid thead input[type="checkbox"]')
-    .first();
+  await waitNoLoader(page, 5000);
 
   if (c.monitors >= cbTotal) {
     if ((await selAll.count()) > 0) {
@@ -332,12 +364,15 @@ async function metricHandler(page, c, picked) {
   await page.waitForTimeout(600);
 
   // --- wait for preview to render (Next becomes clickable once valid) ---
+  // Same drift as creation/wizard.js: .widget-preview / .preview-rendered / .chart-container
+  // do not exist on this build (measured 0 matches with a chart on screen), so this always
+  // reported 'timeout' after burning the full budget. Real containers verified live:
+  // .widget-view wrapping a Highcharts SVG, or a Kendo/ant grid for Grid/Top-N widgets.
   try {
     await page
       .locator(
-        '.widget-preview svg, .widget-preview canvas, .widget-preview .k-grid-content tr, ' +
-          '.widget-preview .ant-table-tbody tr, .preview-rendered svg, .preview-rendered canvas, ' +
-          '.chart-container svg, .chart-container canvas',
+        '.widget-view .highcharts-container, .widget-view svg, .widget-view canvas, ' +
+          '.widget-view .k-grid-content tr, .widget-view .ant-table-tbody tr',
       )
       .first()
       .waitFor({ state: 'visible', timeout: 30_000 });

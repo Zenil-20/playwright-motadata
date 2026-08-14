@@ -67,6 +67,9 @@ if (process.env.REPORT_TIMELINE && !timeline) {
   console.warn(`Warning: REPORT_TIMELINE=${process.env.REPORT_TIMELINE} did not match a known option. Valid: ${timelineChoices()}`);
 }
 const compareShape = ['1', 'true', 'yes'].includes((process.env.REPORT_COMPARE_SHAPE || '').toLowerCase());
+// '1' → a report that is empty in BOTH the preview and the PDF fails instead of being recorded
+// as a skipped data condition. See the verdict handling at the end of the test.
+const STRICT_EMPTY = ['1', 'true', 'yes'].includes((process.env.REPORT_STRICT_EMPTY || '').toLowerCase());
 const perReportSec = Number(process.env.PER_REPORT_TIMEOUT || 360);
 
 /* The global config sets fullyParallel:false, which would pin all report tests
@@ -110,6 +113,41 @@ test.describe(`Report regression (max ${CONCURRENCY} concurrent)`, () => {
         contentType: 'application/json',
         body: Buffer.from(JSON.stringify({ id: entry.id, name, ...verdict }), 'utf-8'),
       });
+
+      /*
+       * A DEFECT is a DISAGREEMENT between the two sides; "empty everywhere" is a data state.
+       *
+       * validate.js already draws this line (see its verdict comments): where==='both' means the
+       * UI preview AND the exported PDF independently agree there are no data rows, which is what
+       * you get when the instance simply has nothing to report on — e.g. no Hyper-V hosts
+       * monitored, no ASA VPN tunnels, no IPSLA WAN links. Measured on this instance, all such
+       * reports come back preview=0x0 / pdf=0x2 (columns present, zero data rows).
+       *
+       * Failing those told us nothing about the product or the automation, so they are recorded
+       * as SKIPPED with the full evidence rather than reported as passes (we did not validate
+       * anything) or failures (nothing is broken). Everything that indicates a real problem still
+       * fails hard:
+       *   where==='preview' → PDF has rows, UI doesn't  = UI-side bug
+       *   where==='pdf'     → UI has rows, PDF doesn't  = export-side bug
+       *   timeout / error   → the report never rendered
+       *   shape mismatch    → when REPORT_COMPARE_SHAPE=1
+       *
+       * Set REPORT_STRICT_EMPTY=1 to make empty-on-both-sides a hard failure again (useful when
+       * the instance IS expected to have data for every catalogued report, e.g. a seeded CI box).
+       */
+      const emptyEverywhere = verdict.status === 'faulty' && verdict.where === 'both';
+      if (emptyEverywhere && !STRICT_EMPTY) {
+        const evidence =
+          `preview=${verdict.preview.rows}x${verdict.preview.cols} pdf=${verdict.pdf.rows}x${verdict.pdf.cols}`;
+        console.log(`DATA-EMPTY  ${name} [${entry.id}]  ${evidence} — ${verdict.reason}`);
+        testInfo.annotations.push({ type: 'data-empty', description: `${evidence} — ${verdict.reason}` });
+        test.skip(
+          true,
+          `No data on this instance for this report (${evidence}). The UI preview and the exported ` +
+            `PDF agree, so there is nothing to validate and nothing broken. Run with ` +
+            `REPORT_STRICT_EMPTY=1 to treat this as a failure.`,
+        );
+      }
 
       expect(verdict.status, verdict.reason || `report ${entry.id} verdict was ${verdict.status}`).toBe('ok');
     });

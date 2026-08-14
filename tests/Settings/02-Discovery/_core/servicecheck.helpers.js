@@ -201,34 +201,205 @@ export async function selectCredentialProfile(page, name) {
   await page.waitForTimeout(300);
 }
 
-/** Read the "Discovered Objects N | Failed Objects N" counts from the result view. */
-async function readCounts(page) {
+const LIST_PATH = '/settings/network-discovery/network-discovery-profiles';
+// Save-and-Run routes to <LIST_PATH>/<profileId>/progress and then /<profileId>/result.
+const RUN_VIEW_RE = /network-discovery-profiles\/(\d+)\/(progress|result)/;
+const RESULT_RE = /network-discovery-profiles\/\d+\/result$/;
+const PROGRESS_RE = /network-discovery-profiles\/\d+\/progress$/;
+
+/**
+ * Read the "Discovered Objects N | Failed Objects N" counts, plus enough page state to tell
+ * the three post-save views apart (progress / result / bounced back to the profile LIST).
+ *
+ * The counts regex is deliberately case-SENSITIVE. The profile LIST grid carries a
+ * "DISCOVERED OBJECTS" column header, so any case-insensitive test — including Playwright's
+ * getByText('Discovered Objects'), which is case-insensitive by design — resolves happily on
+ * the list page and makes the caller believe the run view mounted. `onList` is the honest
+ * check: only the list renders the "Create Discovery Profile" button.
+ */
+async function readState(page) {
   return page.evaluate(() => {
     const t = document.body.innerText || '';
     const d = t.match(/Discovered Objects\s*(\d+)/);
     const f = t.match(/Failed Objects\s*(\d+)/);
-    return { discovered: d ? +d[1] : -1, failed: f ? +f[1] : -1 };
+    return {
+      discovered: d ? +d[1] : -1,
+      failed: f ? +f[1] : -1,
+      onList: [...document.querySelectorAll('button')].some((b) => /Create Discovery Profile/i.test(b.innerText || '')),
+      onForm: !!document.querySelector('#save-run-btn-id'),
+      notices: [...document.querySelectorAll('.ant-notification-notice, .ant-message, .ant-form-item-explain-error')]
+        .map((e) => (e.innerText || '').replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .slice(0, 3),
+    };
+  });
+}
+
+/** Pull the app's own bearer token (localStorage 'auth.token' — the stored value is either the raw
+ *  JWT or a JSON object holding it) so we can ask the API for a run's verdict. The /api/v1 calls
+ *  reject cookie-only requests with 401, so the token is required. Returns null if the storage
+ *  shape ever changes; callers then fall back to reading the UI counts. */
+async function authToken(page) {
+  return page.evaluate(() => {
+    const isJwt = (v) => typeof v === 'string' && /^ey[A-Za-z0-9_-]{10,}\./.test(v);
+    for (const store of [localStorage, sessionStorage]) {
+      for (const k of ['auth.token', 'token', 'access.token', 'access_token', ...Object.keys(store)]) {
+        const v = store.getItem(k);
+        if (!v) continue;
+        if (isJwt(v)) return v;
+        try {
+          const o = JSON.parse(v);
+          if (isJwt(o)) return o;
+          for (const kk of Object.keys(o || {})) if (isJwt(o[kk])) return o[kk];
+        } catch {
+          /* not JSON — next key */
+        }
+      }
+    }
+    return null;
   });
 }
 
 /**
- * Click "Save and Run" and SMART-WAIT (default 10 min) for the discovery to reach a
- * terminal state. Returns as soon as (Discovered >= 1 OR Failed >= 1) — a fast response
- * continues immediately; a slow one is allowed up to `timeout`.
- * Returns { discovered, failed }.
+ * The run's verdict, STRAIGHT FROM THE SERVER — the only signal that separates a rejected run from
+ * a slow one. The UI cannot be trusted here: a rejected run abandons /progress for the profile
+ * list and renders an EMPTY result view, which in the DOM looks exactly like "still running".
+ *
+ *   "Not Run Yet"                          -> the run never started
+ *   "Discovery is running, started at ..."  -> in progress
+ *   "Last ran at ..."                       -> finished
+ *   "Last ran failed at ..."                -> REJECTED server-side (see saveAndRunAndWait)
  */
-export async function saveAndRunAndWait(page, { timeout = 600000, poll = 5000 } = {}) {
+async function runStatus(page, profileId, token) {
+  if (!token) return null;
+  return page
+    .evaluate(async ([id, tok]) => {
+      try {
+        const r = await fetch(`/api/v1/settings/discoveries/${id}`, { headers: { Authorization: `Bearer ${tok}` } });
+        if (!r.ok) return null;
+        const j = await r.json();
+        return (j && j.result && j.result['discovery.status']) || null;
+      } catch {
+        return null;
+      }
+    }, [profileId, token])
+    .catch(() => null);
+}
+
+/**
+ * Click "Save and Run" and SMART-WAIT (default 10 min) for the discovery to reach a terminal
+ * state. Returns as soon as the server reports the run finished (a healthy run takes ~30 s); a
+ * slow one is allowed up to `timeout`.
+ *
+ * Returns { discovered, failed, reason? }. `reason` is set ONLY when no genuine count could be
+ * obtained, and explains WHICH failure it was — save rejected / run rejected by the server / run
+ * never finished — so the caller fails with the truth instead of a bare "-1".
+ *
+ * Gated on the server's discovery.status, not on page text, because of two traps that both
+ * produced "discovered=-1" for the full 10 minutes and then a misleading assertion message:
+ *   - the /progress view renders NO counts (plus a transient "Discovered Objects 0" right before
+ *     it flips), and the profile LIST's "DISCOVERED OBJECTS" column header satisfies a
+ *     case-insensitive text wait while the case-sensitive count regex matches nothing;
+ *   - a run the server REJECTED ("Last ran failed at ...") abandons the run view for the list and
+ *     leaves an empty result, indistinguishable in the DOM from a run still in flight.
+ *
+ * The dominant cause of a REJECTED run in this suite: the target is ALREADY PROVISIONED as a
+ * monitor (by an earlier row, or by an earlier run). Re-discovering a provisioned target is
+ * rejected server-side — reproduced on demand 2026-08-12 on .86 (/html provisioned at 14:37 →
+ * re-discovery at 14:53 rejected; the same form with a per-row-unique target discovered 1/0).
+ * That is why the specs build a target that is unique per row AND per run.
+ */
+export async function saveAndRunAndWait(page, { timeout = 600000, poll = 3000, settle = 3 } = {}) {
   await clickThrough(page, '#save-run-btn-id');
-  const start = Date.now();
-  let counts = { discovered: -1, failed: -1 };
-  // wait for the result view to mount first
-  await page.getByText('Discovered Objects', { exact: false }).first().waitFor({ state: 'visible', timeout: 60000 }).catch(() => {});
-  while (Date.now() - start < timeout) {
-    await page.waitForTimeout(poll);
-    counts = await readCounts(page);
-    if (counts.discovered >= 1 || counts.failed >= 1) break;
+
+  // The save must open the run view. If it doesn't, the form rejected the profile — surface the
+  // actual message rather than polling a page that can never show counts.
+  let profileId = null;
+  try {
+    await page.waitForURL(RUN_VIEW_RE, { timeout: 120000 });
+    profileId = (page.url().match(RUN_VIEW_RE) || [])[1] || null;
+  } catch {
+    const s = await readState(page);
+    return {
+      discovered: s.discovered,
+      failed: s.failed,
+      reason:
+        `"Save and Run" never opened the run view (still at ${page.url()}). ` +
+        (s.notices.length ? `Page said: ${s.notices.join(' | ')}` : 'No error message was shown.'),
+    };
   }
-  return counts;
+
+  const resultUrl = `${base()}${LIST_PATH}/${profileId}/result`;
+  const start = Date.now();
+  const token = await authToken(page).catch(() => null);
+  let last = { discovered: -1, failed: -1, notices: [] };
+  let status = null;
+  let stable = 0;
+
+  while (Date.now() - start < timeout) {
+    status = await runStatus(page, profileId, token);
+
+    // The server rejected the run — no amount of waiting will produce objects.
+    if (status && /^Last ran failed/i.test(status)) {
+      return {
+        discovered: 0,
+        failed: 0,
+        reason:
+          `the SERVER rejected this discovery run — API discovery.status = "${status}" and ` +
+          `/discoveries/${profileId}/result is empty. The usual cause is that this exact target is ` +
+          `ALREADY PROVISIONED as a monitor (by an earlier row or an earlier run); re-discovering a ` +
+          `provisioned target is rejected. Give the row a target that is unique per row AND per run.`,
+      };
+    }
+
+    // Finished. Land on the result view so the counts render and provisioning can proceed. The
+    // counts still come from the UI: it is the one place that reports FAILED objects too (the
+    // negative rows assert failed >= 1), which /discoveries/<id>/result does not give us.
+    if (status && /^Last ran /i.test(status)) {
+      if (!RESULT_RE.test(page.url())) await page.goto(resultUrl, { waitUntil: 'domcontentloaded' }).catch(() => {});
+      for (let i = 0; i < 5; i++) {
+        last = await readState(page);
+        if (last.discovered >= 0 || last.failed >= 0) break;
+        await page.waitForTimeout(2000);
+      }
+      if (last.discovered < 0 && last.failed < 0) {
+        return {
+          discovered: last.discovered,
+          failed: last.failed,
+          reason:
+            `the server reports the run finished ("${status}") but the result view never rendered ` +
+            `any counts (profile ${profileId}, view ${page.url()}) — the counts could not be read.`,
+        };
+      }
+      return { discovered: Math.max(last.discovered, 0), failed: Math.max(last.failed, 0) };
+    }
+
+    // No token / API shape changed -> fall back to the UI counts, still route-aware. NEVER navigate
+    // while /progress is up: leaving that view before it flips starves the run (verified 2026-08-12).
+    if (!status) {
+      last = await readState(page);
+      if (last.discovered >= 1 || last.failed >= 1) return { discovered: last.discovered, failed: last.failed };
+      if (RESULT_RE.test(page.url()) && last.discovered === 0 && last.failed === 0) {
+        if (++stable >= settle) return { discovered: 0, failed: 0 };
+      } else {
+        stable = 0;
+      }
+      if (!RESULT_RE.test(page.url()) && !PROGRESS_RE.test(page.url())) {
+        await page.goto(resultUrl, { waitUntil: 'domcontentloaded' }).catch(() => {});
+      }
+    }
+    await page.waitForTimeout(poll);
+  }
+
+  return {
+    discovered: last.discovered,
+    failed: last.failed,
+    reason:
+      `discovery did not finish within ${Math.round(timeout / 1000)}s (profile ${profileId}, ` +
+      `server discovery.status=${JSON.stringify(status)}, last view ${page.url()}, last UI read ` +
+      `discovered=${last.discovered} failed=${last.failed}, onList=${last.onList}, onForm=${last.onForm})` +
+      (last.notices.length ? ` — page said: ${last.notices.join(' | ')}` : ''),
+  };
 }
 
 /** Close the "Provision Status" popover (it renders as role=document, so target the cross
@@ -285,6 +456,9 @@ export async function assertDiscovery(page, testInfo, { expect: expected = 'disc
     contentType: 'application/json',
   });
   await page.screenshot({ path: testInfo.outputPath('result.png'), fullPage: true }).catch(() => {});
+  // No terminal count => the run never produced one. Fail on THAT, not on a bogus "discovered=-1",
+  // so the report says whether the save was rejected or the run never finished.
+  if (counts.reason) throw new Error(`[${label}] ${counts.reason}`);
   if (expected === 'discovered') {
     expect(counts.discovered, `expected the target to be DISCOVERED (got discovered=${counts.discovered}, failed=${counts.failed})`).toBeGreaterThanOrEqual(1);
     if (provision) await provisionDiscovered(page, testInfo);

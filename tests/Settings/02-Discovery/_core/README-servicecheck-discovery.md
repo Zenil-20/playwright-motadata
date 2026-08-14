@@ -21,7 +21,7 @@ types, driven against the lightweight test API on **172.16.15.160**
    then select it.
 5. Set protocol/method (+ JSON URL / URL Content / Parameters / Headers / body as needed).
 6. Click **Save and Run**, then **smart-wait up to 10 minutes** — returning the instant the
-   result panel shows `Discovered Objects` / `Failed Objects`.
+   run's result view reports `Discovered Objects` / `Failed Objects` (see *Post-save run views*).
 7. Assert genuinely: normal rows require **Discovered ≥ 1**; negative rows
    (`content miss`, `status 500`) require **Failed ≥ 1**. No false passes.
 
@@ -33,6 +33,75 @@ types, driven against the lightweight test API on **172.16.15.160**
 | `SC_COLLECTOR` | `motadata1568` | collector that runs the probe (`''` = form default) |
 | `SC_TARGET_HOST` | `172.16.15.160` | override the test-API host |
 | `SC_REST_HTTP/…_TLS`, `SC_URL_HTTP/…_TLS` | derived | override individual target base URLs |
+
+## Post-save run views (harvested live on 172.16.15.86, build 8.2.7, 2026-08-12)
+
+"Save and Run" does **not** render an inline panel — it **navigates**:
+
+```
+form submit → …/network-discovery-profiles/<profileId>/progress   (~30 s, NO counts)
+             → …/network-discovery-profiles/<profileId>/result     (final counts)
+```
+
+- `/progress` shows a **transient** `Discovered Objects 0 | Failed Objects 0` in the last second
+  before it flips — treat it as "still running", never as an answer.
+- Don't `goto()`/reload while `/progress` is up — there is no in-progress status text on either
+  view, so wait it out rather than poking at the SPA.
+
+### The run's verdict comes from the server, not the page
+
+```
+GET /api/v1/settings/discoveries/<profileId>      ->  result["discovery.status"]
+      "Not Run Yet"                             the run never started
+      "Discovery is running, started at ..."     in progress
+      "Last ran at ..."                          finished
+      "Last ran failed at ..."                   REJECTED server-side
+```
+
+`/api/v1` rejects cookie-only requests with **401**, so the helper reads the app's own JWT from
+`localStorage['auth.token']` (raw JWT or a JSON object holding one) and calls the API from inside
+the page. This is the gate `saveAndRunAndWait()` waits on; the UI is only used afterwards to read
+the counts (it is the one place that reports **failed** objects, which the negative rows assert).
+
+### Why a row can be REJECTED: the target is already provisioned
+
+**Re-discovering a target that is already provisioned as a monitor is rejected by the server.** The
+run is marked `Last ran failed at ...`, `/discoveries/<id>/result` comes back empty, and the SPA
+abandons the run view for the profile list — which in the DOM is indistinguishable from a run still
+in flight.
+
+That is what killed `URL Content match → UP`: row 2 discovered **and provisioned**
+`172.16.15.160:9090/html` at 14:37:05, then row 3 ran the same `/html` at 14:37:20 and was rejected.
+Three URL rows shared `/html` and three shared `/echo`, so the failure was structural, not flaky.
+Reproduced on demand (2026-08-12, .86): `/html` → rejected; `/text` (virgin) → `1/0`;
+`/html?row=probe6` → `1/0`.
+
+Both specs therefore build a target that is **unique per row and per run**:
+
+```js
+const RUN = Date.now().toString(36);
+const uniqueTarget = (endpoint, key) => `${endpoint}?row=${key}&run=${RUN}`;
+```
+
+The `run` token matters as much as `row`: without it the *second* run of a spec re-discovers the
+targets the *first* run provisioned. The test server serves every route identically with a query
+string appended (verified across all REST + URL routes, `/status/500` still 500 and the auth routes
+still challenging), so no row's semantics change.
+
+Side effect to keep in mind: every provisioned row leaves a monitor behind, and with per-run targets
+those accumulate instead of being reused. They are inert (nothing re-discovers them), but a periodic
+cleanup of `172.16.15.160:9090/*` URL monitors keeps the inventory readable.
+- `/result` is **directly navigable**: a fresh GET of `/<profileId>/result` re-renders the counts,
+  which is how `saveAndRunAndWait()` recovers if the SPA drops back to the profile list.
+- **Trap:** the profile **list** grid has a `DISCOVERED OBJECTS` column header, and
+  `getByText('Discovered Objects')` is **case-insensitive**, so it resolves on the list page while
+  the case-sensitive count regex reads nothing → `discovered: -1`. The helper is therefore
+  **route-aware** and identifies the list by its "Create Discovery Profile" button, not by text.
+  This exact confusion cost one row 10 minutes of polling and produced the misleading
+  `expected the target to be DISCOVERED (got discovered=-1, failed=-1)`.
+- When no terminal count can be obtained, `saveAndRunAndWait()` returns a `reason` (save rejected
+  vs. run never finished, with the profile id, the last route and any on-page notice) and
+  `assertDiscovery()` fails on **that** instead of on a bogus `-1`.
 
 ## Important environment notes (learned live on build 8.2.6)
 - **Endpoint is scheme-less** for both REST and URL — `172.16.15.160:18080/get`, never
